@@ -14,8 +14,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1180,
     height: 800,
-    minWidth: 1000,
-    minHeight: 700,
+    minWidth: 840,
+    minHeight: 560,
     title: 'GhostWire VPN - 0-Kayıtlı Kuantum Gizlilik Kalkanı',
     backgroundColor: '#060911',
     frame: false,

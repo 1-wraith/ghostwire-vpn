@@ -76,7 +76,7 @@ export class SpeedMonitor {
     if (!this.ctx || !this.canvas) return;
 
     const width = this.canvas.width = this.canvas.parentElement.clientWidth || 320;
-    const height = this.canvas.height = 70;
+    const height = this.canvas.height = this.canvas.parentElement.clientHeight || 52;
 
     this.ctx.clearRect(0, 0, width, height);
 

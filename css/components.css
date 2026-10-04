@@ -4,13 +4,14 @@
 
 /* 1. Quick Connect Hero Card */
 .hero-connect-card {
-  padding: 24px 20px;
+  padding: 16px 16px 14px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   overflow: hidden;
   text-align: center;
+  min-height: fit-content;
 }
 
 .hero-connect-card::before {
@@ -19,8 +20,8 @@
   top: -60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   background: radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, transparent 70%);
   pointer-events: none;
   transition: all var(--transition-smooth);
@@ -33,9 +34,9 @@
 /* Holographic Power Button */
 .power-button-wrapper {
   position: relative;
-  width: 140px;
-  height: 140px;
-  margin: 12px 0 18px 0;
+  width: 105px;
+  height: 105px;
+  margin: 6px 0 12px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +53,7 @@
 
 .power-radar-ring-2 {
   position: absolute;
-  inset: -10px;
+  inset: -8px;
   border-radius: 50%;
   border: 1px solid rgba(0, 229, 255, 0.15);
   animation: rotate-radar-rev 15s linear infinite;
@@ -70,8 +71,8 @@
 }
 
 .btn-power-main {
-  width: 110px;
-  height: 110px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: linear-gradient(145deg, #131b31, #0b1120);
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -90,8 +91,8 @@
 }
 
 .btn-power-main svg {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   stroke: var(--text-secondary);
   transition: all var(--transition-normal);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
@@ -137,14 +138,14 @@
 /* Power Label & Subtext */
 .connect-status-text {
   font-family: var(--font-title);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .connect-subtext {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
   font-family: var(--font-mono);
   display: flex;
@@ -155,8 +156,8 @@
 /* Active Server Bar inside Hero */
 .active-server-bar {
   width: 100%;
-  margin-top: 18px;
-  padding: 12px 14px;
+  margin-top: 10px;
+  padding: 9px 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
@@ -175,17 +176,17 @@
 .server-info-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-align: left;
 }
 
 .server-flag {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
 }
 
 .server-name-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-main);
   display: flex;
@@ -201,7 +202,7 @@
 .server-meta-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .server-ping-badge {
@@ -220,22 +221,22 @@
 /* Protocol Selector Bar */
 .protocol-selector-bar {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 6px 10px;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .protocol-tag-btn {
   background: rgba(0, 229, 255, 0.1);
   color: var(--cyan-stealth);
   border: 1px solid rgba(0, 229, 255, 0.25);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 600;
@@ -251,17 +252,17 @@
 
 /* 2. Telemetry & Security Metrics Card */
 .telemetry-card {
-  padding: 16px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .telemetry-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 8px;
+  padding-bottom: 5px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 .telemetry-row:last-child {
@@ -294,15 +295,15 @@
 .speed-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .speed-box {
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -318,7 +319,7 @@
 
 .speed-box-val {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--cyan-stealth);
 }
@@ -328,12 +329,12 @@
 
 /* 3. Interactive World Map Card */
 .world-map-card {
-  padding: 18px 20px;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   position: relative;
-  min-height: 280px;
+  min-height: 200px;
 }
 
 .map-card-header {
@@ -344,7 +345,7 @@
 
 .map-title {
   font-family: var(--font-title);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -354,7 +355,7 @@
 .map-canvas-wrapper {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: clamp(140px, 20vh, 190px);
   border-radius: var(--radius-md);
   overflow: hidden;
   background: radial-gradient(circle at center, rgba(14, 23, 44, 0.6) 0%, rgba(6, 9, 17, 0.9) 100%);
@@ -369,16 +370,16 @@
 
 .map-legend {
   position: absolute;
-  bottom: 10px;
-  left: 12px;
+  bottom: 8px;
+  left: 10px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   font-size: 11px;
   color: var(--text-muted);
   background: rgba(6, 9, 17, 0.7);
   backdrop-filter: blur(8px);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border-glass);
 }
@@ -396,15 +397,15 @@
 
 /* 4. Live Bandwidth Canvas Card */
 .bandwidth-graph-card {
-  padding: 16px 20px;
+  padding: 10px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .bandwidth-canvas-wrapper {
   width: 100%;
-  height: 70px;
+  height: 52px;
   position: relative;
 }
 .bandwidth-canvas-wrapper canvas {
@@ -417,17 +418,17 @@
 .feature-hub-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .feature-tile {
   background: var(--bg-card);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-md);
-  padding: 14px 12px;
+  padding: 10px 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   cursor: pointer;
   transition: all var(--transition-fast);
 }

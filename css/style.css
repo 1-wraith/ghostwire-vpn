@@ -246,31 +246,44 @@ body {
 /* App Body Split */
 .app-body {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 360px 1fr;
   flex: 1;
   overflow: hidden;
-  padding: 18px 24px 20px 24px;
-  gap: 20px;
+  padding: 14px 20px;
+  gap: 16px;
+  min-height: 0;
 }
 
 /* Left Column: VPN Controller & Telemetry */
 .vpn-control-column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+}
+
+.vpn-control-column > * {
+  flex-shrink: 0;
 }
 
 /* Right Column: World Map, Network Graph, Feature Hub */
 .vpn-main-column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 4px;
+}
+
+.vpn-main-column > * {
+  flex-shrink: 0;
 }
 
 /* General Buttons */
@@ -357,3 +370,209 @@ input:checked + .toggle-slider:before {
   background-color: var(--emerald-safe);
   box-shadow: 0 0 10px var(--emerald-safe);
 }
+
+/* ===================================================================
+   RESPONSIVE DESIGN & COMPACT WINDOW ADAPTATION
+   =================================================================== */
+
+/* Compact laptop heights and scaled displays (125%/150%) */
+@media (max-height: 850px) {
+  .app-header {
+    height: 52px;
+    padding: 0 16px;
+  }
+  
+  .brand-logo-wrap {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .brand-title {
+    font-size: 17px;
+  }
+  
+  .nav-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .app-body {
+    padding: 10px 16px 12px 16px;
+    gap: 12px;
+  }
+
+  .vpn-control-column,
+  .vpn-main-column {
+    gap: 12px;
+  }
+
+  .power-button-wrapper {
+    width: 92px !important;
+    height: 92px !important;
+    margin: 4px 0 8px 0 !important;
+  }
+
+  .btn-power-main {
+    width: 72px !important;
+    height: 72px !important;
+  }
+
+  .btn-power-main svg {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .connect-status-text {
+    font-size: 16px !important;
+  }
+
+  .connect-subtext {
+    font-size: 11px !important;
+  }
+
+  .active-server-bar {
+    margin-top: 8px !important;
+    padding: 8px 10px !important;
+  }
+
+  .server-flag {
+    font-size: 20px !important;
+  }
+
+  .server-name-title {
+    font-size: 13px !important;
+  }
+
+  .server-city-sub {
+    font-size: 10px !important;
+  }
+
+  .protocol-selector-bar {
+    margin-top: 6px !important;
+    padding: 5px 8px !important;
+  }
+
+  .telemetry-card {
+    padding: 10px 12px !important;
+    gap: 6px !important;
+  }
+
+  .telemetry-row {
+    padding: 3px 0 !important;
+    font-size: 11px !important;
+  }
+
+  .speed-grid {
+    margin-top: 4px !important;
+    gap: 8px !important;
+  }
+
+  .speed-box {
+    padding: 6px 10px !important;
+  }
+
+  .speed-box-val {
+    font-size: 16px !important;
+  }
+
+  .world-map-card {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+    min-height: auto !important;
+  }
+
+  .map-canvas-wrapper {
+    height: 155px !important;
+  }
+
+  .bandwidth-graph-card {
+    padding: 10px 14px !important;
+    gap: 4px !important;
+  }
+
+  .bandwidth-canvas-wrapper {
+    height: 48px !important;
+  }
+
+  .feature-hub-grid {
+    gap: 8px !important;
+  }
+
+  .feature-tile {
+    padding: 8px 10px !important;
+    gap: 6px !important;
+  }
+
+  .tile-icon-wrap {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .tile-title {
+    font-size: 12px !important;
+  }
+
+  .tile-desc {
+    font-size: 10px !important;
+  }
+}
+
+/* Very short heights (e.g. 600px - 720px) */
+@media (max-height: 720px) {
+  .power-button-wrapper {
+    width: 78px !important;
+    height: 78px !important;
+    margin: 2px 0 6px 0 !important;
+  }
+
+  .btn-power-main {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .btn-power-main svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .connect-status-text {
+    font-size: 15px !important;
+  }
+
+  .active-server-bar {
+    margin-top: 6px !important;
+    padding: 6px 8px !important;
+  }
+
+  .map-canvas-wrapper {
+    height: 125px !important;
+  }
+}
+
+/* Narrow window widths */
+@media (max-width: 1100px) {
+  .app-body {
+    grid-template-columns: 310px 1fr;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .feature-hub-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Very narrow / vertical stacked mode */
+@media (max-width: 860px) {
+  .app-body {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .vpn-control-column,
+  .vpn-main-column {
+    height: auto;
+    overflow-y: visible;
+  }
+}
+
