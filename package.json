@@ -1,0 +1,29 @@
+{
+  "name": "ghostwire-vpn",
+  "version": "1.0.0",
+  "description": "GhostWire VPN - Next-Gen Open Source, Zero-Knowledge, Zero-Log Stealth VPN with Tor-Over-VPN, Ad/Malware Shield, and Anti-Censorship DPI Bypass.",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "serve": "node server.js",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "vpn",
+    "open-source",
+    "zero-log",
+    "wireguard",
+    "tor-bridge",
+    "anti-censorship",
+    "adblock",
+    "malware-blocker",
+    "dpi-bypass",
+    "privacy"
+  ],
+  "author": "GhostWire Open Source Team",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^33.2.1"
+  }
+}
