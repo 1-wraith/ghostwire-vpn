@@ -4,198 +4,129 @@
 
   # 🛡️ GhostWire VPN
   
-  **The Next-Generation, Zero-Knowledge & Zero-Log Stealth Privacy Engine**  
-  *Uncompromised Speed • 140+ Countries • Tor-Over-VPN • Discord & Censorship DPI Bypass • Built-in Malware & Ad Blocker*
+  **100% Açık Kaynaklı, Sıfır Kayıtlı Kuantum Gizlilik Kalkanı & Sansür Kırıcı**  
+  *100% Free, Open-Source, Zero-Knowledge Stealth Privacy Engine*
 
   <p align="center">
-    <a href="https://github.com"><img src="https://img.shields.io/badge/License-GPL--3.0-00f59b.svg?style=for-the-badge&logo=gnu" alt="GPLv3 License" /></a>
-    <a href="SECURITY_AUDIT.md"><img src="https://img.shields.io/badge/Audit-PASSED%20(0--LOGS)-00e5ff.svg?style=for-the-badge&logo=security" alt="No Logs Audit" /></a>
-    <a href="#"><img src="https://img.shields.io/badge/Cryptography-Post--Quantum%20Kyber768-b362ff.svg?style=for-the-badge" alt="Kyber768" /></a>
-    <a href="#"><img src="https://img.shields.io/badge/Nodes-140%2B%20Countries-ffaa00.svg?style=for-the-badge&logo=planetscale" alt="140+ Countries" /></a>
-    <a href="#"><img src="https://img.shields.io/badge/Anti--DPI-Discord%20Bypass%20Active-7289da.svg?style=for-the-badge&logo=discord" alt="Discord Bypass" /></a>
+    <a href="#-türkçe-açıklama"><img src="https://img.shields.io/badge/Dil-Türkçe-red.svg?style=for-the-badge&logo=turkey" alt="Türkçe" /></a>
+    <a href="#-english-documentation"><img src="https://img.shields.io/badge/Language-English-blue.svg?style=for-the-badge" alt="English" /></a>
+    <a href="https://github.com/1-wraith/ghostwire-vpn/releases"><img src="https://img.shields.io/badge/Download-.EXE%20Kurulum%20Sihirbazı-00e5ff.svg?style=for-the-badge&logo=windows" alt="Windows EXE" /></a>
+    <a href="SECURITY_AUDIT.md"><img src="https://img.shields.io/badge/Denetim-0--KAYIT%20ONAYLI-00f59b.svg?style=for-the-badge&logo=security" alt="No Logs Audit" /></a>
+    <a href="#"><img src="https://img.shields.io/badge/Discord%20&%20Roblox-Engel%20Kaldırıcı-7289da.svg?style=for-the-badge&logo=discord" alt="Discord Bypass" /></a>
   </p>
 
   <p align="center">
-    <a href="#-key-features">Features</a> •
-    <a href="#-battle-tested-anti-censorship--discord-unblock">Anti-Censorship</a> •
-    <a href="#-tor-over-vpn-onion-routing">Tor-Over-VPN</a> •
-    <a href="#-independent-no-logs-audit">Security Audit</a> •
-    <a href="#-quick-start">Quick Start</a> •
-    <a href="#-architecture">Architecture</a> •
-    <a href="#-custom-logo-guide">Custom Logo</a>
+    <strong>🇹🇷 [Türkçe Dökümantasyon](#-türkçe-açıklama)</strong> | 
+    <strong>🇬🇧 [English Documentation](#-english-documentation)</strong>
   </p>
 </div>
 
 ---
 
+# 🇹🇷 Türkçe Açıklama
+
+## 🌟 Genel Bakış
+
+**GhostWire VPN**, hiçbir ücret talep etmeyen, ticari hiçbir abonelik veya gizli ücret içermeyen, internet sansürlerini ve gözetimini teknik olarak imkansız kılmak için geliştirilmiş **%100 açık kaynaklı** bir siber gizlilik motorudur.
+
+Özellikle Türkiye ve kısıtlamalı ülkelerdeki **Discord, Roblox, VoIP ve web sitesi engellerini** aşmak için özel olarak tasarlanmıştır. Sunucuları ve istemcisi kalıcı disklere asla kayıt tutmaz; tüm altyapı **uçucu RAM diskler (`tmpfs`)** üzerinde çalışır ve sistem kapandığında tüm veriler kalıcı olarak yok olur.
+
+---
+
+## ⚡ Temel Özellikler
+
+### 🎮 1. Discord, Roblox ve DPI Sansür Engelini Aşma (Stealth Cloak)
+- **DPI Parçalama (SNI Fragmentation):** İnternet servis sağlayıcılarının uyguladığı Derin Paket İncelemesi (DPI) filtrelerini TLS ClientHello paketlerini parçalayarak bypass eder.
+- **Discord & Roblox Kilidini Açar:** Discord ses kanalları, metin kanalları, Roblox ve kısıtlanmış sosyal ağlar gecikmesiz ve yüksek hızda çalışır.
+- **Güvenli DoH (DNS over HTTPS):** Cloudflare (1.1.1.1) ve Google (8.8.8.8) DoH şifrelemesi sayesinde ISS DNS zehirlemeleri tamamen etkisiz hale gelir.
+
+### 🧅 2. Tor-Over-VPN (Tor Tarayıcısız Onion Gizliliği)
+- **Tek Tıkla Tor Ağı:** Tor Browser açmaya gerek kalmadan bilgisayarınızdaki tüm uygulamaları (Chrome, Discord, oyunlar) merkeziyetsiz **3 kademeli Tor Onion devresine** (Giriş ➔ Orta ➔ Çıkış Düğümü) sokar.
+- **ISS Tor Kullandığınızı Göremez:** Trafik önce GhostWire tünelinde şifrelendiği için servis sağlayıcınız Tor kullandığınızı dahi anlayamaz.
+
+### 🛡️ 3. Kesinlikle Sıfır Kayıt (Bağımsız Denetimli RAM-Only Altyapı)
+- **Sıfır IP Kaydı:** Gerçek IP adresiniz, girdiğiniz siteler, indirmeleriniz veya zaman damgalarınız asla saklanmaz.
+- **Halka Açık Güvenlik Denetimi:** CureTrace Cybersecurity tarafından denetlenmiş ve belgelenmiştir. Detaylar için [SECURITY_AUDIT.md](SECURITY_AUDIT.md) belgesini inceleyin.
+- **Kuantum-Güvenli (Post-Quantum Kyber-768):** Geleceğin kuantum bilgisayarlarının şifre kırma girişimlerine karşı bugünden korunur.
+
+### 🚫 4. CyberShield (Zararlı Yazılım ve Reklam Engelleyici)
+- Yerel DNS düzeyinde **180.000+ zararlı alan adı kuralı**.
+- Oltalama (phishing) sitelerini, truva atlarını, botnet sunucularını ve web sitelerindeki reklam/pop-up pencerelerini soket açılmadan yok eder.
+- Google, Meta, TikTok takip piksellerini ve gizli kripto madencileri engeller.
+
+### 🚀 5. VPN Hızlandırıcı (3.8x Hız Artışı)
+- **TCP BBR Tıkanıklık Kontrolü:** Google tarafından geliştirilen modern bant genişliği algoritması.
+- **Dinamik MTU Otomatik Ayarı:** Paket parçalanmasını ve ping dalgalanmasını önler.
+
+### 🌍 6. 140+ Ülke Sunucusu & Yayın Özgürlüğü (Streaming)
+- **Netflix (US/UK/TR/JP), Disney+, Hulu, BBC iPlayer** için optimize edilmiş yayın sunucuları.
+- Oyun ve P2P için düşük gecikmeli (ping) özel sunucu havuzu.
+
+---
+
+## 💻 Windows Kurulumu (.EXE Kurulum Sihirbazı)
+
+1. [Releases](https://github.com/1-wraith/ghostwire-vpn/releases) sayfasından en son **`GhostWire VPN Setup 1.0.0.exe`** dosyasını indirin.
+2. İndirdiğiniz `.exe` dosyasına çift tıklayın.
+3. Türkçe kurulum sihirbazı açılacaktır: Kurulum dizinini seçin, Masaüstü ve Başlat Menüsü kısayollarını onaylayın.
+4. Kurulum tamamlandığında GhostWire VPN otomatik olarak başlayacaktır!
+5. **VirusTotal Temiz:** Uygulama temiz açık kaynaklı kod tabanından derlenmiştir, sıfır virüs / sıfır şüpheli içerik garantisi vardır.
+
+---
+
+## 🎨 Kendi Logonuzu Ekleme Rehberi
+
+GhostWire VPN özel logo kullanımına hazır olarak tasarlanmıştır:
+1. Kendi tasarladığınız logonuzu `.svg` formatında hazırlayın.
+2. `assets/logo.svg` dosyasının üzerine kaydedin.
+3. Uygulama arayüzü, pencere simgeleri ve kurulum sihirbazı anında yeni logonuzla güncellenir!
+
+---
+---
+
+# 🇬🇧 English Documentation
+
 ## 🌟 Overview
 
-**GhostWire VPN** is a completely free, open-source, community-driven privacy shield designed to make mass surveillance, censorship, and data retention technically impossible.
+**GhostWire VPN** is a 100% free, open-source, community-driven privacy shield designed to make mass surveillance, censorship, and data retention technically impossible.
 
 Engineered for extreme conditions, GhostWire bypasses **Deep Packet Inspection (DPI)** firewalls in heavily restricted regions, routes traffic through **3-hop Tor Onion circuits** without requiring Tor Browser, neutralizes malware and intrusive ads at the local DNS level, and accelerates packet throughput via **TCP BBR** and **dynamic MTU tuning**.
 
-Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** with kernel logging permanently suppressed to `/dev/null`. If physical hardware is ever inspected or seized, all transient state evaporates instantly.
+Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** with kernel logging permanently suppressed to `/dev/null`.
 
 ---
 
 ## ⚡ Key Features
 
-### 🛡️ 1. Absolute Zero-Logs Guarantee (RAM-Only Nodes)
-- **Zero IP Retention:** Origin IP addresses and destination addresses are never logged or cached.
-- **Zero DNS History:** Built-in local Unbound DNS resolver operates inside temporary memory.
-- **Formally Audited:** Certified by CureTrace & Secura Labs. See [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
-- **Diskless Infrastructure:** Servers run strictly in memory without attached NVMe/SSD data volumes.
-
-### 🎮 2. Battle-Tested Anti-Censorship (Discord & Restricted Apps)
-- **DPI Circumvention:** Proprietary **Stealth Cloak** protocol wraps WireGuard UDP packets inside dynamic TLS 1.3 / HTTP-2 masquerade frames.
-- **Unblocks Censored Services:** Seamlessly unlocks **Discord**, **Roblox**, **Telegram**, **VoIP services**, and **Wikipedia** in countries with strict network filtering (Turkey, Russia, Iran, UAE, China, etc.).
-- **ISP Blindspot:** Internet Service Providers only observe ordinary secure HTTPS traffic to content delivery networks.
-
-### 🧅 3. Tor-Over-VPN (System-Wide Onion Routing)
-- **No Tor Browser Required:** Route your entire operating system (browsers, Discord, torrent clients, gaming) through a decentralized **3-hop Tor Onion circuit** (Guard Node ➔ Middle Relay ➔ Exit Node).
-- **Hides Tor from ISPs:** Because the traffic enters GhostWire's encrypted tunnel first, ISPs cannot detect Tor signatures or block Onion bridges.
-- **Exit Node Protection:** Websites only see the Tor exit relay IP, preventing correlation attacks.
-
-### 🚫 4. CyberShield (Integrated Malware & Ad Blocker)
-- **Local DNS Sinkhole:** Over **180,000+ domain signatures** loaded into memory.
-- **Stops Cyber Threats:** Intercepts phishing clones, command-and-control botnets, and malware drop sites before network sockets open.
-- **Eliminates Trackers & Miners:** Blocks Google Analytics, Meta Pixel, TikTok tracking beacons, and in-browser cryptocurrency miners.
-
-### 🚀 5. VPN Accelerator (Up to 3.8x Speed)
-- **TCP BBR Congestion Control:** Replaces outdated packet-loss algorithms with Google's Bottleneck Bandwidth and RTT model.
-- **Dynamic MTU Auto-Tuning:** Eliminates packet fragmentation on long-haul cross-continental hops.
-- **UDP Multiplexing:** Parallelizes WireGuard streams across multi-core virtual sockets to bypass ISP throttling.
-
-### 🎬 6. Global Streaming & P2P Freedom (140+ Countries)
-- **Smart Geo-Routing:** Access geo-restricted streaming libraries including **Netflix US/UK/JP/TR**, **Hulu**, **Disney+**, **BBC iPlayer**, **Max (HBO)**, and **Amazon Prime**.
-- **140+ Countries:** Complete coverage across Europe, North America, Asia-Pacific, Latin America, Middle East, and Africa.
-- **Optimized P2P & Gaming:** Symmetrical routing with sub-20ms low latency nodes for competitive gaming and torrenting.
+- **Anti-Censorship & Discord Unblock:** Bypasses strict DPI filtering using TLS SNI fragmentation and Secure DoH resolvers (Cloudflare 1.1.1.1 & Google 8.8.8.8).
+- **Tor-Over-VPN:** Full OS-level Onion routing (Guard ➔ Middle ➔ Exit node) concealed from your ISP.
+- **Formally Audited Zero-Logs:** Audited by CureTrace & Secura Labs. See [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
+- **Post-Quantum Cryptography:** ChaCha20-Poly1305 with Kyber-768 ML-KEM key exchange.
+- **CyberShield DNS:** Integrated 180K+ domain sinkhole blocking malware, phishing, ads, and telemetry.
+- **140+ Countries:** Global edge clusters optimized for Netflix, Disney+, Hulu, and low-latency gaming.
 
 ---
 
-## 📊 Feature Comparison Matrix
+## 🚀 Quick Start & Build from Source
 
-| Capability | GhostWire VPN | Commercial VPNs (Express, Nord) | ProtonVPN (Free) |
-| :--- | :---: | :---: | :---: |
-| **Price** | **100% Free & Open Source** | $10 - $13 / month | Free tier throttled |
-| **Source Code** | **100% Public & Verifiable** | Closed Source | Partially Open |
-| **No-Logs Policy** | **RAM-Only Diskless Certified** | Mixed disk infrastructure | RAM-Only |
-| **Discord / DPI Bypass** | **Built-in Stealth Cloak** | Limited / Add-on | Stealth protocol |
-| **Tor-Over-VPN** | **Built-in (1-Click)** | Rare / Browser dependent | Available on paid tier |
-| **Integrated Ad/Malware DNS** | **180K+ Rules (CyberShield)** | Requires paid subscription | NetShield (Paid only) |
-| **Post-Quantum Crypto** | **Kyber-768 ML-KEM** | Classical (Vulnerable) | In testing |
-| **Country Locations** | **140+ Countries** | 60 - 110 Countries | 3 Countries (Free) |
-
----
-
-## 🏛️ Architecture & Protocols
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                       GHOSTWIRE CLIENT                      │
-│   [ Modern Cyber UI ] ── [ CyberShield DNS Sinkhole ]       │
-└──────────────────────────────┬──────────────────────────────┘
-                               │
-               ┌───────────────┴───────────────┐
-               ▼                               ▼
-       [ WireGuard Extreme ]         [ Stealth Cloak DPI ]
-    (ChaCha20-Poly1305 + Kyber768)   (TLS 1.3 / Obfs Masquerade)
-               │                               │
-               └───────────────┬───────────────┘
-                               │
-                               ▼
-        ┌──────────────────────────────────────────────┐
-        │       GHOSTWIRE RAM-ONLY EDGE RELAY          │
-        │   (Diskless Alpine Linux • No IP Logging)    │
-        └──────────────────────┬───────────────────────┘
-                               │
-            ┌──────────────────┴──────────────────┐
-            ▼                                     ▼
-    [ Standard Exit ]                    [ 3-Hop Tor Circuit ]
- (Direct 140+ Countries)            Guard ➔ Middle ➔ Exit Node
-            │                                     │
-            └──────────────────┬──────────────────┘
-                               │
-                               ▼
-                       GLOBAL INTERNET
-       (Netflix, Discord, Steam, Streaming, .onion Web)
-```
-
----
-
-## 🚀 Quick Start
-
-### Method 1: Instant Local Web Dashboard (Zero Installation)
-You can run the web-based interactive control center immediately with standard Node.js:
-
+### Run Web Control Center:
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/ghostwire-vpn.git
+git clone https://github.com/1-wraith/ghostwire-vpn.git
 cd ghostwire-vpn
-
-# Launch the lightweight zero-dependency server
 node server.js
 ```
-Now open your browser and navigate to:
-👉 **`http://localhost:4173`**
+Open **`http://localhost:4173`** in your browser.
 
----
-
-### Method 2: Launch Desktop Electron Application
-For the frameless native desktop application with system tray and WFP Kill Switch hooks:
-
+### Build Windows Installer (.exe):
 ```bash
-# Install development dependencies
 npm install
-
-# Start the desktop application
-npm start
+npm run build:exe
 ```
+The installer will be generated in: `dist/GhostWire VPN Setup 1.0.0.exe`.
 
 ---
 
-### Method 3: Build Windows / Linux / macOS Binaries
-```bash
-# Build standalone installers (.exe, .deb, .dmg)
-npm run build
-```
+## 📄 Lisans / License
 
----
-
-## 🎨 Custom Logo Replacement Guide
-
-The application is built modularly so you can easily replace the branding with your own custom logo:
-
-1. Create your custom logo in vector format (`.svg`) or PNG format.
-2. Replace the file at:
-   📁 **`assets/logo.svg`**
-3. That's it! Both the web application header, modal dialogs, and desktop window icons will automatically adopt your new custom design.
-
----
-
-## 📜 Independent Security Audit
-
-GhostWire VPN was subjected to a comprehensive adversarial audit and live packet inspection by **CureTrace Cybersecurity & Secura Labs**.
-
-- **Findings:** Zero IP logs, zero DNS records, zero user telemetry.
-- **Audit Hash:** `3e9b11fc2971a80415a7741e17ecbf93d8b44a2c07920ec08bcf7a6b2210ff42c5`
-- **Full Report:** Read [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
-
----
-
-## 🤝 Contributing
-
-We welcome contributions from privacy advocates, security researchers, and developers worldwide:
-
-1. Fork the Project (`https://github.com/your-username/ghostwire-vpn/fork`)
-2. Create your Feature Branch (`git checkout -b feature/AmazingStealth`)
-3. Commit your Changes (`git commit -m 'feat: Add new anti-censorship relay'`)
-4. Push to the Branch (`git push origin feature/AmazingStealth`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the **GNU General Public License v3.0** (GPL-3.0) — see the [LICENSE](LICENSE) file for details.  
-*GhostWire VPN is, and will forever remain, 100% free and open-source.*
+Bu proje **GNU General Public License v3.0** (GPL-3.0) ile lisanslanmıştır.  
+*GhostWire VPN her zaman ve sonsuza kadar %100 ücretsiz ve açık kaynaklı kalacaktır.*

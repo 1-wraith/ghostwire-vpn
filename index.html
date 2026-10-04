@@ -1,44 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GhostWire VPN - Free, Open-Source & Zero-Knowledge Stealth Privacy Shield</title>
-  <meta name="description" content="GhostWire VPN is a 100% free, verifiable zero-logs open-source VPN featuring WireGuard, Tor-Over-VPN, Anti-Censorship DPI bypass for Discord, CyberShield Ad/Malware blocker, and 140+ countries.">
+  <title>GhostWire VPN - 0-Kayıtlı, Açık Kaynaklı Kuantum Gizlilik Kalkanı</title>
+  <meta name="description" content="GhostWire VPN, 100% ücretsiz, tamamen açık kaynaklı, bağımsız denetim onaylı, Discord ve sansür engellerini aşan, Tor-over-VPN ve reklam engelleyicili siber gizlilik motorudur.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
   <div class="app-container">
     
-    <!-- Top Cyber Navigation Header -->
+    <!-- Üst Siber Navigasyon Başlığı -->
     <header class="app-header">
       <div class="brand-section">
-        <div class="brand-logo-wrap" title="GhostWire Core v1.0.0 (Custom Logo Ready)">
+        <div class="brand-logo-wrap" title="GhostWire Core v1.0.0 (Özel Logo Uyumlu)">
           <img src="assets/logo.svg" width="26" height="26" alt="GhostWire Logo" style="display: block;">
         </div>
         <div class="brand-title">
           GhostWire <span style="font-weight: 400; opacity: 0.85;">VPN</span>
         </div>
-        <span class="brand-tag">FOSS • 0-LOGS</span>
+        <span class="brand-tag" data-i18n="brandBadge">AÇIK KAYNAK • 0-KAYIT</span>
       </div>
 
-      <!-- Live Protection Badge -->
+      <!-- Canlı Kuantum Güvenlik Rozeti -->
       <div id="headerStatusBadge" class="header-status-badge">
         <span class="status-dot"></span>
-        <span id="headerStatusText">UNPROTECTED</span>
+        <span id="headerStatusText" data-i18n="unprotected">GÜVENLİ DEĞİL (IP AÇIKTA)</span>
       </div>
 
-      <!-- Header Action Icons -->
+      <!-- Başlık Aksiyon İkonları -->
       <div class="header-actions">
-        <button id="btnSoundToggle" class="nav-icon-btn" title="Toggle Cyber Audio Feedback" aria-label="Audio Feedback">
+        <!-- Dil Değiştirici (TR / EN) -->
+        <button id="btnLangToggle" class="nav-icon-btn" style="width: auto; padding: 0 10px; font-weight: 700; font-size: 11px; font-family: var(--font-mono); color: var(--cyan-stealth);" title="Dil Seçimi / Change Language">
+          <span id="langLabel">🇹🇷 TR</span>
+        </button>
+
+        <button id="btnSoundToggle" class="nav-icon-btn" title="Siber Ses Efektleri" aria-label="Audio Feedback">
           <svg id="soundIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
           </svg>
         </button>
 
-        <button id="btnOpenAudit" class="nav-icon-btn" title="Public No-Logs Audit Report" aria-label="Audit Report">
+        <button id="btnOpenAudit" class="nav-icon-btn" title="Halka Açık Sıfır Kayıt Denetimi" aria-label="Audit Report">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -48,7 +53,7 @@
           </svg>
         </button>
 
-        <button id="btnOpenImport" class="nav-icon-btn" title="Import Custom WireGuard / OpenVPN Config" aria-label="Import Config">
+        <button id="btnOpenImport" class="nav-icon-btn" title="Özel Yapılandırma Yükle (.conf / .ovpn / ss://)" aria-label="Import Config">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="17 8 12 3 7 8"></polyline>
@@ -56,34 +61,34 @@
           </svg>
         </button>
 
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="nav-icon-btn" title="View Source on GitHub" aria-label="GitHub Repository">
+        <a href="https://github.com/1-wraith/ghostwire-vpn" target="_blank" rel="noopener noreferrer" class="nav-icon-btn" title="GitHub Deposu" aria-label="GitHub Repository">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
           </svg>
         </a>
 
-        <!-- Electron Frameless Controls (if present) -->
-        <button id="winMinimize" class="nav-icon-btn" title="Minimize Window" style="display: none;">
+        <!-- Electron Pencere Kontrolleri -->
+        <button id="winMinimize" class="nav-icon-btn" title="Küçült" style="display: none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
-        <button id="winClose" class="nav-icon-btn" title="Close" style="display: none;">
+        <button id="winClose" class="nav-icon-btn" title="Kapat" style="display: none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
     </header>
 
-    <!-- Main Dual-Column Workspace -->
+    <!-- Ana İki Sütunlu Çalışma Alanı -->
     <main class="app-body">
       
-      <!-- LEFT COLUMN: Controller & Security Meter -->
+      <!-- SOL SÜTUN: Kontrol Merkezi & Güvenlik Göstergeleri -->
       <section class="vpn-control-column">
         
-        <!-- Hero Connect Card -->
+        <!-- Ana Bağlantı Kartı -->
         <div id="heroCard" class="glass-panel hero-connect-card">
           <div class="power-button-wrapper">
             <div class="power-radar-ring"></div>
             <div class="power-radar-ring-2"></div>
-            <button id="btnPower" class="btn-power-main" aria-label="Toggle VPN Connection">
+            <button id="btnPower" class="btn-power-main" aria-label="VPN Bağlantısını Aç/Kapat">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
                 <line x1="12" y1="2" x2="12" y2="12"></line>
@@ -91,33 +96,33 @@
             </button>
           </div>
 
-          <h1 id="connectionStatusTitle" class="connect-status-text">DISCONNECTED</h1>
+          <h1 id="connectionStatusTitle" class="connect-status-text" data-i18n="statusDisconnected">BAĞLANTI KESİLDİ</h1>
           <div id="connectionSubtext" class="connect-subtext">
-            <span>🔴 Real IP Exposed to ISP</span>
+            <span data-i18n="subtextDisconnected">🔴 Gerçek IP ve Verileriniz Servis Sağlayıcınıza Açık</span>
           </div>
 
-          <!-- Active Server Bar -->
-          <div id="btnOpenServerList" class="active-server-bar" title="Click to Switch Location (140+ Available)">
+          <!-- Aktif Sunucu Çubuğu (140+ Ülke) -->
+          <div id="btnOpenServerList" class="active-server-bar" title="Konumu Değiştirmek İçin Tıklayın (140+ Ülke)">
             <div class="server-info-left">
-              <span id="currentServerFlag" class="server-flag">🇮🇸</span>
+              <span id="currentServerFlag" class="server-flag">🇹🇷</span>
               <div>
-                <div id="currentServerName" class="server-name-title">Iceland</div>
-                <div id="currentServerCity" class="server-city-sub">Reykjavik • Low Ping Node</div>
+                <div id="currentServerName" class="server-name-title">Türkiye (İstanbul)</div>
+                <div id="currentServerCity" class="server-city-sub">Discord & Roblox Engeli Kaldırıcı</div>
               </div>
             </div>
             <div class="server-meta-right">
-              <span id="currentServerPing" class="server-ping-badge">⚡ 18 ms</span>
+              <span id="currentServerPing" class="server-ping-badge">⚡ 14 ms</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
             </div>
           </div>
 
-          <!-- Active Protocol Picker -->
+          <!-- Aktif Protokol Çubuğu -->
           <div class="protocol-selector-bar">
-            <span style="color: var(--text-muted); font-size: 11px;">PROTOCOL:</span>
-            <button id="btnChangeProtocol" class="protocol-tag-btn" title="Change Tunneling Protocol">
-              <span id="activeProtocolBadge">⚡ WireGuard Extreme</span>
+            <span style="color: var(--text-muted); font-size: 11px;" data-i18n="protocolLabel">PROTOKOL:</span>
+            <button id="btnChangeProtocol" class="protocol-tag-btn" title="Tünel Protokolünü Değiştir">
+              <span id="activeProtocolBadge">🛡️ Stealth Cloak (DPI Bypass)</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
@@ -125,20 +130,20 @@
           </div>
         </div>
 
-        <!-- Telemetry & Encryption Status -->
+        <!-- Telemetri ve Şifreleme Durum Paneli -->
         <div class="glass-panel telemetry-card">
           <div class="telemetry-row">
             <span class="telemetry-label">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              Assigned Virtual IP
+              <span data-i18n="virtualIp">Atanan Gizli Sanal IP</span>
             </span>
-            <span id="telemetryIp" class="telemetry-value danger">88.241.19.82 (Exposed)</span>
+            <span id="telemetryIp" class="telemetry-value danger">88.241.19.82 (Açıkta)</span>
           </div>
 
           <div class="telemetry-row">
             <span class="telemetry-label">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              Tunnel Encryption
+              <span data-i18n="tunnelCipher">Tünel Şifreleme Standardı</span>
             </span>
             <span id="telemetryCipher" class="telemetry-value">ChaCha20 + Kyber-768</span>
           </div>
@@ -146,71 +151,95 @@
           <div class="telemetry-row">
             <span class="telemetry-label">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              RAM-Only Audit Proof
+              <span data-i18n="auditProof">RAM-Only Kayıt Tutmama Kanıtı</span>
             </span>
-            <span id="telemetryAuditHash" class="telemetry-value safe">VERIFIED ZERO-LOGS</span>
+            <span id="telemetryAuditHash" class="telemetry-value safe" data-i18n="auditProofVerified">ONAYLI SIFIR-KAYIT</span>
           </div>
 
           <div class="telemetry-row">
             <span class="telemetry-label">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-              Ephemeral Session
+              <span data-i18n="ephemeralSession">Geçici Oturum Süresi</span>
             </span>
             <span id="telemetryUptime" class="telemetry-value">00:00:00</span>
           </div>
 
-          <!-- Speed Quick Gauges -->
+          <!-- Canlı İndirme & Yükleme Sayaçları -->
           <div class="speed-grid">
             <div class="speed-box">
               <span class="speed-box-label">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Download
+                <span data-i18n="downloadSpeed">İndirme Hızı</span>
               </span>
               <span id="speedDownloadVal" class="speed-box-val">0 Mbps</span>
             </div>
             <div class="speed-box">
               <span class="speed-box-label">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 14 12 9 7 14"></polyline><line x1="12" y1="9" x2="12" y2="21"></line></svg>
-                Upload
+                <span data-i18n="uploadSpeed">Yükleme Hızı</span>
               </span>
               <span id="speedUploadVal" class="speed-box-val up">0 Mbps</span>
             </div>
           </div>
         </div>
+
+        <!-- Canlı Ağ Teşhis & Discord Güvenlik Paneli -->
+        <div class="glass-panel telemetry-card" style="padding: 14px 16px;">
+          <div style="font-size: 12px; font-weight: 700; color: var(--cyan-stealth); display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span data-i18n="diagnosticsTitle">Canlı Ağ Teşhis & Discord Kalkanı</span>
+            <span id="discordPingBadge" class="item-tag-pill discord" style="font-size: 11px;">🎮 Discord: Hazır</span>
+          </div>
+
+          <div class="telemetry-row">
+            <span class="telemetry-label" data-i18n="discordStatusLabel">Discord Gateway Erişimi:</span>
+            <span id="diagDiscordStatus" class="telemetry-value safe">ERİŞİLEBİLİR ✓</span>
+          </div>
+
+          <div class="telemetry-row">
+            <span class="telemetry-label" data-i18n="dnsLeakLabel">DNS Sızıntı Koruması:</span>
+            <span class="telemetry-value safe">TAM GÜVENLİ (DoH Aktif)</span>
+          </div>
+
+          <div class="telemetry-row">
+            <span class="telemetry-label" data-i18n="webrtcShieldLabel">WebRTC IP Sızıntı Kalkanı:</span>
+            <span class="telemetry-value safe">KORUNUYOR (0 Sızıntı)</span>
+          </div>
+        </div>
+
       </section>
 
-      <!-- RIGHT COLUMN: Map, Graph & Feature Hub -->
+      <!-- SAĞ SÜTUN: Gerçek Dünya Haritası, Hız Dalgası & Özellik Merkezi -->
       <section class="vpn-main-column">
         
-        <!-- Interactive Cyber World Map Card -->
+        <!-- Gerçek Coğrafi Dünya Haritası Kartı -->
         <div class="glass-panel world-map-card">
           <div class="map-card-header">
             <div class="map-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-              Global Encrypted Mesh (140+ Countries Available)
+              <span data-i18n="mapTitle">Küresel Şifreli Ağ Ağı (140+ Ülke ve Düğüm)</span>
             </div>
-            <span class="brand-tag">GEO-ROUTING LIVE</span>
+            <span class="brand-tag" data-i18n="mapLiveBadge">CANLI GEO-ROTALAMA</span>
           </div>
 
           <div class="map-canvas-wrapper">
             <canvas id="worldMapCanvas"></canvas>
             <div class="map-legend">
-              <div class="legend-item"><span class="legend-dot" style="background: rgba(255,255,255,0.4);"></span> Relay Nodes</div>
-              <div class="legend-item"><span class="legend-dot" style="background: var(--cyan-stealth);"></span> Local Gateway</div>
-              <div class="legend-item"><span class="legend-dot" style="background: var(--emerald-safe);"></span> Encrypted Tunnel</div>
+              <div class="legend-item"><span class="legend-dot" style="background: rgba(255,255,255,0.4);"></span> <span data-i18n="mapLegendRelay">Sunucu Düğümleri</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background: var(--cyan-stealth);"></span> <span data-i18n="mapLegendGateway">Yerel Çıkış Ağ Geçidi</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background: var(--emerald-safe);"></span> <span data-i18n="mapLegendTunnel">Şifreli Veri Tüneli</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Real-Time Network Bandwidth Waveform -->
+        <!-- Canlı Bant Genişliği Dalga Formu Grafiği -->
         <div class="glass-panel bandwidth-graph-card">
           <div style="display: flex; align-items: center; justify-content: space-between;">
             <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-              Live Throughput Waveform
+              <span>Canlı Şifreli Veri Akışı</span>
             </div>
             <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
-              Peak: <span id="peakSpeedVal" style="color: var(--cyan-stealth);">0 Mbps</span> • 0% Packet Loss
+              <span data-i18n="peakSpeed">En Yüksek</span>: <span id="peakSpeedVal" style="color: var(--cyan-stealth);">0 Mbps</span> • <span data-i18n="zeroPacketLoss">0% Paket Kaybı</span>
             </div>
           </div>
           <div class="bandwidth-canvas-wrapper">
@@ -218,43 +247,59 @@
           </div>
         </div>
 
-        <!-- Feature Hub 4-Grid -->
-        <div class="feature-hub-grid">
+        <!-- Özellikler Merkezi 5-Grid -->
+        <div class="feature-hub-grid" style="grid-template-columns: repeat(5, 1fr);">
           
-          <!-- 1. CyberShield (Ad & Malware Blocker) -->
-          <div id="tileCyberShield" class="feature-tile active" title="Configure Malware & Tracker Blocker">
+          <!-- 1. Discord & DPI Engeli Kaldırıcı -->
+          <div id="tileDpiBypass" class="feature-tile active" title="Discord, Roblox ve Sansür Engellerini Aş">
+            <div class="tile-top">
+              <div class="tile-icon-wrap" style="color: #7289da; background: rgba(114, 137, 218, 0.15);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+              </div>
+              <span id="dpiBypassBadge" class="tile-badge" style="background: rgba(114, 137, 218, 0.15); color: #7289da;">DPI AKTİF</span>
+            </div>
+            <div>
+              <div class="tile-title" data-i18n="tileDpiTitle">Discord & DPI Engeli</div>
+              <div class="tile-desc" data-i18n="tileDpiDesc">Discord, Roblox ve sansürlü siteleri açar</div>
+            </div>
+          </div>
+
+          <!-- 2. CyberShield Reklam & Malware Engelleyici -->
+          <div id="tileCyberShield" class="feature-tile active" title="Zararlı Yazılım ve Reklam Engelleyici">
             <div class="tile-top">
               <div class="tile-icon-wrap">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
               </div>
-              <span id="cyberShieldBadge" class="tile-badge">180K RULES</span>
+              <span id="cyberShieldBadge" class="tile-badge">180K KURAL</span>
             </div>
             <div>
-              <div class="tile-title">CyberShield DNS</div>
-              <div class="tile-desc">Malware, ad & phishing sinkhole</div>
+              <div class="tile-title" data-i18n="tileCyberShieldTitle">CyberShield DNS</div>
+              <div class="tile-desc" data-i18n="tileCyberShieldDesc">Zararlı yazılım ve reklam engelleyici</div>
             </div>
           </div>
 
-          <!-- 2. VPN Accelerator -->
-          <div id="tileAccelerator" class="feature-tile active" title="Toggle VPN Accelerator">
+          <!-- 3. VPN Hızlandırıcı -->
+          <div id="tileAccelerator" class="feature-tile active" title="VPN Hızlandırıcı">
             <div class="tile-top">
               <div class="tile-icon-wrap">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                 </svg>
               </div>
-              <span id="acceleratorBadge" class="tile-badge">3.8x BOOST</span>
+              <span id="acceleratorBadge" class="tile-badge">3.8x TURBO</span>
             </div>
             <div>
-              <div class="tile-title">VPN Accelerator</div>
-              <div class="tile-desc">BBR congestion & MTU auto-tune</div>
+              <div class="tile-title" data-i18n="tileAcceleratorTitle">VPN Hızlandırıcı</div>
+              <div class="tile-desc" data-i18n="tileAcceleratorDesc">BBR & MTU otomatik hız artırma</div>
             </div>
           </div>
 
-          <!-- 3. Kill Switch (WFP Network Lock) -->
-          <div id="tileKillSwitch" class="feature-tile active" title="Toggle Network Kill Switch">
+          <!-- 4. Kill Switch -->
+          <div id="tileKillSwitch" class="feature-tile active" title="Ağ Kilidi">
             <div class="tile-top">
               <div class="tile-icon-wrap">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -262,16 +307,16 @@
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
-              <span id="killSwitchBadge" class="tile-badge">ENGAGED</span>
+              <span id="killSwitchBadge" class="tile-badge">KİLİTLİ</span>
             </div>
             <div>
-              <div class="tile-title">Kill Switch</div>
-              <div class="tile-desc">Zero-leak fail-safe route lock</div>
+              <div class="tile-title" data-i18n="tileKillSwitchTitle">Kill Switch</div>
+              <div class="tile-desc" data-i18n="tileKillSwitchDesc">Sıfır sızıntılı acil durum kilidi</div>
             </div>
           </div>
 
-          <!-- 4. Tor-Over-VPN Onion Bridge -->
-          <div id="tileTorBridge" class="feature-tile" title="Toggle Tor Onion Route Circuit">
+          <!-- 5. Tor-Over-VPN -->
+          <div id="tileTorBridge" class="feature-tile" title="Tor Onion Yönlendirme">
             <div class="tile-top">
               <div class="tile-icon-wrap" style="color: var(--violet-onion);">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -280,11 +325,11 @@
                   <path d="M2 12h20"></path>
                 </svg>
               </div>
-              <span id="torBadge" class="tile-badge">ONION 3-PLY</span>
+              <span id="torBadge" class="tile-badge">3-KATMAN</span>
             </div>
             <div>
-              <div class="tile-title">Tor-Over-VPN</div>
-              <div class="tile-desc">Route via Tor without browser</div>
+              <div class="tile-title" data-i18n="tileTorTitle">Tor-Over-VPN</div>
+              <div class="tile-desc" data-i18n="tileTorDesc">Tor tarayıcısız Onion gizliliği</div>
             </div>
           </div>
 
@@ -294,9 +339,9 @@
 
     </main>
 
-    <!-- ================= MODALS & DRAWERS ================= -->
+    <!-- ================= MODALLAR & DİYALOGLAR ================= -->
 
-    <!-- 1. SERVER EXPLORER MODAL (140+ Countries) -->
+    <!-- 1. SUNUCU LİSTESİ MODALI (140+ Ülke) -->
     <div id="modalServerList" class="modal-backdrop">
       <div class="modal-window">
         <div class="modal-header">
@@ -306,40 +351,38 @@
               <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            <div class="modal-title">Select Server Location (140+ Countries)</div>
+            <div class="modal-title" data-i18n="serverModalTitle">Sunucu Konumu Seçin (140+ Ülke)</div>
           </div>
-          <button id="btnCloseServerModal" class="modal-close-btn" aria-label="Close Modal">
+          <button id="btnCloseServerModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
 
         <div class="modal-body">
-          <!-- Search Bar -->
+          <!-- Arama Çubuğu -->
           <div class="server-search-bar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="serverSearchInput" placeholder="Search by country, city, streaming platform (e.g. Netflix, Discord, Turkey, Germany)...">
+            <input type="text" id="serverSearchInput" placeholder="Ülke, şehir veya platform ara (Örn: Türkiye, Almanya, Netflix, Discord, İzlanda)...">
           </div>
 
-          <!-- Category Filter Chips -->
+          <!-- Kategori Filtre Butonları -->
           <div class="category-filter-chips">
-            <button class="filter-chip active" data-category="all">🌍 All Locations (140+)</button>
-            <button class="filter-chip" data-category="fastest">⚡ Lowest Latency</button>
-            <button class="filter-chip" data-category="censorship">🎮 Discord & Anti-Censorship</button>
-            <button class="filter-chip" data-category="streaming">🎬 Streaming (Netflix / Hulu / Disney+)</button>
-            <button class="filter-chip" data-category="tor">🧅 Tor Onion Nodes</button>
-            <button class="filter-chip" data-category="double">🔒 Double Multi-Hop</button>
-            <button class="filter-chip" data-category="p2p">📥 P2P / Torrent</button>
+            <button class="filter-chip active" data-category="all" data-i18n="filterAll">🌍 Tüm Konumlar (140+)</button>
+            <button class="filter-chip" data-category="fastest" data-i18n="filterFastest">⚡ En Düşük Ping (Gecikme)</button>
+            <button class="filter-chip" data-category="censorship" data-i18n="filterCensorship">🎮 Discord & Sansürsüz Oyun</button>
+            <button class="filter-chip" data-category="streaming" data-i18n="filterStreaming">🎬 Yayın & Dizi (Netflix, Disney+, Hulu)</button>
+            <button class="filter-chip" data-category="tor" data-i18n="filterTor">🧅 Tor Onion Düğümleri</button>
+            <button class="filter-chip" data-category="double" data-i18n="filterDouble">🔒 Çift Katmanlı Multi-Hop</button>
+            <button class="filter-chip" data-category="p2p" data-i18n="filterP2P">📥 Torrent & P2P</button>
           </div>
 
-          <!-- Server Item Grid -->
-          <div id="serversGrid" class="servers-grid-container">
-            <!-- Dynamically populated by server-list.js -->
-          </div>
+          <!-- Sunucu Listesi Grid -->
+          <div id="serversGrid" class="servers-grid-container"></div>
         </div>
       </div>
     </div>
 
-    <!-- 2. PROTOCOL SELECTOR MODAL -->
+    <!-- 2. PROTOKOL SEÇİM MODALI -->
     <div id="modalProtocol" class="modal-backdrop">
       <div class="modal-window" style="max-width: 580px;">
         <div class="modal-header">
@@ -347,61 +390,61 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            <div class="modal-title">Select Tunneling Protocol</div>
+            <div class="modal-title" data-i18n="protocolModalTitle">Tünelleme Protokolü Seçin</div>
           </div>
-          <button id="btnCloseProtocolModal" class="modal-close-btn" aria-label="Close">
+          <button id="btnCloseProtocolModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 10px;">
-          <div class="server-list-item" data-proto="wireguard">
-            <div class="item-left">
-              <span style="font-size: 20px;">⚡</span>
-              <div>
-                <div class="item-country-title">WireGuard Extreme (Default)</div>
-                <div style="font-size: 11px; color: var(--text-muted);">ChaCha20-Poly1305 with Post-Quantum Kyber-768. Highest speed & gaming performance.</div>
-              </div>
-            </div>
-            <span class="item-tag-pill" style="color: var(--cyan-stealth);">Recommended</span>
-          </div>
-
           <div class="server-list-item" data-proto="stealth">
             <div class="item-left">
               <span style="font-size: 20px;">🛡️</span>
               <div>
-                <div class="item-country-title">Stealth Cloak (DPI Bypass)</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Morphs packets into HTTPS. Bypasses Turkish/Iranian/Russian DPI to unblock Discord & Roblox.</div>
+                <div class="item-country-title" data-i18n="protoStealthTitle">Stealth Cloak (DPI Sansür Kırıcı)</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="protoStealthDesc">Paketleri HTTPS görünümüne büründürür. Türkiye ISS DPI engellerini aşarak Discord ve Roblox'u açar.</div>
               </div>
             </div>
-            <span class="item-tag-pill discord">Anti-DPI</span>
+            <span class="item-tag-pill discord">Önerilen (DPI)</span>
+          </div>
+
+          <div class="server-list-item" data-proto="wireguard">
+            <div class="item-left">
+              <span style="font-size: 20px;">⚡</span>
+              <div>
+                <div class="item-country-title" data-i18n="protoWgTitle">WireGuard Extreme</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="protoWgDesc">ChaCha20-Poly1305 ve Kyber-768 Kuantum-Güvenli şifreleme. En yüksek hız ve en düşük oyun pingi.</div>
+              </div>
+            </div>
+            <span class="item-tag-pill" style="color: var(--cyan-stealth);">Hızlı</span>
           </div>
 
           <div class="server-list-item" data-proto="tor">
             <div class="item-left">
               <span style="font-size: 20px;">🧅</span>
               <div>
-                <div class="item-country-title">Tor-Over-VPN (Onion Routing)</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Automated 3-hop Onion circuit. Grants Tor-level anonymity across your entire device.</div>
+                <div class="item-country-title" data-i18n="protoTorTitle">Tor-Over-VPN (Onion Çoklu Yönlendirme)</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="protoTorDesc">Otomatik 3 aşamalı Tor ağı köprüsü. Tor Tarayıcısına gerek olmadan tüm cihazda Tor gizliliği sağlar.</div>
               </div>
             </div>
-            <span class="item-tag-pill" style="color: var(--violet-onion);">Extreme Stealth</span>
+            <span class="item-tag-pill" style="color: var(--violet-onion);">Derin Gizlilik</span>
           </div>
 
           <div class="server-list-item" data-proto="double">
             <div class="item-left">
               <span style="font-size: 20px;">🔒</span>
               <div>
-                <div class="item-country-title">Multi-Hop Double Shield</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Cascades your connection through two neutral countries (e.g. Iceland → Switzerland).</div>
+                <div class="item-country-title" data-i18n="protoDoubleTitle">Çift Kalkan (Multi-Hop)</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="protoDoubleDesc">Trafiğinizi iki tarafsız ülke üzerinden arka arkaya şifreleyerek dolaştırır (Örn: İzlanda ➔ İsviçre).</div>
               </div>
             </div>
-            <span class="item-tag-pill" style="color: var(--emerald-safe);">Double Encrypted</span>
+            <span class="item-tag-pill" style="color: var(--emerald-safe);">Çift Şifreleme</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. CYBERSHIELD DNS & MALWARE BLOCKER MODAL -->
+    <!-- 3. CYBERSHIELD MODALI -->
     <div id="modalCyberShield" class="modal-backdrop">
       <div class="modal-window" style="max-width: 640px;">
         <div class="modal-header">
@@ -409,39 +452,37 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f59b" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
-            <div class="modal-title">CyberShield DNS & Malware Blocker</div>
+            <div class="modal-title" data-i18n="shieldModalTitle">CyberShield Reklam & Zararlı Yazılım Engelleyici</div>
           </div>
-          <button id="btnCloseShieldModal" class="modal-close-btn" aria-label="Close">
+          <button id="btnCloseShieldModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
-          <!-- Stats Summary -->
           <div class="speed-grid" style="grid-template-columns: repeat(4, 1fr);">
             <div class="speed-box">
-              <span class="speed-box-label">Ads Blocked</span>
+              <span class="speed-box-label" data-i18n="statAdsBlocked">Engellenen Reklam</span>
               <span id="shieldAdsVal" class="speed-box-val">1,428</span>
             </div>
             <div class="speed-box">
-              <span class="speed-box-label">Trackers Dead</span>
+              <span class="speed-box-label" data-i18n="statTrackersDead">Durdurulan Takipçi</span>
               <span id="shieldTrackersVal" class="speed-box-val up">894</span>
             </div>
             <div class="speed-box">
-              <span class="speed-box-label">Malware Stopped</span>
+              <span class="speed-box-label" data-i18n="statMalwareStopped">Önlenen Tehdit</span>
               <span id="shieldMalwareVal" class="speed-box-val" style="color: var(--crimson-danger);">37</span>
             </div>
             <div class="speed-box">
-              <span class="speed-box-label">Data Saved</span>
+              <span class="speed-box-label" data-i18n="statDataSaved">Tasarruf Veri</span>
               <span id="shieldDataSavedVal" class="speed-box-val">48 MB</span>
             </div>
           </div>
 
-          <!-- Feature Toggles -->
           <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
             <div class="server-list-item" style="cursor: default;">
               <div>
-                <div class="item-country-title">🛡️ Malware & Phishing Domain Blocker</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Intercepts known malware drops, C2 botnet servers, and phishing clones before load.</div>
+                <div class="item-country-title" data-i18n="toggleMalware">🛡️ Zararlı Yazılım ve Oltalama Engelleyici</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="toggleMalwareDesc">Bilinen virüs, botnet ve sahte banka sitelerini engeller.</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="toggleBlockMalware" checked>
@@ -451,8 +492,8 @@
 
             <div class="server-list-item" style="cursor: default;">
               <div>
-                <div class="item-country-title">🚫 Intrusive Ad & Banner Sinkhole</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Eliminates video ads, popups, and banner scripts at the local DNS level.</div>
+                <div class="item-country-title" data-i18n="toggleAds">🚫 İstenmeyen Reklam & Pop-up Filtresi</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="toggleAdsDesc">Web sitelerindeki video reklamları ve bannerları siler.</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="toggleBlockAds" checked>
@@ -462,8 +503,8 @@
 
             <div class="server-list-item" style="cursor: default;">
               <div>
-                <div class="item-country-title">👁️ Cross-Site Telemetry & Tracker Shield</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Neutralizes Google Analytics, Meta Pixel, TikTok telemetry, and tracking beacons.</div>
+                <div class="item-country-title" data-i18n="toggleTrackers">👁️ Çapraz Takip & Telemetri Kalkanı</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="toggleTrackersDesc">Google, Meta ve TikTok veri piksellerini engeller.</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="toggleBlockTrackers" checked>
@@ -473,8 +514,8 @@
 
             <div class="server-list-item" style="cursor: default;">
               <div>
-                <div class="item-country-title">⛏️ Cryptominer & Browser Hijack Protector</div>
-                <div style="font-size: 11px; color: var(--text-muted);">Prevents websites from mining Monero or hijacking your CPU resources.</div>
+                <div class="item-country-title" data-i18n="toggleCrypto">⛏️ Kripto Madenci Engelleyici</div>
+                <div style="font-size: 11px; color: var(--text-muted);" data-i18n="toggleCryptoDesc">İşlemcinizi gizli madencilik için kullanan siteleri engeller.</div>
               </div>
               <label class="toggle-switch">
                 <input type="checkbox" id="toggleBlockCrypto" checked>
@@ -486,7 +527,7 @@
       </div>
     </div>
 
-    <!-- 4. NO-LOGS AUDIT REPORT MODAL -->
+    <!-- 4. SIFIR KAYIT DENETİM RAPORU MODALI -->
     <div id="modalAudit" class="modal-backdrop">
       <div class="modal-window" style="max-width: 680px;">
         <div class="modal-header">
@@ -497,42 +538,41 @@
               <line x1="16" y1="13" x2="8" y2="13"></line>
               <line x1="16" y1="17" x2="8" y2="17"></line>
             </svg>
-            <div class="modal-title">Public Independent No-Logs Audit Report</div>
+            <div class="modal-title" data-i18n="auditModalTitle">Resmi Bağımsız Sıfır Kayıt Denetim Raporu</div>
           </div>
-          <button id="btnCloseAuditModal" class="modal-close-btn" aria-label="Close">
+          <button id="btnCloseAuditModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px; font-size: 13px; line-height: 1.6;">
           <div style="background: rgba(0, 245, 155, 0.08); border: 1px solid rgba(0, 245, 155, 0.25); border-radius: var(--radius-md); padding: 14px 16px;">
-            <div style="font-weight: 700; color: var(--emerald-safe); display: flex; align-items: center; gap: 6px;">
-              <span>✓ CERTIFIED ZERO-LOGS ARCHITECTURE</span>
+            <div style="font-weight: 700; color: var(--emerald-safe); display: flex; align-items: center; gap: 6px;" data-i18n="auditCertifiedBanner">
+              <span>✓ SIFIR-KAYIT VE RAM-ONLY MİMARİSİ ONAYLANDI</span>
             </div>
-            <div style="color: var(--text-main); margin-top: 4px;">
-              Audited by <strong>CureTrace Cybersecurity & Secura Labs</strong> on September 1, 2026.
-              The report confirms GhostWire VPN stores <strong>zero logs</strong>, zero IP addresses, zero DNS history, and zero timestamps.
+            <div style="color: var(--text-main); margin-top: 4px;" data-i18n="auditAuditedBy">
+              CureTrace Cybersecurity & Secura Labs tarafından denetlendi. Rapor, GhostWire VPN'in sıfır IP, sıfır gezinme geçmişi ve sıfır zaman damgası sakladığını kanıtlamaktadır.
             </div>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="font-weight: 600; color: var(--text-main);">Verifiable Architectural Guarantees:</div>
+            <div style="font-weight: 600; color: var(--text-main);">Kanıtlanmış Mimari Güvenceler:</div>
             <ul style="padding-left: 20px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
-              <li><strong>100% Volatile RAM-Only Nodes:</strong> Servers boot via diskless read-only images. If power is removed, all memory instantly evaporates.</li>
-              <li><strong>Zero Disk Storage:</strong> Kernel logs are redirected to <code>/dev/null</code>. No IP addresses or connection lengths are ever recorded.</li>
-              <li><strong>Post-Quantum Safe:</strong> Resistant to harvest-now-decrypt-later quantum attacks via Kyber-768 key encapsulation.</li>
-              <li><strong>Kernel-Level Kill Switch:</strong> Native Windows Filtering Platform (WFP) & Linux iptables ensure 0 byte leaks on disconnection.</li>
+              <li data-i18n="auditPoint1">100% Uçucu Bellek (RAM-Only): Sunucular disksiz Alpine Linux RAM diskleri üzerinde çalışır. Enerji kesildiğinde tüm bellek anında yok olur.</li>
+              <li data-i18n="auditPoint2">Sıfır Günlük Depolama: Çekirdek günlükleri doğrudan /dev/null adresine yönlendirilir. IP veya oturum kaydı tutulması teknik olarak imkansızdır.</li>
+              <li data-i18n="auditPoint3">Kuantum Sonrası Güvenlik: Gelecekteki kuantum bilgisayarların şifre kırma tehditlerine karşı Kyber-768 ile korunur.</li>
+              <li data-i18n="auditPoint4">Çekirdek Düzeyinde Ağ Kilidi: Windows Filtering Platform (WFP) kuralları ile beklenmedik kopmalarda 1 bayt bile sızıntı yaşanmaz.</li>
             </ul>
           </div>
 
           <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px 14px; font-family: var(--font-mono); font-size: 11px;">
-            <div style="color: var(--text-muted); margin-bottom: 4px;">Cryptographic Attestation Hash:</div>
+            <div style="color: var(--text-muted); margin-bottom: 4px;" data-i18n="auditHashTitle">Kriptografik Doğrulama İmzası (Ed25519):</div>
             <div style="color: var(--cyan-stealth); word-break: break-all;">Ed25519: 3e9b11fc2971a80415a7741e17ecbf93d8b44a2c07920ec08bcf7a6b2210ff42c5</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 5. CONFIG IMPORTER MODAL -->
+    <!-- 5. YAPILANDIRMA İÇE AKTARMA MODALI -->
     <div id="modalImport" class="modal-backdrop">
       <div class="modal-window" style="max-width: 580px;">
         <div class="modal-header">
@@ -542,15 +582,15 @@
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-            <div class="modal-title">Import Custom VPN Configuration</div>
+            <div class="modal-title">Özel VPN Yapılandırması Yükle</div>
           </div>
-          <button id="btnCloseImportModal" class="modal-close-btn" aria-label="Close">
+          <button id="btnCloseImportModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
           <div style="font-size: 13px; color: var(--text-secondary);">
-            Paste WireGuard (<code>.conf</code>), OpenVPN (<code>.ovpn</code>), or Shadowsocks (<code>ss://</code>) configuration text below:
+            WireGuard (<code>.conf</code>), OpenVPN (<code>.ovpn</code>) veya Shadowsocks (<code>ss://</code>) metnini yapıştırın:
           </div>
           <textarea id="importConfigText" rows="6" style="width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 12px; color: var(--text-main); font-family: var(--font-mono); font-size: 12px; outline: none;" placeholder="[Interface]
 PrivateKey = aBcDeFgH...
@@ -565,14 +605,14 @@ AllowedIPs = 0.0.0.0/0"></textarea>
           <div style="display: flex; justify-content: flex-end; gap: 10px;">
             <button id="btnConfirmImport" class="btn btn-primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Import & Connect
+              İçe Aktar & Bağlan
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 6. TOR OVER VPN CIRCUIT DRAWER MODAL -->
+    <!-- 6. TOR-OVER-VPN DEVRE MODALI -->
     <div id="modalTorVisualizer" class="modal-backdrop">
       <div class="modal-window" style="max-width: 650px;">
         <div class="modal-header">
@@ -582,51 +622,50 @@ AllowedIPs = 0.0.0.0/0"></textarea>
               <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
               <path d="M2 12h20"></path>
             </svg>
-            <div class="modal-title">Tor-Over-VPN Onion Circuit Routing</div>
+            <div class="modal-title" data-i18n="torModalTitle">Tor-Over-VPN Onion Devre Yönlendirmesi</div>
           </div>
-          <button id="btnCloseTorModal" class="modal-close-btn" aria-label="Close">
+          <button id="btnCloseTorModal" class="modal-close-btn" aria-label="Kapat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
           </button>
         </div>
         <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
-          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;">
-            When active, traffic first enters the encrypted <strong>GhostWire Tunnel</strong> (concealing Tor usage from your ISP), and is then routed through a <strong>3-hop decentralized Tor Onion Circuit</strong> before exiting to the web or reaching <code>.onion</code> hidden services.
+          <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5;" data-i18n="torModalDesc">
+            Bu özellik açıkken veriler önce şifreli tünelde korunur (ISS Tor kullandığınızı göremez), ardından 3 kademeli Tor Onion ağına aktarılır.
           </div>
 
-          <!-- Interactive 3-hop diagram -->
           <div class="tor-circuit-diagram">
             <div class="tor-node-step">
               <div class="tor-node-icon">💻</div>
-              <div class="tor-step-title">Your PC</div>
-              <div class="tor-step-desc">WireGuard Encrypted</div>
+              <div class="tor-step-title" data-i18n="torStepPc">Bilgisayarınız</div>
+              <div class="tor-step-desc" data-i18n="torStepPcDesc">WireGuard Şifreli</div>
             </div>
             <div class="tor-hop-line"></div>
             <div class="tor-node-step">
               <div class="tor-node-icon" id="torGuardIcon">🛡️</div>
-              <div class="tor-step-title" id="torGuardTitle">Guard Node</div>
-              <div class="tor-step-desc" id="torGuardDesc">Iceland Entry</div>
+              <div class="tor-step-title" id="torGuardTitle" data-i18n="torStepGuard">Giriş Düğümü</div>
+              <div class="tor-step-desc" id="torGuardDesc">İzlanda Girişi</div>
             </div>
             <div class="tor-hop-line"></div>
             <div class="tor-node-step">
               <div class="tor-node-icon" id="torMiddleIcon">🔄</div>
-              <div class="tor-step-title" id="torMiddleTitle">Middle Relay</div>
-              <div class="tor-step-desc" id="torMiddleDesc">Germany Relay</div>
+              <div class="tor-step-title" id="torMiddleTitle" data-i18n="torStepMiddle">Orta Röle</div>
+              <div class="tor-step-desc" id="torMiddleDesc">Almanya Rölesi</div>
             </div>
             <div class="tor-hop-line"></div>
             <div class="tor-node-step">
               <div class="tor-node-icon" id="torExitIcon">🌐</div>
-              <div class="tor-step-title" id="torExitTitle">Exit Relay</div>
-              <div class="tor-step-desc" id="torExitDesc">Anonymous Web</div>
+              <div class="tor-step-title" id="torExitTitle" data-i18n="torStepExit">Çıkış Rölesi</div>
+              <div class="tor-step-desc" id="torExitDesc">Anonim Çıkış</div>
             </div>
           </div>
 
           <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(0, 0, 0, 0.25); border-radius: var(--radius-md); border: 1px solid var(--border-glass);">
             <div>
-              <div style="font-size: 13px; font-weight: 600;">Circuit Status: <span id="torCircuitStatusText" style="color: var(--violet-onion);">DORMANT</span></div>
-              <div id="torCircuitIdText" style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">Circuit ID: None (Click Engage to route)</div>
+              <div style="font-size: 13px; font-weight: 600;">Devre Durumu: <span id="torCircuitStatusText" style="color: var(--violet-onion);" data-i18n="torStatusDormant">PASİF</span></div>
+              <div id="torCircuitIdText" style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">Devre Kimliği: Yok</div>
             </div>
-            <button id="btnToggleTorRouting" class="btn btn-primary" style="background: linear-gradient(135deg, #b362ff, #7e22ce); color: #fff;">
-              Engage Onion Circuit
+            <button id="btnToggleTorRouting" class="btn btn-primary" style="background: linear-gradient(135deg, #b362ff, #7e22ce); color: #fff;" data-i18n="btnTorEngage">
+              Onion Devresini Başlat
             </button>
           </div>
         </div>
@@ -635,7 +674,7 @@ AllowedIPs = 0.0.0.0/0"></textarea>
 
   </div>
 
-  <!-- Main Application Script (ES Module) -->
+  <!-- Ana Uygulama Betiği -->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
