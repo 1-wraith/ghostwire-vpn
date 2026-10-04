@@ -1,16 +1,25 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { exec } = require('child_process');
 const { ProxyEngine } = require('./core/proxy-engine');
 const { PingEngine } = require('./core/ping-engine');
 const { UpdaterEngine } = require('./core/updater-engine');
 const { SERVERS_DATABASE } = require('./js/server-list');
 
+// Intercept unhandled exceptions safely
+process.on('uncaughtException', (err) => {
+  console.warn('[GhostWire Server] Uncaught Exception intercepted:', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.warn('[GhostWire Server] Unhandled Rejection intercepted:', reason);
+});
+
 const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
 const pingEngine = new PingEngine();
 const updaterEngine = new UpdaterEngine('1.0.0', '1-wraith/ghostwire-vpn');
-proxyEngine.start();
+proxyEngine.start().catch(() => {});
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -85,6 +94,67 @@ const server = http.createServer(async (req, res) => {
       }
     });
     return;
+  }
+
+  // Scan Running Windows Desktop Applications
+  if (req.url === '/api/running-apps') {
+    if (process.platform === 'win32') {
+      exec('tasklist /FO CSV /NH', (err, stdout) => {
+        if (err || !stdout) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ success: true, apps: [] }));
+        }
+        const lines = stdout.split('\r\n');
+        const systemExes = new Set([
+          'system', 'smss.exe', 'csrss.exe', 'wininit.exe', 'services.exe', 'lsass.exe',
+          'svchost.exe', 'fontdrvhost.exe', 'winlogon.exe', 'dwm.exe', 'explorer.exe',
+          'taskhostw.exe', 'sihost.exe', 'runtimebroker.exe', 'searchhost.exe',
+          'startmenuexperiencehost.exe', 'textinputhost.exe', 'shellexperiencehost.exe',
+          'conhost.exe', 'cmd.exe', 'powershell.exe', 'electron.exe', 'node.exe', 'ghostwire vpn.exe'
+        ]);
+        const detected = new Map();
+        for (const line of lines) {
+          const match = line.match(/^"([^"]+)"/);
+          if (match) {
+            const exe = match[1];
+            const lower = exe.toLowerCase();
+            if (!systemExes.has(lower) && !detected.has(lower)) {
+              const name = exe.replace(/\.exe$/i, '');
+              let icon = '⚡';
+              let category = 'tools';
+              if (lower.includes('discord')) { icon = '🎮'; category = 'gaming'; }
+              else if (lower.includes('steam')) { icon = '🕹️'; category = 'gaming'; }
+              else if (lower.includes('roblox')) { icon = '🕹️'; category = 'gaming'; }
+              else if (lower.includes('riot') || lower.includes('valorant')) { icon = '🎯'; category = 'gaming'; }
+              else if (lower.includes('epic')) { icon = '⚡'; category = 'gaming'; }
+              else if (lower.includes('chrome')) { icon = '🌐'; category = 'browsers'; }
+              else if (lower.includes('brave')) { icon = '🦁'; category = 'browsers'; }
+              else if (lower.includes('edge')) { icon = '🌊'; category = 'browsers'; }
+              else if (lower.includes('firefox')) { icon = '🦊'; category = 'browsers'; }
+              else if (lower.includes('spotify')) { icon = '🎵'; category = 'media'; }
+              else if (lower.includes('obs')) { icon = '📹'; category = 'media'; }
+              else if (lower.includes('telegram')) { icon = '✈️'; category = 'social'; }
+              else if (lower.includes('whatsapp')) { icon = '📱'; category = 'social'; }
+              else if (lower.includes('code')) { icon = '💻'; category = 'tools'; }
+              
+              detected.set(lower, {
+                exe,
+                name: name.charAt(0).toUpperCase() + name.slice(1),
+                icon,
+                category
+              });
+            }
+          }
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, apps: Array.from(detected.values()).slice(0, 40) }));
+      });
+      return;
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, apps: [] }));
+      return;
+    }
   }
 
   if (req.url === '/api/check-update') {

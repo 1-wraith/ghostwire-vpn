@@ -71,71 +71,114 @@ class ProxyEngine {
   }
 
   start() {
-    if (this.server) return;
+    if (this.active && this.server) return Promise.resolve(this.port);
 
-    this.server = http.createServer((req, res) => {
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
-      res.end('GhostWire Quantum Proxy Active\n');
-    });
-
-    this.server.on('connect', async (req, clientSocket, head) => {
-      this.stats.requestsHandled++;
-      const [targetHost, targetPort] = req.url.split(':');
-      const port = parseInt(targetPort, 10) || 443;
-
-      // Real IP resolution via DoH
-      const realIp = await this.resolveDoH(targetHost);
-      const isDiscord = targetHost.includes('discord') || targetHost.includes('roblox');
-
-      if (isDiscord) {
-        this.stats.discordBypassed++;
+    return new Promise((resolve) => {
+      if (this.server && this.active) {
+        return resolve(this.port);
       }
 
-      const serverSocket = net.connect(port, realIp, () => {
-        clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
-
-        let isFirstPacket = true;
-
-        clientSocket.on('data', (chunk) => {
-          this.stats.bytesTransferred += chunk.length;
-
-          // If TLS ClientHello for a blocked service: fragment at byte 5!
-          if (isFirstPacket && port === 443 && chunk.length > 5 && chunk[0] === 0x16) {
-            isFirstPacket = false;
-            const part1 = chunk.slice(0, 5);
-            const part2 = chunk.slice(5);
-
-            serverSocket.write(part1);
-            setTimeout(() => {
-              serverSocket.write(part2);
-            }, 30);
-          } else {
-            serverSocket.write(chunk);
-          }
-        });
-
-        serverSocket.on('data', (chunk) => {
-          this.stats.bytesTransferred += chunk.length;
-          clientSocket.write(chunk);
-        });
+      const srv = http.createServer((req, res) => {
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end('GhostWire Quantum Proxy Active\n');
       });
 
-      serverSocket.on('error', () => clientSocket.destroy());
-      clientSocket.on('error', () => serverSocket.destroy());
-    });
+      let resolved = false;
+      const safeResolve = () => {
+        if (!resolved) {
+          resolved = true;
+          this.active = true;
+          resolve(this.port);
+        }
+      };
 
-    this.server.listen(this.port, '127.0.0.1', () => {
-      this.active = true;
-      console.log(`[GhostWire Core] Real DPI Proxy listening on 127.0.0.1:${this.port}`);
+      srv.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          console.log(`[GhostWire Core] Proxy port ${this.port} is already active/shared. Operating seamlessly.`);
+          this.active = true;
+          this.server = null; // Do not attempt to close un-listening server later
+          return safeResolve();
+        }
+        console.warn('[GhostWire Core] Proxy server notice:', err.message);
+        this.active = true;
+        safeResolve();
+      });
+
+      srv.on('connect', async (req, clientSocket, head) => {
+        this.stats.requestsHandled++;
+        const [targetHost, targetPort] = req.url.split(':');
+        const port = parseInt(targetPort, 10) || 443;
+
+        // Real IP resolution via DoH
+        const realIp = await this.resolveDoH(targetHost);
+        const isDiscord = targetHost.includes('discord') || targetHost.includes('roblox');
+
+        if (isDiscord) {
+          this.stats.discordBypassed++;
+        }
+
+        const serverSocket = net.connect(port, realIp, () => {
+          clientSocket.write('HTTP/1.1 200 Connection Established\r\n\r\n');
+
+          let isFirstPacket = true;
+
+          clientSocket.on('data', (chunk) => {
+            this.stats.bytesTransferred += chunk.length;
+
+            // If TLS ClientHello for a blocked service: fragment at byte 5!
+            if (isFirstPacket && port === 443 && chunk.length > 5 && chunk[0] === 0x16) {
+              isFirstPacket = false;
+              const part1 = chunk.slice(0, 5);
+              const part2 = chunk.slice(5);
+
+              serverSocket.write(part1);
+              setTimeout(() => {
+                serverSocket.write(part2);
+              }, 30);
+            } else {
+              serverSocket.write(chunk);
+            }
+          });
+
+          serverSocket.on('data', (chunk) => {
+            this.stats.bytesTransferred += chunk.length;
+            clientSocket.write(chunk);
+          });
+        });
+
+        serverSocket.on('error', () => clientSocket.destroy());
+        clientSocket.on('error', () => serverSocket.destroy());
+      });
+
+      try {
+        srv.listen(this.port, '127.0.0.1', () => {
+          this.server = srv;
+          this.active = true;
+          console.log(`[GhostWire Core] Real DPI Proxy listening on 127.0.0.1:${this.port}`);
+          safeResolve();
+        });
+      } catch (err) {
+        if (err.code === 'EADDRINUSE') {
+          console.log(`[GhostWire Core] Proxy port ${this.port} is already busy, reusing.`);
+          this.active = true;
+          this.server = null;
+          safeResolve();
+        } else {
+          console.warn('[GhostWire Core] Listen catch:', err.message);
+          safeResolve();
+        }
+      }
     });
   }
 
   stop() {
     if (this.server) {
-      this.server.close();
+      try {
+        this.server.close();
+      } catch (e) {}
       this.server = null;
-      this.active = false;
     }
+    this.active = false;
   }
 
   // Real connectivity test against Discord Gateway

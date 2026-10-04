@@ -1019,13 +1019,198 @@
   margin-top: 2px;
 }
 
+/* Split Tunneling Tab Advanced Controls */
+.split-action-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.split-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.split-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.split-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-micro {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-micro:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border-color: var(--cyan-stealth);
+}
+
+/* Running Apps Drawer */
+.running-apps-drawer {
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.running-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.running-apps-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.running-app-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 3px 10px 3px 8px;
+  font-size: 11px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.running-app-chip:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: var(--cyan-stealth);
+  transform: translateY(-1px);
+}
+
+.running-app-chip .chip-add-btn {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--cyan-stealth);
+  background: rgba(0, 229, 255, 0.15);
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+/* Split Category Navigation Chips */
+.split-category-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+.split-category-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.split-cat-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.split-cat-btn:hover {
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.split-cat-btn.active {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--cyan-stealth);
+  color: var(--cyan-stealth);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+/* Search Bar */
+.split-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  color: var(--text-muted);
+}
+
+.split-search-wrap:focus-within {
+  border-color: var(--cyan-stealth);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+.split-search-wrap input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 11px;
+  outline: none;
+}
+
 .split-apps-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 220px;
+  max-height: 240px;
   overflow-y: auto;
   padding-right: 4px;
+}
+
+.split-apps-list::-webkit-scrollbar {
+  width: 5px;
+}
+.split-apps-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.split-apps-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
 }
 
 .split-app-item {
@@ -1036,78 +1221,122 @@
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border-glass);
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .split-app-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.split-app-item.item-active {
+  border-color: rgba(0, 229, 255, 0.3);
+  background: rgba(0, 229, 255, 0.04);
 }
 
 .split-app-info {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .split-app-icon {
   font-size: 18px;
+  width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.split-app-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.split-app-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .split-app-name {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.split-cat-tag {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+}
+
+.split-cat-tag.gaming { color: #f59e0b; background: rgba(245, 158, 11, 0.12); }
+.split-cat-tag.browsers { color: #00e5ff; background: rgba(0, 229, 255, 0.12); }
+.split-cat-tag.social { color: #a855f7; background: rgba(168, 85, 247, 0.12); }
+.split-cat-tag.media { color: #ec4899; background: rgba(236, 72, 153, 0.12); }
+.split-cat-tag.tools { color: #10b981; background: rgba(16, 185, 129, 0.12); }
+.split-cat-tag.custom { color: #00f59b; background: rgba(0, 245, 155, 0.12); }
 
 .split-app-exe {
   font-size: 10px;
   font-family: var(--font-mono);
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Custom Switch */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 36px;
-  height: 20px;
+.split-app-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.split-app-route-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: rgba(255, 255, 255, 0.15);
-  transition: .25s;
-  border-radius: 20px;
+.split-app-route-badge.tunneled {
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--cyan-stealth);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+}
+
+.split-app-route-badge.direct {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
   border: 1px solid var(--border-glass);
 }
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: .25s;
-  border-radius: 50%;
+.split-app-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
 }
 
-input:checked + .slider {
-  background-color: var(--emerald-safe);
-  box-shadow: 0 0 10px var(--emerald-glow);
-}
-
-input:checked + .slider:before {
-  transform: translateX(16px);
+.split-app-delete-btn:hover {
+  color: var(--crimson-danger);
+  background: rgba(255, 0, 85, 0.15);
 }
 
 /* Split Add Custom App */
@@ -1123,7 +1352,7 @@ input:checked + .slider:before {
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   color: var(--text-main);
-  font-size: 12px;
+  font-size: 11px;
   outline: none;
   font-family: var(--font-mono);
 }

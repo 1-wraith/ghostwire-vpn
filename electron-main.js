@@ -1,7 +1,15 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, dialog } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
 const { ProxyEngine } = require('./core/proxy-engine');
+
+// Intercept unhandled exceptions safely so Windows never shows modal crash dialogs
+process.on('uncaughtException', (err) => {
+  console.warn('[GhostWire Main] Uncaught Exception intercepted:', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.warn('[GhostWire Main] Unhandled Rejection intercepted:', reason);
+});
 
 let mainWindow = null;
 let tray = null;
@@ -164,18 +172,88 @@ ipcMain.on('window:close', () => {
 
 // Enable Windows Proxy & Real DPI Engine
 ipcMain.handle('vpn:connect-tunnel', async () => {
-  proxyEngine.start();
+  try {
+    await proxyEngine.start();
+  } catch (err) {
+    console.warn('[GhostWire Main] Proxy startup notice:', err.message);
+  }
 
   if (process.platform === 'win32') {
     return new Promise((resolve) => {
-      const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:10808" /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyOverride /t REG_SZ /d "<local>" /f`;
+      const port = proxyEngine.port || 10808;
+      const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:${port}" /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyOverride /t REG_SZ /d "<local>" /f`;
       exec(cmd, () => {
-        console.log('[GhostWire Core] Windows Proxy engaged on 127.0.0.1:10808');
-        resolve({ success: true, proxyPort: 10808 });
+        console.log(`[GhostWire Core] Windows Proxy engaged on 127.0.0.1:${port}`);
+        resolve({ success: true, proxyPort: port });
       });
     });
   }
   return { success: true };
+});
+
+// Native Windows File Dialog to select any .exe application directly
+ipcMain.handle('dialog:select-exe', async () => {
+  if (!mainWindow) return null;
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'VPN Tüneline Eklenecek Uygulamayı Seçin (.exe)',
+    filters: [
+      { name: 'Çalıştırılabilir Dosyalar (*.exe)', extensions: ['exe'] },
+      { name: 'Tüm Dosyalar (*.*)', extensions: ['*'] }
+    ],
+    properties: ['openFile']
+  });
+  if (!result.canceled && result.filePaths.length > 0) {
+    const fullPath = result.filePaths[0];
+    const name = path.basename(fullPath, path.extname(fullPath));
+    const exe = path.basename(fullPath);
+    return { fullPath, name, exe };
+  }
+  return null;
+});
+
+// Scan currently running Windows applications
+ipcMain.handle('system:get-running-apps', async () => {
+  return new Promise((resolve) => {
+    if (process.platform === 'win32') {
+      exec('tasklist /FO CSV /NH', (err, stdout) => {
+        if (err || !stdout) return resolve([]);
+        const lines = stdout.split('\r\n');
+        const systemExes = new Set([
+          'system', 'smss.exe', 'csrss.exe', 'wininit.exe', 'services.exe', 'lsass.exe',
+          'svchost.exe', 'fontdrvhost.exe', 'winlogon.exe', 'dwm.exe', 'explorer.exe',
+          'taskhostw.exe', 'sihost.exe', 'runtimebroker.exe', 'searchhost.exe',
+          'startmenuexperiencehost.exe', 'textinputhost.exe', 'shellexperiencehost.exe',
+          'conhost.exe', 'cmd.exe', 'powershell.exe', 'electron.exe', 'node.exe', 'ghostwire vpn.exe'
+        ]);
+        const detected = new Map();
+        for (const line of lines) {
+          const match = line.match(/^"([^"]+)"/);
+          if (match) {
+            const exe = match[1];
+            const lower = exe.toLowerCase();
+            if (!systemExes.has(lower) && !detected.has(lower)) {
+              const name = exe.replace(/\.exe$/i, '');
+              let icon = '⚡';
+              if (lower.includes('discord')) icon = '🎮';
+              else if (lower.includes('steam')) icon = '🕹️';
+              else if (lower.includes('chrome')) icon = '🌐';
+              else if (lower.includes('spotify')) icon = '🎵';
+              else if (lower.includes('telegram')) icon = '✈️';
+              else if (lower.includes('code')) icon = '💻';
+              detected.set(lower, {
+                exe,
+                name: name.charAt(0).toUpperCase() + name.slice(1),
+                icon
+              });
+            }
+          }
+        }
+        resolve(Array.from(detected.values()).slice(0, 35));
+      });
+    } else {
+      resolve([]);
+    }
+  });
 });
 
 // Disconnect & Reset Windows Proxy

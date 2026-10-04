@@ -21,6 +21,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   downloadUpdate: () => ipcRenderer.invoke('updater:download'),
   installUpdate: () => ipcRenderer.invoke('updater:install'),
   getUpdateStatus: () => ipcRenderer.invoke('updater:status'),
-  simulateUpdate: (enable, version) => ipcRenderer.invoke('updater:simulate', enable, version)
+  simulateUpdate: (enable, version) => ipcRenderer.invoke('updater:simulate', enable, version),
+  selectExeFile: () => ipcRenderer.invoke('dialog:select-exe'),
+  getRunningApps: () => ipcRenderer.invoke('system:get-running-apps')
 });
 

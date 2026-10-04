@@ -145,17 +145,32 @@ const elements = {
   tileMultiHop: document.getElementById('tileMultiHop'),
   multiHopBadge: document.getElementById('multiHopBadge'),
   switchSplitTunnelMaster: document.getElementById('switchSplitTunnelMaster'),
+  splitActiveBadge: document.getElementById('splitActiveBadge'),
   splitModeTunnelCard: document.getElementById('splitModeTunnelCard'),
   splitModeBypassCard: document.getElementById('splitModeBypassCard'),
   splitAppsListContainer: document.getElementById('splitAppsListContainer'),
   inputCustomAppExe: document.getElementById('inputCustomAppExe'),
   btnAddCustomApp: document.getElementById('btnAddCustomApp'),
+  btnBrowseExe: document.getElementById('btnBrowseExe'),
+  splitFileInput: document.getElementById('splitFileInput'),
+  btnScanRunningApps: document.getElementById('btnScanRunningApps'),
+  runningAppsDrawer: document.getElementById('runningAppsDrawer'),
+  runningAppsGrid: document.getElementById('runningAppsGrid'),
+  runningAppsCountBadge: document.getElementById('runningAppsCountBadge'),
+  btnCloseRunningDrawer: document.getElementById('btnCloseRunningDrawer'),
+  btnSplitEnableAll: document.getElementById('btnSplitEnableAll'),
+  btnSplitDisableAll: document.getElementById('btnSplitDisableAll'),
+  inputSplitSearch: document.getElementById('inputSplitSearch'),
+  btnClearSplitSearch: document.getElementById('btnClearSplitSearch'),
   inputCustomDnsUrl: document.getElementById('inputCustomDnsUrl'),
   btnSaveCustomDns: document.getElementById('btnSaveCustomDns'),
   dnsStatusMessage: document.getElementById('dnsStatusMessage'),
   switchAutostartWindows: document.getElementById('switchAutostartWindows'),
   switchStartMinimized: document.getElementById('switchStartMinimized'),
-  switchAutoConnectLaunch: document.getElementById('switchAutoConnectLaunch')
+  switchAutoConnectLaunch: document.getElementById('switchAutoConnectLaunch'),
+  switchIpv6Shield: document.getElementById('switchIpv6Shield'),
+  selectMtuSize: document.getElementById('selectMtuSize'),
+  switchDesktopNotifications: document.getElementById('switchDesktopNotifications')
 };
 
 // Application Bootstrap
@@ -821,30 +836,192 @@ function initNewFeatures() {
     });
   }
 
-  // 5. Split Tunneling
+  // 5. Split Tunneling Engine Setup
+  let currentSplitCategory = 'all';
+  let currentSplitSearch = '';
+
   if (elements.switchSplitTunnelMaster) {
     elements.switchSplitTunnelMaster.checked = splitTunnel.enabled;
     elements.switchSplitTunnelMaster.addEventListener('change', (e) => {
       soundFX.playClick();
       splitTunnel.setEnabled(e.target.checked);
+      renderSplitTunnelApps();
     });
   }
 
   if (elements.splitModeTunnelCard && elements.splitModeBypassCard) {
+    if (splitTunnel.mode === 'bypass_selected') {
+      elements.splitModeBypassCard.classList.add('active');
+      elements.splitModeTunnelCard.classList.remove('active');
+    } else {
+      elements.splitModeTunnelCard.classList.add('active');
+      elements.splitModeBypassCard.classList.remove('active');
+    }
+
     elements.splitModeTunnelCard.addEventListener('click', () => {
       soundFX.playClick();
       elements.splitModeTunnelCard.classList.add('active');
       elements.splitModeBypassCard.classList.remove('active');
       splitTunnel.setMode('tunnel_selected');
+      renderSplitTunnelApps();
     });
     elements.splitModeBypassCard.addEventListener('click', () => {
       soundFX.playClick();
       elements.splitModeBypassCard.classList.add('active');
       elements.splitModeTunnelCard.classList.remove('active');
       splitTunnel.setMode('bypass_selected');
+      renderSplitTunnelApps();
     });
   }
 
+  // Windows File Picker (.exe selection)
+  if (elements.btnBrowseExe) {
+    elements.btnBrowseExe.addEventListener('click', async () => {
+      soundFX.playClick();
+      if (window.electronAPI && window.electronAPI.selectExeFile) {
+        try {
+          const res = await window.electronAPI.selectExeFile();
+          if (res && res.name) {
+            splitTunnel.addCustomApp(res.fullPath || res.name, res.exe);
+            currentSplitCategory = 'all';
+            renderSplitTunnelApps();
+            soundFX.playConnect();
+          }
+        } catch (e) {
+          console.warn('[GhostWire] Select EXE notice:', e);
+        }
+      } else if (elements.splitFileInput) {
+        elements.splitFileInput.click();
+      }
+    });
+  }
+
+  if (elements.splitFileInput) {
+    elements.splitFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        splitTunnel.addCustomApp(file.name, file.name);
+        currentSplitCategory = 'all';
+        renderSplitTunnelApps();
+        soundFX.playConnect();
+        elements.splitFileInput.value = '';
+      }
+    });
+  }
+
+  // Running Processes Scanner (Tasklist integration)
+  if (elements.btnScanRunningApps) {
+    elements.btnScanRunningApps.addEventListener('click', async () => {
+      soundFX.playClick();
+      if (elements.runningAppsDrawer) {
+        elements.runningAppsDrawer.style.display = 'flex';
+      }
+      if (elements.runningAppsGrid) {
+        elements.runningAppsGrid.innerHTML = '<div style="font-size:11px; color:var(--text-muted); padding:6px;">⚡ Windows görev listesi taranıyor...</div>';
+      }
+
+      let detectedApps = [];
+      try {
+        if (window.electronAPI && window.electronAPI.getRunningApps) {
+          detectedApps = await window.electronAPI.getRunningApps();
+        } else {
+          const res = await fetch('/api/running-apps');
+          if (res.ok) {
+            const data = await res.json();
+            detectedApps = data.apps || [];
+          }
+        }
+      } catch (err) {
+        console.warn('Running apps scan notice:', err);
+      }
+
+      if (elements.runningAppsCountBadge) {
+        elements.runningAppsCountBadge.textContent = `(${detectedApps.length} Açık Süreç)`;
+      }
+
+      if (!elements.runningAppsGrid) return;
+      elements.runningAppsGrid.innerHTML = '';
+
+      if (detectedApps.length === 0) {
+        elements.runningAppsGrid.innerHTML = '<div style="font-size:11px; color:var(--text-muted); padding:6px;">Tespit edilen harici masaüstü uygulaması bulunamadı.</div>';
+        return;
+      }
+
+      detectedApps.forEach(item => {
+        const chip = document.createElement('div');
+        chip.className = 'running-app-chip';
+        chip.innerHTML = `
+          <span>${item.icon || '⚡'}</span>
+          <span>${item.name}</span>
+          <span class="chip-add-btn">+ Ekle</span>
+        `;
+        chip.addEventListener('click', () => {
+          soundFX.playClick();
+          splitTunnel.addCustomApp(item.name, item.exe, item.category || 'tools', item.icon || '⚡');
+          chip.style.opacity = '0.4';
+          chip.style.pointerEvents = 'none';
+          renderSplitTunnelApps();
+        });
+        elements.runningAppsGrid.appendChild(chip);
+      });
+    });
+  }
+
+  if (elements.btnCloseRunningDrawer && elements.runningAppsDrawer) {
+    elements.btnCloseRunningDrawer.addEventListener('click', () => {
+      elements.runningAppsDrawer.style.display = 'none';
+    });
+  }
+
+  // Batch Toggles
+  if (elements.btnSplitEnableAll) {
+    elements.btnSplitEnableAll.addEventListener('click', () => {
+      soundFX.playClick();
+      splitTunnel.toggleAll(currentSplitCategory, true);
+      renderSplitTunnelApps();
+    });
+  }
+
+  if (elements.btnSplitDisableAll) {
+    elements.btnSplitDisableAll.addEventListener('click', () => {
+      soundFX.playClick();
+      splitTunnel.toggleAll(currentSplitCategory, false);
+      renderSplitTunnelApps();
+    });
+  }
+
+  // Split Category Navigation
+  document.querySelectorAll('.split-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      soundFX.playClick();
+      document.querySelectorAll('.split-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentSplitCategory = btn.getAttribute('data-cat') || 'all';
+      renderSplitTunnelApps();
+    });
+  });
+
+  // Split Search Input
+  if (elements.inputSplitSearch) {
+    elements.inputSplitSearch.addEventListener('input', (e) => {
+      currentSplitSearch = e.target.value;
+      if (elements.btnClearSplitSearch) {
+        elements.btnClearSplitSearch.style.display = currentSplitSearch ? 'block' : 'none';
+      }
+      renderSplitTunnelApps();
+    });
+  }
+
+  if (elements.btnClearSplitSearch && elements.inputSplitSearch) {
+    elements.btnClearSplitSearch.addEventListener('click', () => {
+      elements.inputSplitSearch.value = '';
+      currentSplitSearch = '';
+      elements.btnClearSplitSearch.style.display = 'none';
+      renderSplitTunnelApps();
+    });
+  }
+
+  // Manual Add App
   if (elements.btnAddCustomApp && elements.inputCustomAppExe) {
     elements.btnAddCustomApp.addEventListener('click', () => {
       const exeName = elements.inputCustomAppExe.value.trim();
@@ -888,13 +1065,34 @@ function initNewFeatures() {
     });
   }
 
-  // 7. Autostart Switch
+  // 7. System, Network & Autostart Settings
   if (elements.switchAutostartWindows) {
     elements.switchAutostartWindows.addEventListener('change', async (e) => {
       soundFX.playClick();
       if (window.electronAPI && window.electronAPI.setAutostart) {
         await window.electronAPI.setAutostart(e.target.checked);
       }
+    });
+  }
+
+  if (elements.switchIpv6Shield) {
+    elements.switchIpv6Shield.addEventListener('change', (e) => {
+      soundFX.playClick();
+      localStorage.setItem('ghostwire_ipv6_shield', e.target.checked ? 'true' : 'false');
+    });
+  }
+
+  if (elements.selectMtuSize) {
+    elements.selectMtuSize.addEventListener('change', (e) => {
+      soundFX.playClick();
+      localStorage.setItem('ghostwire_mtu_size', e.target.value);
+    });
+  }
+
+  if (elements.switchDesktopNotifications) {
+    elements.switchDesktopNotifications.addEventListener('change', (e) => {
+      soundFX.playClick();
+      localStorage.setItem('ghostwire_notifications', e.target.checked ? 'true' : 'false');
     });
   }
 
@@ -927,28 +1125,128 @@ function showDnsFeedback() {
 function renderSplitTunnelApps() {
   if (!elements.splitAppsListContainer) return;
   elements.splitAppsListContainer.innerHTML = '';
-  const apps = splitTunnel.getApps();
-  apps.forEach(app => {
+
+  const allApps = splitTunnel.getAllApps();
+  const isTunnelMode = splitTunnel.mode === 'tunnel_selected';
+  const isMasterOn = splitTunnel.enabled;
+
+  // Update category counts on chip badges
+  const catCounts = {
+    all: allApps.length,
+    gaming: allApps.filter(a => a.category === 'gaming').length,
+    browsers: allApps.filter(a => a.category === 'browsers').length,
+    social: allApps.filter(a => a.category === 'social').length,
+    media: allApps.filter(a => a.category === 'media').length,
+    tools: allApps.filter(a => a.category === 'tools').length,
+    custom: allApps.filter(a => a.isCustom).length
+  };
+
+  const updateBadge = (id, count) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = count;
+  };
+  updateBadge('catCountAll', catCounts.all);
+  updateBadge('catCountGaming', catCounts.gaming);
+  updateBadge('catCountBrowsers', catCounts.browsers);
+  updateBadge('catCountSocial', catCounts.social);
+  updateBadge('catCountMedia', catCounts.media);
+  updateBadge('catCountTools', catCounts.tools);
+  updateBadge('catCountCustom', catCounts.custom);
+
+  // Update active count badge on header
+  if (elements.splitActiveBadge) {
+    const activeCount = allApps.filter(a => a.enabled).length;
+    if (!isMasterOn) {
+      elements.splitActiveBadge.textContent = 'DEVRE DIŞI';
+      elements.splitActiveBadge.style.color = 'var(--text-muted)';
+      elements.splitActiveBadge.style.borderColor = 'var(--border-glass)';
+    } else {
+      elements.splitActiveBadge.textContent = `${activeCount} UYGULAMA AKTİF`;
+      elements.splitActiveBadge.style.color = 'var(--cyan-stealth)';
+      elements.splitActiveBadge.style.borderColor = 'rgba(0, 229, 255, 0.3)';
+    }
+  }
+
+  // Filter apps
+  const filtered = splitTunnel.getFilteredApps(currentSplitCategory, currentSplitSearch);
+
+  if (filtered.length === 0) {
+    elements.splitAppsListContainer.innerHTML = `
+      <div style="padding: 24px 16px; text-align: center; color: var(--text-muted); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <span style="font-size: 24px;">🔍</span>
+        <div>Arama kriterine uygun uygulama bulunamadı.</div>
+        <div style="font-size: 10px; color: var(--text-muted);">Yukarıdaki <b>📂 .EXE Seç</b> veya <b>⚡ Açık Uygulamaları Tara</b> butonlarıyla dilediğiniz uygulamayı ekleyebilirsiniz.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const categoryNames = {
+    gaming: '🎮 Oyun',
+    browsers: '🌐 Tarayıcı',
+    social: '💬 İletişim',
+    media: '🎵 Medya',
+    tools: '📥 Araç',
+    custom: '📦 Özel'
+  };
+
+  filtered.forEach(app => {
     const item = document.createElement('div');
-    item.className = 'split-app-item';
+    item.className = `split-app-item ${app.enabled ? 'item-active' : ''}`;
+
+    let routeLabel = '';
+    let routeClass = '';
+    if (isTunnelMode) {
+      routeLabel = app.enabled ? '🛡️ TÜNELLENİYOR' : '⚪ DOĞRUDAN ISS';
+      routeClass = app.enabled ? 'tunneled' : 'direct';
+    } else {
+      routeLabel = app.enabled ? '⚡ BYPASS (ISS)' : '🛡️ TÜNELLENİYOR';
+      routeClass = app.enabled ? 'direct' : 'tunneled';
+    }
+
+    const catBadge = categoryNames[app.category] || '📦 Özel';
+
     item.innerHTML = `
       <div class="split-app-info">
-        <span class="split-app-icon">${app.icon}</span>
-        <div>
-          <div class="split-app-name">${app.name}</div>
-          <div class="split-app-exe">${app.exe}</div>
+        <span class="split-app-icon">${app.icon || '📦'}</span>
+        <div class="split-app-text-wrap">
+          <div class="split-app-name-row">
+            <span class="split-app-name" title="${app.name}">${app.name}</span>
+            <span class="split-cat-tag ${app.category || 'custom'}">${catBadge}</span>
+          </div>
+          <div class="split-app-exe" title="${app.desc || app.exe}">${app.desc || app.exe}</div>
         </div>
       </div>
-      <label class="switch">
-        <input type="checkbox" ${app.enabled ? 'checked' : ''}>
-        <span class="slider"></span>
-      </label>
+      <div class="split-app-controls">
+        <span class="split-app-route-badge ${routeClass}">${routeLabel}</span>
+        <label class="switch">
+          <input type="checkbox" ${app.enabled ? 'checked' : ''}>
+          <span class="slider"></span>
+        </label>
+        ${app.isCustom ? `<button class="split-app-delete-btn" title="Uygulamayı Listeden Kaldır">🗑️</button>` : ''}
+      </div>
     `;
+
+    // Toggle switch
     const cb = item.querySelector('input');
     cb.addEventListener('change', () => {
       soundFX.playClick();
       splitTunnel.toggleApp(app.id);
+      renderSplitTunnelApps();
     });
+
+    // Delete custom app
+    if (app.isCustom) {
+      const delBtn = item.querySelector('.split-app-delete-btn');
+      if (delBtn) {
+        delBtn.addEventListener('click', () => {
+          soundFX.playClick();
+          splitTunnel.removeCustomApp(app.id);
+          renderSplitTunnelApps();
+        });
+      }
+    }
+
     elements.splitAppsListContainer.appendChild(item);
   });
 }

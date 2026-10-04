@@ -813,10 +813,14 @@ AllowedIPs = 0.0.0.0/0"></textarea>
           
           <!-- TAB 1: SPLIT TUNNELING -->
           <div id="tabPaneSplit" class="tab-pane active">
-            <div style="display: flex; align-items: center; justify-content: space-between;">
+            <!-- Üst Başlık & Master Switch -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--border-glass);">
               <div>
-                <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="splitTunnelTitle">Uygulama Bazlı Tünelleme (Split Tunneling)</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="splitTunnelDesc">VPN tüneline girecek veya doğrudan yerel internete bağlanacak uygulamaları belirleyin.</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="splitTunnelTitle">Uygulama Bazlı Tünelleme (Split Tunneling)</div>
+                  <span id="splitActiveBadge" class="brand-tag" style="background: rgba(0, 229, 255, 0.12); color: var(--cyan-stealth); border-color: rgba(0, 229, 255, 0.3); font-size: 9px; padding: 2px 7px;">2 AKTİF</span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="splitTunnelDesc">VPN tünelinden geçecek uygulamaları belirleyin; diğer tüm trafiği ISS doğrudan hızında bırakın.</div>
               </div>
               <label class="switch">
                 <input type="checkbox" id="switchSplitTunnelMaster" checked>
@@ -827,25 +831,79 @@ AllowedIPs = 0.0.0.0/0"></textarea>
             <!-- Mod Seçici -->
             <div class="split-mode-selector">
               <div id="splitModeTunnelCard" class="split-mode-card active" data-mode="tunnel_selected">
-                <div class="split-mode-title" data-i18n="splitModeTunnel">Yalnızca Seçili Uygulamaları VPN ile Koru</div>
+                <div class="split-mode-title" data-i18n="splitModeTunnel">🛡️ Yalnızca Seçilenleri VPN ile Koru</div>
                 <div class="split-mode-sub">Discord, Roblox, Steam vs. VPN'den geçer, diğer her şey yerel ISS hızında kalır.</div>
               </div>
               <div id="splitModeBypassCard" class="split-mode-card" data-mode="bypass_selected">
-                <div class="split-mode-title" data-i18n="splitModeBypass">Tüm Cihazı Koru, Seçilenleri Hariç Tut (Bypass)</div>
+                <div class="split-mode-title" data-i18n="splitModeBypass">🌐 Tüm Cihazı Koru, Seçilenleri Hariç Tut (Bypass)</div>
                 <div class="split-mode-sub">Banka uygulamaları ve yerel servisler VPN'i bypass ederek doğrudan bağlanır.</div>
               </div>
             </div>
 
-            <!-- Uygulama Listesi -->
-            <div id="splitAppsListContainer" class="split-apps-list">
-              <!-- JS ile dinamik render edilecek -->
+            <!-- Gelişmiş Eylem & Tarama Çubuğu -->
+            <div class="split-action-toolbar">
+              <div class="split-toolbar-left">
+                <button id="btnBrowseExe" class="btn btn-primary split-tool-btn" title="Bilgisayarınızdaki herhangi bir .exe dosyasını seçin">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                  <span>📂 .EXE Seç (Gözat)</span>
+                </button>
+                <input type="file" id="splitFileInput" accept=".exe" style="display: none;">
+
+                <button id="btnScanRunningApps" class="btn btn-outline split-tool-btn" title="Şu an açık olan Windows uygulamalarını otomatik algıla">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  <span>⚡ Açık Uygulamaları Tara</span>
+                </button>
+              </div>
+
+              <div class="split-toolbar-right">
+                <button id="btnSplitEnableAll" class="btn-micro" title="Mevcut kategorideki tümünü VPN tüneline al">✓ Tümünü Aç</button>
+                <button id="btnSplitDisableAll" class="btn-micro" title="Tümünü devre dışı bırak">✕ Tümünü Kapat</button>
+              </div>
             </div>
 
-            <!-- Özel Uygulama Ekleme -->
+            <!-- Çalışan Uygulamalar Çekmecesi (Otomatik Tarama Sonucu) -->
+            <div id="runningAppsDrawer" class="running-apps-drawer" style="display: none;">
+              <div class="running-drawer-header">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span class="live-dot-pulse"></span>
+                  <span style="font-weight: 700; color: var(--cyan-stealth); font-size: 11px;">Çalışan Windows Uygulamaları Algılandı:</span>
+                  <span id="runningAppsCountBadge" style="font-size: 10px; color: var(--text-muted);">(Tarandı)</span>
+                </div>
+                <button id="btnCloseRunningDrawer" class="btn-micro" style="padding: 2px 6px;">✕ Kapat</button>
+              </div>
+              <div id="runningAppsGrid" class="running-apps-chips-grid">
+                <!-- JS ile tespit edilen açık uygulamalar burada belirecek -->
+              </div>
+            </div>
+
+            <!-- Kategori Çipleri -->
+            <div class="split-category-nav">
+              <button class="split-cat-btn active" data-cat="all">🌍 Tümü (<span id="catCountAll">25</span>)</button>
+              <button class="split-cat-btn" data-cat="gaming">🎮 Oyunlar (<span id="catCountGaming">8</span>)</button>
+              <button class="split-cat-btn" data-cat="browsers">🌐 Tarayıcılar (<span id="catCountBrowsers">6</span>)</button>
+              <button class="split-cat-btn" data-cat="social">💬 İletişim (<span id="catCountSocial">4</span>)</button>
+              <button class="split-cat-btn" data-cat="media">🎵 Medya (<span id="catCountMedia">4</span>)</button>
+              <button class="split-cat-btn" data-cat="tools">📥 Araçlar (<span id="catCountTools">3</span>)</button>
+              <button class="split-cat-btn" data-cat="custom">📦 Özel (<span id="catCountCustom">0</span>)</button>
+            </div>
+
+            <!-- Arama Çubuğu -->
+            <div class="split-search-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="inputSplitSearch" placeholder="Uygulama veya .exe adı ara (Discord, Roblox, Chrome, Valorant)...">
+              <button id="btnClearSplitSearch" style="display: none; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px;">✕</button>
+            </div>
+
+            <!-- Uygulama Listesi Grid -->
+            <div id="splitAppsListContainer" class="split-apps-list">
+              <!-- JS ile dinamik zengin kartlar render edilecek -->
+            </div>
+
+            <!-- Manuel Uygulama Ekleme (Hızlı Alternatif) -->
             <div class="split-add-box">
-              <input type="text" id="inputCustomAppExe" placeholder="Özel uygulama .exe adı (Örn: valorant.exe veya chrome.exe)...">
+              <input type="text" id="inputCustomAppExe" placeholder="Veya manuel .exe yazın (Örn: valorant.exe veya customapp.exe)...">
               <button id="btnAddCustomApp" class="btn btn-primary" style="padding: 7px 14px; font-size: 11px;" data-i18n="btnAddApp">
-                + Uygulama Ekle
+                + Ekle
               </button>
             </div>
           </div>
@@ -904,14 +962,15 @@ AllowedIPs = 0.0.0.0/0"></textarea>
             </div>
           </div>
 
-          <!-- TAB 3: SİSTEM & BAŞLANGIÇ AYARLARI -->
+          <!-- TAB 3: SİSTEM, GELİŞMİŞ AĞ & BAŞLANGIÇ AYARLARI -->
           <div id="tabPaneSystem" class="tab-pane">
             <div>
-              <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="autostartTitle">Windows Açılışında Başlatma & Sistem Tepsisi</div>
-              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="autostartDesc">GhostWire VPN arka planda sistem tepsisinde (Tray) sessiz çalışabilir ve Windows ile otomatik başlayabilir.</div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="autostartTitle">Windows Entegrasyonu & Gelişmiş Ağ Kalkanları</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="autostartDesc">Sistem başlangıcı, sızıntı korumaları ve MTU turbo optimizasyonlarını yapılandırın.</div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Windows Açılışında Başlat -->
               <div class="settings-row">
                 <div>
                   <div class="settings-row-title" data-i18n="optStartWithWindows">Windows Açılışında Otomatik Başlat</div>
@@ -923,6 +982,7 @@ AllowedIPs = 0.0.0.0/0"></textarea>
                 </label>
               </div>
 
+              <!-- Sistem Tepsisine Küçültülmüş Başlat -->
               <div class="settings-row">
                 <div>
                   <div class="settings-row-title" data-i18n="optStartMinimized">Sistem Tepsisine (Tray) Küçültülmüş Olarak Başlat</div>
@@ -934,6 +994,7 @@ AllowedIPs = 0.0.0.0/0"></textarea>
                 </label>
               </div>
 
+              <!-- Açılışta Akıllı Bağlantı Kur -->
               <div class="settings-row">
                 <div>
                   <div class="settings-row-title" data-i18n="optAutoConnectLaunch">Açılışta Otomatik Akıllı Bağlantı (Smart Connect) Kur</div>
@@ -941,6 +1002,44 @@ AllowedIPs = 0.0.0.0/0"></textarea>
                 </div>
                 <label class="switch">
                   <input type="checkbox" id="switchAutoConnectLaunch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <!-- IPv6 Sızıntı Kalkanı -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-title">🛡️ IPv6 Sızıntı Kalkanı (IPv6 Leak Shield)</div>
+                  <div class="settings-row-sub">IPv6 trafiğini filtreleyerek ISS'nizin gerçek kimliğinizi görmesini 100% önler.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchIpv6Shield" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <!-- MTU Paket Boyutu Optimizasyonu -->
+              <div class="settings-row" style="align-items: center;">
+                <div>
+                  <div class="settings-row-title">⚡ MTU Paket Boyutu & Parçalama</div>
+                  <div class="settings-row-sub">DPI sansürünü kırmak ve paket kaybını sıfırlamak için en uygun MTU değeri.</div>
+                </div>
+                <select id="selectMtuSize" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); color: var(--cyan-stealth); padding: 6px 10px; font-size: 11px; font-family: var(--font-mono); outline: none;">
+                  <option value="1360" selected>1360 (DPI Sansür Kırıcı - Önerilen)</option>
+                  <option value="1420">1420 (WireGuard Turbo)</option>
+                  <option value="1280">1280 (Tor & Kısıtlı ISS)</option>
+                  <option value="1500">1500 (Maksimum Verim)</option>
+                </select>
+              </div>
+
+              <!-- Windows Masaüstü Bildirimleri -->
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-title">🔔 Windows Masaüstü Bildirimleri</div>
+                  <div class="settings-row-sub">VPN bağlandığında veya bağlantı koptuğunda masaüstü bildirimi gönder.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchDesktopNotifications" checked>
                   <span class="slider"></span>
                 </label>
               </div>
