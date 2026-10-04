@@ -482,7 +482,7 @@ input:checked + .toggle-slider:before {
   }
 
   .map-canvas-wrapper {
-    height: 155px !important;
+    height: 185px !important;
   }
 
   .bandwidth-graph-card {
@@ -545,7 +545,7 @@ input:checked + .toggle-slider:before {
   }
 
   .map-canvas-wrapper {
-    height: 125px !important;
+    height: 150px !important;
   }
 }
 

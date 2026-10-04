@@ -1,166 +1,378 @@
-// GhostWire High-Fidelity Cyber World Map Visualizer
-// Real Geographic Continent Coordinates & Live Geodesic Animated Routing
+// GhostWire High-Precision Geographical World Map Visualizer
+// Real Vector SVG Projection (180+ Countries) with Live Geodesic Laser Routing & Interactive Nodes
+
+import { SVG_VIEWBOX, COUNTRY_CENTERS, WORLD_MAP_SVG_INNER } from './map-svg-data.js';
+import { SERVERS_DATABASE } from './server-list.js';
 
 export class MapRenderer {
-  constructor(canvasElement) {
-    this.canvas = canvasElement;
-    this.ctx = canvasElement ? canvasElement.getContext('2d') : null;
+  constructor(containerOrCanvas) {
+    this.container = containerOrCanvas?.parentElement?.id === 'worldMapWrapper'
+      ? containerOrCanvas.parentElement
+      : (document.getElementById('worldMapWrapper') || containerOrCanvas?.parentElement || containerOrCanvas);
+
+    this.svgElement = null;
+    this.tooltipElement = null;
     this.animationId = null;
     this.pulsePhase = 0;
-    this.hoveredNode = null;
-
-    // Real Geographic Nodes (Lat, Lon)
-    this.worldNodes = [
-      { id: 'tr-ist', name: 'Türkiye (İstanbul)', code: 'TR', flag: '🇹🇷', lat: 41.0, lon: 28.9, isHome: true },
-      { id: 'tr-ank', name: 'Türkiye (Ankara)', code: 'TR', flag: '🇹🇷', lat: 39.9, lon: 32.8 },
-      { id: 'is-rey', name: 'İzlanda (Reykjavik)', code: 'IS', flag: '🇮🇸', lat: 64.1, lon: -21.9 },
-      { id: 'ch-zur', name: 'İsviçre (Zürih)', code: 'CH', flag: '🇨🇭', lat: 47.3, lon: 8.5 },
-      { id: 'de-fra', name: 'Almanya (Frankfurt)', code: 'DE', flag: '🇩🇪', lat: 50.1, lon: 8.6 },
-      { id: 'nl-ams', name: 'Hollanda (Amsterdam)', code: 'NL', flag: '🇳🇱', lat: 52.3, lon: 4.9 },
-      { id: 'gb-lon', name: 'Birleşik Krallık (Londra)', code: 'GB', flag: '🇬🇧', lat: 51.5, lon: -0.1 },
-      { id: 'se-sto', name: 'İsveç (Stockholm)', code: 'SE', flag: '🇸🇪', lat: 59.3, lon: 18.0 },
-      { id: 'us-nyc', name: 'ABD (New York)', code: 'US', flag: '🇺🇸', lat: 40.7, lon: -74.0 },
-      { id: 'us-lax', name: 'ABD (Los Angeles)', code: 'US', flag: '🇺🇸', lat: 34.0, lon: -118.2 },
-      { id: 'ca-tor', name: 'Kanada (Toronto)', code: 'CA', flag: '🇨🇦', lat: 43.6, lon: -79.3 },
-      { id: 'jp-tok', name: 'Japonya (Tokyo)', code: 'JP', flag: '🇯🇵', lat: 35.6, lon: 139.6 },
-      { id: 'sg-sin', name: 'Singapur', code: 'SG', flag: '🇸🇬', lat: 1.3, lon: 103.8 },
-      { id: 'au-syd', name: 'Avustralya (Sidney)', code: 'AU', flag: '🇦🇺', lat: -33.8, lon: 151.2 },
-      { id: 'ae-dxb', name: 'BAE (Dubai)', code: 'AE', flag: '🇦🇪', lat: 25.2, lon: 55.2 },
-      { id: 'br-sao', name: 'Brezilya (Sao Paulo)', code: 'BR', flag: '🇧🇷', lat: -23.5, lon: -46.6 },
-      { id: 'za-jnb', name: 'Güney Afrika (Johannesburg)', code: 'ZA', flag: '🇿🇦', lat: -26.2, lon: 28.0 }
-    ];
-
-    // High-Resolution Normalized Continent Outlines (Real Earth Geography)
-    this.continents = [
-      // North America
-      [
-        [-168, 65], [-160, 71], [-130, 70], [-90, 73], [-80, 62], [-65, 60], [-55, 48],
-        [-65, 43], [-75, 35], [-80, 25], [-97, 26], [-90, 20], [-80, 8], [-77, 7],
-        [-83, 10], [-92, 16], [-105, 20], [-115, 30], [-124, 40], [-124, 48], [-135, 57],
-        [-160, 56], [-165, 60], [-168, 65]
-      ],
-      // Greenland
-      [
-        [-50, 83], [-20, 82], [-20, 70], [-40, 60], [-55, 60], [-55, 78], [-50, 83]
-      ],
-      // South America
-      [
-        [-77, 8], [-60, 8], [-50, 0], [-35, -5], [-35, -10], [-40, -22], [-50, -30],
-        [-55, -40], [-65, -55], [-72, -53], [-75, -45], [-72, -30], [-78, -10], [-80, -2],
-        [-77, 8]
-      ],
-      // Europe
-      [
-        [-9, 36], [-9, 43], [-2, 47], [-5, 48], [2, 51], [8, 54], [10, 57],
-        [15, 55], [25, 60], [30, 70], [40, 67], [60, 67], [60, 50], [40, 45],
-        [30, 40], [25, 35], [15, 38], [0, 38], [-9, 36]
-      ],
-      // British Isles
-      [
-        [-5, 50], [1, 52], [0, 58], [-5, 58], [-6, 54], [-5, 50]
-      ],
-      // Scandinavia
-      [
-        [5, 58], [10, 64], [18, 70], [28, 71], [30, 65], [22, 60], [12, 56], [5, 58]
-      ],
-      // Africa
-      [
-        [-17, 15], [-17, 25], [-5, 36], [10, 37], [25, 32], [32, 31], [35, 27],
-        [43, 12], [51, 12], [45, 0], [40, -10], [35, -25], [28, -34], [18, -34],
-        [12, -18], [9, 4], [0, 6], [-10, 5], [-15, 12], [-17, 15]
-      ],
-      // Asia
-      [
-        [40, 45], [50, 40], [60, 25], [75, 20], [80, 10], [85, 20], [90, 22],
-        [100, 18], [105, 10], [108, 15], [120, 23], [122, 30], [122, 38], [130, 42],
-        [140, 48], [145, 58], [170, 65], [178, 67], [170, 70], [140, 73], [100, 77],
-        [80, 73], [60, 68], [60, 50], [40, 45]
-      ],
-      // Japan
-      [
-        [130, 32], [136, 35], [141, 38], [144, 44], [141, 44], [136, 38], [130, 32]
-      ],
-      // Australia
-      [
-        [114, -22], [115, -34], [130, -32], [138, -35], [148, -38], [152, -28],
-        [148, -20], [142, -11], [132, -12], [128, -18], [114, -22]
-      ]
-    ];
-
-    this.origin = this.worldNodes.find(n => n.code === 'TR') || this.worldNodes[0];
-    this.target = this.worldNodes.find(n => n.code === 'IS') || this.worldNodes[2];
     this.connected = false;
 
+    // Home Node: Turkey
+    this.originCode = 'TR';
+    this.originCenter = COUNTRY_CENTERS['tr'] || { cx: 485.5, cy: 428.4 };
+
+    // Target Node: Defaults to Iceland or first server
+    this.targetCode = 'IS';
+    this.targetCenter = COUNTRY_CENTERS['is'] || { cx: 370.3, cy: 346.1 };
+    this.targetServer = SERVERS_DATABASE.find(s => s.code === 'IS') || SERVERS_DATABASE[0];
+
     this.onNodeSelected = null;
-    this.initInteraction();
-  }
+    this.hoveredCountry = null;
 
-  setCanvas(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas ? canvas.getContext('2d') : null;
-    this.initInteraction();
-  }
+    // Major global relay hubs to display as ambient node pins
+    this.hubCodes = ['de', 'nl', 'gb', 'ch', 'se', 'us', 'jp', 'sg', 'au', 'ae', 'br', 'za'];
 
-  geoToPixel(lon, lat, width, height) {
-    // Equirectangular projection with margin adjustment
-    const padX = 24;
-    const padY = 16;
-    const w = width - padX * 2;
-    const h = height - padY * 2;
-
-    const x = padX + ((lon + 180) / 360) * w;
-    // Latitude clamped to -60..85 degrees
-    const clampedLat = Math.max(-60, Math.min(82, lat));
-    const y = padY + ((85 - clampedLat) / 145) * h;
-
-    return { x, y };
-  }
-
-  initInteraction() {
-    if (!this.canvas) return;
-
-    this.canvas.addEventListener('mousemove', (e) => {
-      const rect = this.canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      let found = null;
-      for (const node of this.worldNodes) {
-        const p = this.geoToPixel(node.lon, node.lat, this.canvas.width, this.canvas.height);
-        const dist = Math.hypot(p.x - mouseX, p.y - mouseY);
-        if (dist < 14) {
-          found = node;
-          break;
-        }
-      }
-
-      this.hoveredNode = found;
-      this.canvas.style.cursor = found ? 'pointer' : 'default';
-    });
-
-    this.canvas.addEventListener('click', (e) => {
-      if (this.hoveredNode && this.onNodeSelected) {
-        this.setTargetNode(this.hoveredNode.code);
-        this.onNodeSelected(this.hoveredNode);
+    window.addEventListener('map:select', (e) => {
+      const code = e.detail;
+      const server = this.getServerInfo(code);
+      this.setTargetNode(code);
+      if (this.onNodeSelected) {
+        this.onNodeSelected(server);
       }
     });
+
+    this.initSvgMap();
+  }
+
+  initSvgMap() {
+    if (!this.container) return;
+
+    // Check or create map container
+    let mapDiv = document.getElementById('worldMapContainer');
+    if (!mapDiv) {
+      mapDiv = document.createElement('div');
+      mapDiv.id = 'worldMapContainer';
+      mapDiv.className = 'world-map-svg-container';
+      this.container.prepend(mapDiv);
+    }
+
+    // Check or create tooltip
+    this.tooltipElement = document.getElementById('mapTooltip');
+    if (!this.tooltipElement) {
+      this.tooltipElement = document.createElement('div');
+      this.tooltipElement.id = 'mapTooltip';
+      this.tooltipElement.className = 'map-cyber-tooltip';
+      this.tooltipElement.style.display = 'none';
+      this.container.appendChild(this.tooltipElement);
+    }
+
+    // Hide old canvas if present
+    const oldCanvas = document.getElementById('worldMapCanvas');
+    if (oldCanvas) {
+      oldCanvas.style.display = 'none';
+    }
+
+    // Build SVG markup with cyber filters, background grid, real countries, laser layer and pins
+    mapDiv.innerHTML = `
+      <svg id="cyberWorldMapSvg" class="cyber-world-map-svg" viewBox="${SVG_VIEWBOX}" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <!-- Cyber Cyan & Emerald Glow Filters -->
+          <filter id="neonGlowCyan" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="neonGlowEmerald" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <!-- Laser Beam Gradient -->
+          <linearGradient id="laserBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00e5ff" stop-opacity="1" />
+            <stop offset="60%" stop-color="#00f59b" stop-opacity="1" />
+            <stop offset="100%" stop-color="#00f59b" stop-opacity="1" />
+          </linearGradient>
+        </defs>
+
+        <!-- 1. Coordinate Grid Layer (Cyber Meridians & Parallels) -->
+        <g id="mapGridLayer" class="map-grid-layer">
+          <!-- Meridians -->
+          <line x1="140" y1="240" x2="140" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="240" y1="240" x2="240" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="340" y1="240" x2="340" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="440" y1="240" x2="440" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="540" y1="240" x2="540" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="640" y1="240" x2="640" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="740" y1="240" x2="740" y2="700" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+
+          <!-- Parallels -->
+          <line x1="30" y1="300" x2="820" y2="300" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="30" y1="380" x2="820" y2="380" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="30" y1="460" x2="820" y2="460" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="30" y1="540" x2="820" y2="540" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+          <line x1="30" y1="620" x2="820" y2="620" stroke="rgba(0, 229, 255, 0.04)" stroke-width="1" />
+
+          <!-- Equator (Dashed cyan) -->
+          <line x1="30" y1="525" x2="820" y2="525" stroke="rgba(0, 229, 255, 0.09)" stroke-width="1" stroke-dasharray="4, 6" />
+        </g>
+
+        <!-- 2. Real Vector Country Paths (180+ Countries) -->
+        <g id="mapCountryLayer" class="map-country-layer">
+          ${WORLD_MAP_SVG_INNER}
+        </g>
+
+        <!-- 3. Geodesic Laser Tunnel Layer -->
+        <g id="mapLaserLayer" class="map-laser-layer">
+          <!-- Background glow track -->
+          <path id="laserArcGlow" class="laser-arc-glow" fill="none" stroke="rgba(0, 229, 255, 0.15)" stroke-width="5" />
+          <!-- Main Laser Arc -->
+          <path id="laserArcMain" class="laser-arc-main" fill="none" stroke="rgba(0, 229, 255, 0.45)" stroke-width="2" stroke-dasharray="4, 4" />
+          <!-- Active animated packet pulse -->
+          <circle id="laserPulsePacket" r="4.5" fill="#00f59b" filter="url(#neonGlowEmerald)" style="display: none;" />
+        </g>
+
+        <!-- 4. Dynamic Interactive Server Nodes & Beacons -->
+        <g id="mapNodesLayer" class="map-nodes-layer"></g>
+      </svg>
+    `;
+
+    this.svgElement = document.getElementById('cyberWorldMapSvg');
+    this.setupInteractivity();
+    this.renderNodes();
+    this.updateRoute();
+  }
+
+  setupInteractivity() {
+    if (!this.svgElement) return;
+
+    const countriesLayer = document.getElementById('mapCountryLayer');
+    if (!countriesLayer) return;
+
+    // Apply classes to all paths/groups
+    const elements = countriesLayer.querySelectorAll('path, g');
+    elements.forEach(el => {
+      const id = el.id?.toLowerCase();
+      if (id && id.length === 2) {
+        el.classList.add('map-country-path');
+        el.setAttribute('data-country-code', id.toUpperCase());
+
+        el.addEventListener('mouseenter', (e) => this.handleCountryHover(e, id.toUpperCase()));
+        el.addEventListener('mousemove', (e) => this.handleCountryMove(e));
+        el.addEventListener('mouseleave', () => this.handleCountryLeave());
+        el.addEventListener('click', () => this.handleCountryClick(id.toUpperCase()));
+      }
+    });
+
+    // Tooltip hide on mouseleave container
+    this.container.addEventListener('mouseleave', () => this.handleCountryLeave());
+  }
+
+  getServerInfo(countryCode) {
+    return SERVERS_DATABASE.find(s => s.code.toUpperCase() === countryCode.toUpperCase()) || {
+      name: countryCode,
+      code: countryCode,
+      flag: '🌐',
+      city: 'GhostWire Relay Node',
+      ping: Math.floor(20 + Math.random() * 35)
+    };
+  }
+
+  handleCountryHover(e, countryCode) {
+    const server = this.getServerInfo(countryCode);
+    this.hoveredCountry = server;
+
+    if (this.tooltipElement) {
+      const isTarget = server.code === this.targetCode;
+      const isHome = server.code === this.originCode;
+
+      this.tooltipElement.innerHTML = `
+        <span style="font-size: 16px; line-height: 1;">${server.flag || '🌐'}</span>
+        <div>
+          <div style="font-weight: 700; color: #fff;">${server.name} <span style="font-size: 10px; color: var(--cyan-stealth);">(${server.code})</span></div>
+          <div style="font-size: 10px; color: var(--text-muted);">${server.city || 'Tünel Düğümü'} • <span style="color: var(--emerald-safe); font-family: var(--font-mono);">⚡ ${server.ping} ms</span></div>
+        </div>
+        <div style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0, 229, 255, 0.15); color: var(--cyan-stealth); margin-left: 4px;">
+          ${isHome ? 'EV AĞI' : (isTarget ? 'AKTİF TÜNEL' : 'TIKLA & BAĞLAN')}
+        </div>
+      `;
+      this.tooltipElement.style.display = 'flex';
+      this.positionTooltip(e);
+    }
+  }
+
+  handleCountryMove(e) {
+    this.positionTooltip(e);
+  }
+
+  positionTooltip(e) {
+    if (!this.tooltipElement || !this.container) return;
+    const rect = this.container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Keep within bounds
+    const clampedX = Math.max(80, Math.min(rect.width - 80, x));
+    const clampedY = Math.max(30, y);
+
+    this.tooltipElement.style.left = `${clampedX}px`;
+    this.tooltipElement.style.top = `${clampedY}px`;
+  }
+
+  handleCountryLeave() {
+    this.hoveredCountry = null;
+    if (this.tooltipElement) {
+      this.tooltipElement.style.display = 'none';
+    }
+  }
+
+  handleCountryClick(countryCode) {
+    if (countryCode === this.originCode) return; // Ignore home click
+
+    const server = this.getServerInfo(countryCode);
+    this.setTargetNode(countryCode);
+
+    if (this.onNodeSelected) {
+      this.onNodeSelected(server);
+    }
   }
 
   setTargetNode(countryCode) {
-    const found = this.worldNodes.find(n => n.code === countryCode);
-    if (found) {
-      this.target = found;
+    const code = countryCode.toUpperCase();
+    this.targetCode = code;
+    this.targetServer = this.getServerInfo(code);
+
+    const center = COUNTRY_CENTERS[code.toLowerCase()];
+    if (center) {
+      this.targetCenter = center;
     }
+
+    this.updateRoute();
+    this.renderNodes();
   }
 
   setConnectionState(isConnected) {
     this.connected = isConnected;
+    this.updateRoute();
+  }
+
+  updateRoute() {
+    if (!this.svgElement) return;
+
+    const arcMain = document.getElementById('laserArcMain');
+    const arcGlow = document.getElementById('laserArcGlow');
+    const pulsePacket = document.getElementById('laserPulsePacket');
+    const countriesLayer = document.getElementById('mapCountryLayer');
+
+    // Update active highlight classes on SVG countries
+    if (countriesLayer) {
+      countriesLayer.querySelectorAll('.country-home, .country-target').forEach(el => {
+        el.classList.remove('country-home', 'country-target');
+      });
+
+      const homeEl = countriesLayer.querySelector(`[id="${this.originCode.toLowerCase()}"]`);
+      if (homeEl) homeEl.classList.add('country-home');
+
+      const targetEl = countriesLayer.querySelector(`[id="${this.targetCode.toLowerCase()}"]`);
+      if (targetEl) targetEl.classList.add('country-target');
+    }
+
+    if (!arcMain || !arcGlow) return;
+
+    const p1 = this.originCenter;
+    const p2 = this.targetCenter;
+
+    // Calculate Geodesic Arching Bezier curve
+    const dx = p2.cx - p1.cx;
+    const dy = p2.cy - p1.cy;
+    const dist = Math.hypot(dx, dy);
+
+    const midX = (p1.cx + p2.cx) / 2;
+    // Arch upward proportional to distance
+    const archHeight = Math.max(30, Math.min(85, dist * 0.28));
+    const midY = Math.min(p1.cy, p2.cy) - archHeight;
+
+    const d = `M ${p1.cx} ${p1.cy} Q ${midX} ${midY} ${p2.cx} ${p2.cy}`;
+    arcMain.setAttribute('d', d);
+    arcGlow.setAttribute('d', d);
+
+    if (this.connected) {
+      arcMain.setAttribute('stroke', 'url(#laserBeamGrad)');
+      arcMain.setAttribute('stroke-width', '2.5');
+      arcMain.setAttribute('stroke-dasharray', '8, 4');
+      arcMain.classList.add('laser-arc-active');
+      arcGlow.style.display = 'block';
+      if (pulsePacket) pulsePacket.style.display = 'block';
+    } else {
+      arcMain.setAttribute('stroke', 'rgba(0, 229, 255, 0.45)');
+      arcMain.setAttribute('stroke-width', '1.8');
+      arcMain.setAttribute('stroke-dasharray', '4, 4');
+      arcMain.classList.remove('laser-arc-active');
+      arcGlow.style.display = 'none';
+      if (pulsePacket) pulsePacket.style.display = 'none';
+    }
+
+    // Cache curve params for packet animation
+    this.curveParams = { p1, mid: { x: midX, y: midY }, p2 };
+  }
+
+  renderNodes() {
+    const nodesLayer = document.getElementById('mapNodesLayer');
+    if (!nodesLayer) return;
+
+    let html = '';
+
+    // 1. Ambient Relay Node Pins
+    for (const hubCode of this.hubCodes) {
+      if (hubCode.toUpperCase() === this.originCode || hubCode.toUpperCase() === this.targetCode) continue;
+      const c = COUNTRY_CENTERS[hubCode];
+      if (!c) continue;
+
+      html += `
+        <g class="relay-node-group" style="cursor: pointer;" onclick="document.dispatchEvent(new CustomEvent('map:select', {detail: '${hubCode.toUpperCase()}'}))">
+          <circle cx="${c.cx}" cy="${c.cy}" r="2" fill="rgba(255, 255, 255, 0.4)" />
+          <circle cx="${c.cx}" cy="${c.cy}" r="5" fill="none" stroke="rgba(0, 229, 255, 0.15)" stroke-width="0.8" />
+        </g>
+      `;
+    }
+
+    // 2. Home Node: Turkey (Cyan Radar Pulse)
+    const tr = this.originCenter;
+    html += `
+      <g id="nodeHomeTR" class="node-home-group">
+        <circle cx="${tr.cx}" cy="${tr.cy}" r="14" fill="none" stroke="rgba(0, 229, 255, 0.25)" stroke-width="1" class="radar-pulse-ring" />
+        <circle cx="${tr.cx}" cy="${tr.cy}" r="7" fill="rgba(0, 229, 255, 0.2)" stroke="#00e5ff" stroke-width="1.2" />
+        <circle cx="${tr.cx}" cy="${tr.cy}" r="3" fill="#00e5ff" filter="url(#neonGlowCyan)" />
+        <text x="${tr.cx + 9}" y="${tr.cy + 3}" fill="#00e5ff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" letter-spacing="0.5">TR</text>
+      </g>
+    `;
+
+    // 3. Target Node: Active VPN Exit (Emerald Radar Pulse)
+    const tgt = this.targetCenter;
+    const tgtColor = this.connected ? '#00f59b' : '#00e5ff';
+    const tgtGlow = this.connected ? 'url(#neonGlowEmerald)' : 'url(#neonGlowCyan)';
+
+    html += `
+      <g id="nodeTargetCurrent" class="node-target-group">
+        <circle cx="${tgt.cx}" cy="${tgt.cy}" r="18" fill="none" stroke="${tgtColor}" stroke-width="1.2" opacity="0.35" class="radar-pulse-ring-tgt" />
+        <circle cx="${tgt.cx}" cy="${tgt.cy}" r="9" fill="rgba(0, 245, 155, 0.2)" stroke="${tgtColor}" stroke-width="1.5" />
+        <circle cx="${tgt.cx}" cy="${tgt.cy}" r="3.8" fill="${tgtColor}" filter="${tgtGlow}" />
+        <text x="${tgt.cx + 10}" y="${tgt.cy + 3.5}" fill="${tgtColor}" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" letter-spacing="0.5">${this.targetCode}</text>
+      </g>
+    `;
+
+    nodesLayer.innerHTML = html;
   }
 
   start() {
     const loop = () => {
-      this.pulsePhase += 0.025;
-      this.render();
+      this.pulsePhase += 0.02;
+      this.animatePacket();
       this.animationId = requestAnimationFrame(loop);
     };
     loop();
@@ -173,190 +385,20 @@ export class MapRenderer {
     }
   }
 
-  render() {
-    if (!this.ctx || !this.canvas) return;
+  animatePacket() {
+    if (!this.connected || !this.curveParams) return;
 
-    const width = this.canvas.width = this.canvas.parentElement.clientWidth || 700;
-    const height = this.canvas.height = this.canvas.parentElement.clientHeight || 260;
+    const pulsePacket = document.getElementById('laserPulsePacket');
+    if (!pulsePacket) return;
 
-    this.ctx.clearRect(0, 0, width, height);
+    const { p1, mid, p2 } = this.curveParams;
+    const t = (this.pulsePhase * 0.8) % 1;
 
-    // 1. Draw Subtle Cyber Coordinate Grid
-    this.drawCoordinateGrid(width, height);
+    // Quadratic bezier curve interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+    const px = (1 - t) * (1 - t) * p1.cx + 2 * (1 - t) * t * mid.x + t * t * p2.cx;
+    const py = (1 - t) * (1 - t) * p1.cy + 2 * (1 - t) * t * mid.y + t * t * p2.cy;
 
-    // 2. Draw Real Geographic Continents (Fill & Border)
-    this.drawContinents(width, height);
-
-    // 3. Draw Active Geodesic Routing Arc
-    this.drawRoutingArc(width, height);
-
-    // 4. Draw Server Nodes with Neon Halos
-    this.drawNodes(width, height);
-
-    // 5. Draw Tooltip if hovering over a node
-    if (this.hoveredNode) {
-      this.drawTooltip(this.hoveredNode, width, height);
-    }
-  }
-
-  drawCoordinateGrid(width, height) {
-    this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.035)';
-    this.ctx.lineWidth = 1;
-
-    // Longitudinal meridians
-    for (let lon = -180; lon <= 180; lon += 45) {
-      const p1 = this.geoToPixel(lon, 80, width, height);
-      const p2 = this.geoToPixel(lon, -60, width, height);
-      this.ctx.beginPath();
-      this.ctx.moveTo(p1.x, 0);
-      this.ctx.lineTo(p2.x, height);
-      this.ctx.stroke();
-    }
-
-    // Latitudinal parallels
-    for (let lat = -45; lat <= 75; lat += 30) {
-      const p1 = this.geoToPixel(-180, lat, width, height);
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, p1.y);
-      this.ctx.lineTo(width, p1.y);
-      this.ctx.stroke();
-    }
-
-    // Equator Line (Subtle Cyan Marker)
-    const eq = this.geoToPixel(0, 0, width, height);
-    this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
-    this.ctx.setLineDash([3, 6]);
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, eq.y);
-    this.ctx.lineTo(width, eq.y);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
-  }
-
-  drawContinents(width, height) {
-    for (const polygon of this.continents) {
-      if (polygon.length < 3) continue;
-
-      this.ctx.beginPath();
-      const first = this.geoToPixel(polygon[0][0], polygon[0][1], width, height);
-      this.ctx.moveTo(first.x, first.y);
-
-      for (let i = 1; i < polygon.length; i++) {
-        const pt = this.geoToPixel(polygon[i][0], polygon[i][1], width, height);
-        this.ctx.lineTo(pt.x, pt.y);
-      }
-      this.ctx.closePath();
-
-      // Continent Landmass styling: Glass slate body with glowing border
-      this.ctx.fillStyle = 'rgba(16, 26, 48, 0.55)';
-      this.ctx.fill();
-
-      this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.22)';
-      this.ctx.lineWidth = 1.2;
-      this.ctx.shadowColor = 'rgba(0, 229, 255, 0.15)';
-      this.ctx.shadowBlur = 4;
-      this.ctx.stroke();
-      this.ctx.shadowBlur = 0;
-    }
-  }
-
-  drawRoutingArc(width, height) {
-    const p1 = this.geoToPixel(this.origin.lon, this.origin.lat, width, height);
-    const p2 = this.geoToPixel(this.target.lon, this.target.lat, width, height);
-
-    // Control point arching upwards
-    const midX = (p1.x + p2.x) / 2;
-    const midY = Math.min(p1.y, p2.y) - 45;
-
-    // Glowing Arc Path
-    this.ctx.beginPath();
-    this.ctx.moveTo(p1.x, p1.y);
-    this.ctx.quadraticCurveTo(midX, midY, p2.x, p2.y);
-    this.ctx.strokeStyle = this.connected ? 'rgba(0, 245, 155, 0.65)' : 'rgba(0, 229, 255, 0.45)';
-    this.ctx.lineWidth = this.connected ? 2.5 : 1.5;
-    this.ctx.setLineDash([5, 5]);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
-
-    // Animated Flying Packet Pulse along Arc
-    if (this.connected) {
-      const t = (this.pulsePhase * 0.9) % 1;
-      const px = (1 - t) * (1 - t) * p1.x + 2 * (1 - t) * t * midX + t * t * p2.x;
-      const py = (1 - t) * (1 - t) * p1.y + 2 * (1 - t) * t * midY + t * t * p2.y;
-
-      this.ctx.beginPath();
-      this.ctx.arc(px, py, 4.5, 0, Math.PI * 2);
-      this.ctx.fillStyle = '#00f59b';
-      this.ctx.shadowColor = '#00f59b';
-      this.ctx.shadowBlur = 12;
-      this.ctx.fill();
-      this.ctx.shadowBlur = 0;
-    }
-  }
-
-  drawNodes(width, height) {
-    for (const node of this.worldNodes) {
-      const p = this.geoToPixel(node.lon, node.lat, width, height);
-      const isTarget = node.code === this.target.code;
-      const isHome = node.code === this.origin.code;
-
-      const color = isTarget 
-        ? (this.connected ? '#00f59b' : '#00e5ff') 
-        : isHome 
-          ? '#00e5ff' 
-          : 'rgba(255, 255, 255, 0.5)';
-
-      // Outer Halo for active nodes
-      if (isTarget || isHome) {
-        const pulseR = 7 + (Math.sin(this.pulsePhase * 3) + 1) * 4;
-        this.ctx.beginPath();
-        this.ctx.arc(p.x, p.y, pulseR, 0, Math.PI * 2);
-        this.ctx.strokeStyle = isTarget ? (this.connected ? 'rgba(0, 245, 155, 0.4)' : 'rgba(0, 229, 255, 0.4)') : 'rgba(0, 229, 255, 0.3)';
-        this.ctx.lineWidth = 1.5;
-        this.ctx.stroke();
-      }
-
-      // Center Node Dot
-      this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, isTarget || isHome ? 4 : 2.5, 0, Math.PI * 2);
-      this.ctx.fillStyle = color;
-      this.ctx.shadowColor = color;
-      this.ctx.shadowBlur = isTarget ? 10 : 4;
-      this.ctx.fill();
-      this.ctx.shadowBlur = 0;
-
-      // Small Country Code Label next to major nodes
-      if (isTarget || isHome) {
-        this.ctx.fillStyle = color;
-        this.ctx.font = '600 10px JetBrains Mono';
-        this.ctx.fillText(node.code, p.x + 8, p.y + 3);
-      }
-    }
-  }
-
-  drawTooltip(node, width, height) {
-    const p = this.geoToPixel(node.lon, node.lat, width, height);
-    const text = `${node.flag} ${node.name}`;
-
-    this.ctx.font = '600 11px Outfit, sans-serif';
-    const textW = this.ctx.measureText(text).width;
-    const boxW = textW + 16;
-    const boxH = 24;
-
-    const boxX = Math.max(10, Math.min(width - boxW - 10, p.x - boxW / 2));
-    const boxY = p.y - 34;
-
-    // Tooltip Bubble
-    this.ctx.fillStyle = 'rgba(6, 10, 20, 0.92)';
-    this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
-    this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
-    this.ctx.roundRect(boxX, boxY, boxW, boxH, 6);
-    this.ctx.fill();
-    this.ctx.stroke();
-
-    // Tooltip Text
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillText(text, boxX + 8, boxY + 16);
+    pulsePacket.setAttribute('cx', px.toFixed(1));
+    pulsePacket.setAttribute('cy', py.toFixed(1));
   }
 }
