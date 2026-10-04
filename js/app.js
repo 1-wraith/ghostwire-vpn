@@ -12,6 +12,7 @@ import { i18n } from './i18n.js';
 import { ConfigImporter } from '../core/config-importer.js';
 import { splitTunnel } from './split-tunnel.js';
 import { themeManager } from './theme-manager.js';
+import { ClientUpdater } from './updater.js';
 
 // Instantiate Core Engines
 const cyberShield = new CyberShield();
@@ -20,6 +21,7 @@ const accelerator = new VpnAccelerator();
 const soundFX = new SoundFX();
 const dpiEngine = new DpiEngine();
 const vpnEngine = new VpnEngine(SERVERS_DATABASE, cyberShield, torBridge, accelerator);
+let clientUpdater = null;
 
 // Set default to Turkey (Istanbul) for instant anti-censorship out-of-the-box
 const trServer = SERVERS_DATABASE.find(s => s.code === 'TR');
@@ -162,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSubscriptions();
   initEventListeners();
   initNewFeatures();
+  clientUpdater = new ClientUpdater();
   applyLanguage(i18n.currentLang);
   renderServerList();
   checkElectronIntegration();

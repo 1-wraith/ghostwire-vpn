@@ -16,6 +16,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onQuickConnect: (callback) => ipcRenderer.on('vpn:quick-connect', callback),
   onDisconnect: (callback) => ipcRenderer.on('vpn:disconnect', callback),
   onSmartConnect: (callback) => ipcRenderer.on('vpn:smart-connect', callback),
-  onSelectServer: (callback) => ipcRenderer.on('vpn:select-server', (event, code) => callback(code))
+  onSelectServer: (callback) => ipcRenderer.on('vpn:select-server', (event, code) => callback(code)),
+  checkForUpdates: () => ipcRenderer.invoke('updater:check'),
+  downloadUpdate: () => ipcRenderer.invoke('updater:download'),
+  installUpdate: () => ipcRenderer.invoke('updater:install'),
+  getUpdateStatus: () => ipcRenderer.invoke('updater:status'),
+  simulateUpdate: (enable, version) => ipcRenderer.invoke('updater:simulate', enable, version)
 });
 

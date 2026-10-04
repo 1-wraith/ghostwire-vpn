@@ -3,11 +3,13 @@ const fs = require('fs');
 const path = require('path');
 const { ProxyEngine } = require('./core/proxy-engine');
 const { PingEngine } = require('./core/ping-engine');
+const { UpdaterEngine } = require('./core/updater-engine');
 const { SERVERS_DATABASE } = require('./js/server-list');
 
 const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
 const pingEngine = new PingEngine();
+const updaterEngine = new UpdaterEngine('1.0.0', '1-wraith/ghostwire-vpn');
 proxyEngine.start();
 
 const MIME_TYPES = {
@@ -81,6 +83,53 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: e.message }));
       }
+    });
+    return;
+  }
+
+  if (req.url === '/api/check-update') {
+    const updateInfo = await updaterEngine.checkLatestRelease();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(updateInfo));
+    return;
+  }
+
+  if (req.url === '/api/download-update' && req.method === 'POST') {
+    const status = await updaterEngine.startDownload();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(status));
+    return;
+  }
+
+  if (req.url === '/api/update-status') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(updaterEngine.getStatus()));
+    return;
+  }
+
+  if (req.url === '/api/install-update' && req.method === 'POST') {
+    const result = updaterEngine.applyUpdate();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+    return;
+  }
+
+  if (req.url.startsWith('/api/simulate-update') && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      let enable = true;
+      let targetVersion = '1.1.0';
+      try {
+        if (body) {
+          const parsed = JSON.parse(body);
+          if (parsed.enable !== undefined) enable = parsed.enable;
+          if (parsed.version) targetVersion = parsed.version;
+        }
+      } catch (e) {}
+      const status = updaterEngine.simulateUpdate(enable, targetVersion);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(status));
     });
     return;
   }

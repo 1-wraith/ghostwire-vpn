@@ -239,6 +239,30 @@ ipcMain.on('tray:update-status', (event, data) => {
 });
 
 
+// In-App Auto-Updater IPC Handlers
+const { UpdaterEngine } = require('./core/updater-engine');
+const updaterEngine = new UpdaterEngine('1.0.0', '1-wraith/ghostwire-vpn');
+
+ipcMain.handle('updater:check', async () => {
+  return await updaterEngine.checkLatestRelease();
+});
+
+ipcMain.handle('updater:download', async () => {
+  return await updaterEngine.startDownload();
+});
+
+ipcMain.handle('updater:install', () => {
+  return updaterEngine.applyUpdate();
+});
+
+ipcMain.handle('updater:status', () => {
+  return updaterEngine.getStatus();
+});
+
+ipcMain.handle('updater:simulate', (event, enable, version) => {
+  return updaterEngine.simulateUpdate(enable, version);
+});
+
 app.whenReady().then(() => {
   createWindow();
   try {

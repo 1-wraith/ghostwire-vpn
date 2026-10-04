@@ -1245,3 +1245,154 @@ input:checked + .slider:before {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* ===================================================================
+   HORIZONTAL IN-APP AUTO-UPDATE BANNER (GITHUB RELEASES)
+   =================================================================== */
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, rgba(88, 101, 242, 0.22) 0%, rgba(0, 229, 255, 0.18) 50%, rgba(0, 245, 155, 0.12) 100%);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.35);
+  padding: 8px 18px;
+  animation: slide-down 0.35s ease;
+  position: relative;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.update-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.update-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00f59b;
+  box-shadow: 0 0 10px #00f59b;
+  animation: pulse-dot 1.2s infinite;
+}
+
+.update-banner-icon {
+  font-size: 18px;
+}
+
+.update-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.update-banner-badge {
+  font-size: 9px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  background: rgba(0, 245, 155, 0.2);
+  color: var(--emerald-safe);
+  border: 1px solid rgba(0, 245, 155, 0.4);
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.update-banner-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.update-banner-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.update-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.update-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.update-progress-bar {
+  width: 140px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-glass);
+  overflow: hidden;
+}
+
+.update-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan-stealth), var(--emerald-safe));
+  transition: width 0.2s ease;
+  box-shadow: 0 0 8px var(--cyan-stealth);
+}
+
+.update-progress-text {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.update-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--cyan-stealth), #00b4d8);
+  color: #050811;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.update-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4);
+}
+
+.update-close-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  transition: color var(--transition-fast);
+}
+
+.update-close-btn:hover {
+  color: var(--text-main);
+}
+

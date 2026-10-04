@@ -100,6 +100,39 @@
       </div>
     </header>
 
+    <!-- Yatay Otomatik Güncelleme Bildirim Banner'ı (GitHub Releases Entegrasyonu) -->
+    <div id="updateBanner" class="update-banner" style="display: none;">
+      <div class="update-banner-left">
+        <span class="update-pulse-dot"></span>
+        <span class="update-banner-icon">🚀</span>
+        <div class="update-banner-text">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="update-banner-badge" id="updateBadge">YENİ GÜNCELLEME MEVCUT</span>
+            <span class="update-banner-title" id="updateTitle">GhostWire VPN v1.1.0 Yayınlandı!</span>
+          </div>
+          <div class="update-banner-desc" id="updateDesc">GitHub Release üzerinden tek tıkla doğrudan güncelleyin.</div>
+        </div>
+      </div>
+      <div class="update-banner-right">
+        <!-- İndirme İlerleme Çubuğu -->
+        <div id="updateProgressWrap" class="update-progress-wrap" style="display: none;">
+          <div class="update-progress-bar">
+            <div id="updateProgressFill" class="update-progress-fill" style="width: 0%;"></div>
+          </div>
+          <span id="updateProgressText" class="update-progress-text">%0 (0 MB / 80.6 MB)</span>
+        </div>
+
+        <button id="btnDownloadUpdate" class="btn btn-primary update-action-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span id="btnDownloadUpdateText">Şimdi Güncelle & Kur</span>
+        </button>
+
+        <button id="btnDismissUpdate" class="nav-icon-btn update-close-btn" title="Kapat">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
     <!-- Ana İki Sütunlu Çalışma Alanı -->
     <main class="app-body">
       
@@ -742,6 +775,8 @@ AllowedIPs = 0.0.0.0/0"></textarea>
           </div>
         </div>
       </div>
+    </div>
+
     <!-- 7. GELİŞMİŞ SİBER AYARLAR MODALI (Split Tunneling, DoH/DNS, Sistem & Temalar) -->
     <div id="modalSettings" class="modal-backdrop">
       <div class="modal-window" style="max-width: 680px;">
@@ -913,6 +948,29 @@ AllowedIPs = 0.0.0.0/0"></textarea>
               <!-- Sistem Tepsisi (Tray) Bilgilendirmesi -->
               <div style="padding: 10px 14px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
                 <span style="color: var(--cyan-stealth); font-weight: 700;">💡 Sistem Tepsisi (Tray) Hızlı Menüsü:</span> Saat yanındaki GhostWire simgesine sağ tıklayarak Akıllı Bağlantıyı tetikleyebilir, Türkiye/Almanya/İzlanda gibi popüler sunucular arasında tek tıkla geçiş yapabilirsiniz.
+              </div>
+
+              <!-- GitHub Releases Otomatik Güncelleme Paneli -->
+              <div style="margin-top: 6px; padding: 12px 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                      <span>🔄 Otomatik Güncelleme & GitHub Releases</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                      Kurulu Sürüm: <span id="settingsCurrentVer" style="color: var(--cyan-stealth); font-family: var(--font-mono); font-weight: 700;">v1.0.0</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button id="btnCheckUpdateManual" class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;">
+                      🔍 Güncellemeleri Denetle
+                    </button>
+                    <button id="btnTestSimulateUpdate" class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; background: linear-gradient(135deg, #7289da, #5865f2);" title="Yeni sürüm banner'ını test etmek için tıkla">
+                      ⚡ Test Banner'ını Aç (v1.1.0)
+                    </button>
+                  </div>
+                </div>
+                <div id="settingsUpdateStatus" style="font-size: 11px; font-family: var(--font-mono); display: none;"></div>
               </div>
             </div>
           </div>
