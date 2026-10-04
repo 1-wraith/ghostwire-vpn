@@ -80,6 +80,13 @@ ipcMain.on('window:maximize', () => {
   }
 });
 
+ipcMain.on('window:toggle-fullscreen', () => {
+  if (mainWindow) {
+    const isFull = mainWindow.isFullScreen();
+    mainWindow.setFullScreen(!isFull);
+  }
+});
+
 ipcMain.on('window:close', () => {
   if (mainWindow) mainWindow.hide();
 });

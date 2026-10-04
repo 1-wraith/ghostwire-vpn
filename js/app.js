@@ -125,6 +125,8 @@ const elements = {
   langLabel: document.getElementById('langLabel'),
   btnSoundToggle: document.getElementById('btnSoundToggle'),
   soundIcon: document.getElementById('soundIcon'),
+  btnFullscreenToggle: document.getElementById('btnFullscreenToggle'),
+  fullscreenIcon: document.getElementById('fullscreenIcon'),
   winMinimize: document.getElementById('winMinimize'),
   winClose: document.getElementById('winClose')
 };
@@ -409,6 +411,42 @@ function initEventListeners() {
     soundFX.playClick();
     i18n.toggleLanguage();
   });
+
+  // Fullscreen Toggle
+  function toggleFullscreenMode() {
+    soundFX.playClick();
+    if (window.electronAPI && window.electronAPI.toggleFullscreen) {
+      window.electronAPI.toggleFullscreen();
+    } else {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+    }
+  }
+
+  function updateFullscreenUI() {
+    const isFullscreen = !!document.fullscreenElement;
+    if (isFullscreen) {
+      elements.btnFullscreenToggle.title = i18n.t('exitFullscreen');
+      // Compress icon
+      elements.fullscreenIcon.innerHTML = `
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+      `;
+    } else {
+      elements.btnFullscreenToggle.title = i18n.t('toggleFullscreen');
+      // Expand icon
+      elements.fullscreenIcon.innerHTML = `
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+      `;
+    }
+  }
+
+  elements.btnFullscreenToggle.addEventListener('click', toggleFullscreenMode);
+  document.addEventListener('fullscreenchange', updateFullscreenUI);
 
   // Sound Toggle
   elements.btnSoundToggle.addEventListener('click', () => {
