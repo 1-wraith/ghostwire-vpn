@@ -13,6 +13,12 @@ class ProxyEngine {
     this.server = null;
     this.active = false;
     this.dnsCache = new Map();
+    this.dohEndpoint = 'https://cloudflare-dns.com/dns-query';
+    this.splitTunnel = {
+      enabled: false,
+      mode: 'tunnel_selected', // 'tunnel_selected' or 'bypass_selected'
+      rules: ['discord', 'roblox', 'steam', 'spotify']
+    };
     this.stats = {
       bytesTransferred: 0,
       requestsHandled: 0,
@@ -20,12 +26,30 @@ class ProxyEngine {
     };
   }
 
-  // Cloudflare DNS over HTTPS to bypass ISP DNS hijacking
+  setDoHEndpoint(endpoint) {
+    if (endpoint && endpoint.startsWith('http')) {
+      this.dohEndpoint = endpoint;
+      this.dnsCache.clear();
+      console.log(`[GhostWire Core] DoH endpoint updated to: ${endpoint}`);
+    }
+  }
+
+  setSplitTunnel(config) {
+    if (config) {
+      this.splitTunnel = { ...this.splitTunnel, ...config };
+      console.log('[GhostWire Core] Split Tunnel rules updated:', this.splitTunnel);
+    }
+  }
+
+  // Real DNS-over-HTTPS (Cloudflare / AdGuard / NextDNS / Quad9)
   async resolveDoH(hostname) {
     if (this.dnsCache.has(hostname)) return this.dnsCache.get(hostname);
 
     return new Promise((resolve) => {
-      https.get(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=A`, {
+      const sep = this.dohEndpoint.includes('?') ? '&' : '?';
+      const url = `${this.dohEndpoint}${sep}name=${encodeURIComponent(hostname)}&type=A`;
+
+      https.get(url, {
         headers: { 'accept': 'application/dns-json' },
         timeout: 3000
       }, (res) => {

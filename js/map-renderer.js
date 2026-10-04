@@ -31,6 +31,10 @@ export class MapRenderer {
     // Major global relay hubs to display as ambient node pins
     this.hubCodes = ['de', 'nl', 'gb', 'ch', 'se', 'us', 'jp', 'sg', 'au', 'ae', 'br', 'za'];
 
+    this.multiHopMode = false;
+    this.hopEntryCode = 'CH';
+    this.hopEntryCenter = COUNTRY_CENTERS['ch'] || { cx: 424.8, cy: 406.0 };
+
     window.addEventListener('map:select', (e) => {
       const code = e.detail;
       const server = this.getServerInfo(code);
@@ -41,6 +45,15 @@ export class MapRenderer {
     });
 
     this.initSvgMap();
+  }
+
+  setMultiHopMode(enabled, entryCode = 'CH') {
+    this.multiHopMode = enabled;
+    this.hopEntryCode = entryCode.toUpperCase();
+    const c = COUNTRY_CENTERS[this.hopEntryCode.toLowerCase()];
+    if (c) this.hopEntryCenter = c;
+    this.updateRoute();
+    this.renderNodes();
   }
 
   initSvgMap() {
@@ -271,12 +284,17 @@ export class MapRenderer {
 
     // Update active highlight classes on SVG countries
     if (countriesLayer) {
-      countriesLayer.querySelectorAll('.country-home, .country-target').forEach(el => {
-        el.classList.remove('country-home', 'country-target');
+      countriesLayer.querySelectorAll('.country-home, .country-target, .country-hop').forEach(el => {
+        el.classList.remove('country-home', 'country-target', 'country-hop');
       });
 
       const homeEl = countriesLayer.querySelector(`[id="${this.originCode.toLowerCase()}"]`);
       if (homeEl) homeEl.classList.add('country-home');
+
+      if (this.multiHopMode) {
+        const hopEl = countriesLayer.querySelector(`[id="${this.hopEntryCode.toLowerCase()}"]`);
+        if (hopEl) hopEl.classList.add('country-hop');
+      }
 
       const targetEl = countriesLayer.querySelector(`[id="${this.targetCode.toLowerCase()}"]`);
       if (targetEl) targetEl.classList.add('country-target');
@@ -287,17 +305,35 @@ export class MapRenderer {
     const p1 = this.originCenter;
     const p2 = this.targetCenter;
 
-    // Calculate Geodesic Arching Bezier curve
-    const dx = p2.cx - p1.cx;
-    const dy = p2.cy - p1.cy;
-    const dist = Math.hypot(dx, dy);
+    let d = '';
+    if (this.multiHopMode) {
+      const pHop = this.hopEntryCenter;
+      // Hop 1: TR -> Hop
+      const dist1 = Math.hypot(pHop.cx - p1.cx, pHop.cy - p1.cy);
+      const mid1X = (p1.cx + pHop.cx) / 2;
+      const mid1Y = Math.min(p1.cy, pHop.cy) - Math.max(25, dist1 * 0.25);
 
-    const midX = (p1.cx + p2.cx) / 2;
-    // Arch upward proportional to distance
-    const archHeight = Math.max(30, Math.min(85, dist * 0.28));
-    const midY = Math.min(p1.cy, p2.cy) - archHeight;
+      // Hop 2: Hop -> Target
+      const dist2 = Math.hypot(p2.cx - pHop.cx, p2.cy - pHop.cy);
+      const mid2X = (pHop.cx + p2.cx) / 2;
+      const mid2Y = Math.min(pHop.cy, p2.cy) - Math.max(25, dist2 * 0.25);
 
-    const d = `M ${p1.cx} ${p1.cy} Q ${midX} ${midY} ${p2.cx} ${p2.cy}`;
+      d = `M ${p1.cx} ${p1.cy} Q ${mid1X} ${mid1Y} ${pHop.cx} ${pHop.cy} Q ${mid2X} ${mid2Y} ${p2.cx} ${p2.cy}`;
+      this.curveParams = { multi: true, p1, mid1: { x: mid1X, y: mid1Y }, pHop, mid2: { x: mid2X, y: mid2Y }, p2 };
+    } else {
+      // Calculate Geodesic Arching Bezier curve
+      const dx = p2.cx - p1.cx;
+      const dy = p2.cy - p1.cy;
+      const dist = Math.hypot(dx, dy);
+
+      const midX = (p1.cx + p2.cx) / 2;
+      const archHeight = Math.max(30, Math.min(85, dist * 0.28));
+      const midY = Math.min(p1.cy, p2.cy) - archHeight;
+
+      d = `M ${p1.cx} ${p1.cy} Q ${midX} ${midY} ${p2.cx} ${p2.cy}`;
+      this.curveParams = { multi: false, p1, mid: { x: midX, y: midY }, p2 };
+    }
+
     arcMain.setAttribute('d', d);
     arcGlow.setAttribute('d', d);
 
@@ -316,9 +352,6 @@ export class MapRenderer {
       arcGlow.style.display = 'none';
       if (pulsePacket) pulsePacket.style.display = 'none';
     }
-
-    // Cache curve params for packet animation
-    this.curveParams = { p1, mid: { x: midX, y: midY }, p2 };
   }
 
   renderNodes() {
@@ -352,7 +385,20 @@ export class MapRenderer {
       </g>
     `;
 
-    // 3. Target Node: Active VPN Exit (Emerald Radar Pulse)
+    // 3. Middle Hop Node (if Multi-Hop active)
+    if (this.multiHopMode) {
+      const hop = this.hopEntryCenter;
+      html += `
+        <g id="nodeHopEntry" class="node-hop-group">
+          <circle cx="${hop.cx}" cy="${hop.cy}" r="15" fill="none" stroke="#b362ff" stroke-width="1.2" opacity="0.4" class="radar-pulse-ring" />
+          <circle cx="${hop.cx}" cy="${hop.cy}" r="7.5" fill="rgba(179, 98, 255, 0.2)" stroke="#b362ff" stroke-width="1.5" />
+          <circle cx="${hop.cx}" cy="${hop.cy}" r="3.5" fill="#b362ff" filter="url(#neonGlowCyan)" />
+          <text x="${hop.cx + 9}" y="${hop.cy + 3.5}" fill="#b362ff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700">${this.hopEntryCode}</text>
+        </g>
+      `;
+    }
+
+    // 4. Target Node: Active VPN Exit (Emerald Radar Pulse)
     const tgt = this.targetCenter;
     const tgtColor = this.connected ? '#00f59b' : '#00e5ff';
     const tgtGlow = this.connected ? 'url(#neonGlowEmerald)' : 'url(#neonGlowCyan)';
@@ -391,12 +437,25 @@ export class MapRenderer {
     const pulsePacket = document.getElementById('laserPulsePacket');
     if (!pulsePacket) return;
 
-    const { p1, mid, p2 } = this.curveParams;
     const t = (this.pulsePhase * 0.8) % 1;
+    let px = 0, py = 0;
 
-    // Quadratic bezier curve interpolation: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
-    const px = (1 - t) * (1 - t) * p1.cx + 2 * (1 - t) * t * mid.x + t * t * p2.cx;
-    const py = (1 - t) * (1 - t) * p1.cy + 2 * (1 - t) * t * mid.y + t * t * p2.cy;
+    if (this.curveParams.multi) {
+      const { p1, mid1, pHop, mid2, p2 } = this.curveParams;
+      if (t < 0.5) {
+        const u = t * 2;
+        px = (1 - u) * (1 - u) * p1.cx + 2 * (1 - u) * u * mid1.x + u * u * pHop.cx;
+        py = (1 - u) * (1 - u) * p1.cy + 2 * (1 - u) * u * mid1.y + u * u * pHop.cy;
+      } else {
+        const u = (t - 0.5) * 2;
+        px = (1 - u) * (1 - u) * pHop.cx + 2 * (1 - u) * u * mid2.x + u * u * p2.cx;
+        py = (1 - u) * (1 - u) * pHop.cy + 2 * (1 - u) * u * mid2.y + u * u * p2.cy;
+      }
+    } else {
+      const { p1, mid, p2 } = this.curveParams;
+      px = (1 - t) * (1 - t) * p1.cx + 2 * (1 - t) * t * mid.x + t * t * p2.cx;
+      py = (1 - t) * (1 - t) * p1.cy + 2 * (1 - t) * t * mid.y + t * t * p2.cy;
+    }
 
     pulsePacket.setAttribute('cx', px.toFixed(1));
     pulsePacket.setAttribute('cy', py.toFixed(1));

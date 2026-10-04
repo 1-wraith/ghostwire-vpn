@@ -2,9 +2,12 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { ProxyEngine } = require('./core/proxy-engine');
+const { PingEngine } = require('./core/ping-engine');
+const { SERVERS_DATABASE } = require('./js/server-list');
 
 const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
+const pingEngine = new PingEngine();
 proxyEngine.start();
 
 const MIME_TYPES = {
@@ -38,12 +41,57 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Live Ping measurement for all servers
+  if (req.url === '/api/ping-all') {
+    const pings = await pingEngine.pingAll(SERVERS_DATABASE);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(pings));
+    return;
+  }
+
+  // Custom DoH configuration
+  if (req.url === '/api/set-doh' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { endpoint } = JSON.parse(body);
+        proxyEngine.setDoHEndpoint(endpoint);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, endpoint }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  // Split Tunnel configuration
+  if (req.url === '/api/split-tunnel' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const config = JSON.parse(body);
+        proxyEngine.setSplitTunnel(config);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, config }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
   if (req.url === '/api/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       status: 'active',
       engine: 'GhostWire Core v1.0.0',
       proxyPort: 10808,
+      dohEndpoint: proxyEngine.dohEndpoint,
       ramOnlyMode: true,
       logsRecorded: 0
     }));

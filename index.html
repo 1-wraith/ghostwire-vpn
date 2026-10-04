@@ -50,6 +50,22 @@
           </svg>
         </button>
 
+        <!-- Siber Tema Değiştirici Buton -->
+        <button id="btnCycleTheme" class="nav-icon-btn" title="Siber Tema Değiştir (Quantum / Matrix / Crimson / Violet)" aria-label="Cyber Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m14.14-14.14l-1.41 1.41"></path>
+          </svg>
+        </button>
+
+        <!-- Gelişmiş Ayarlar Butonu (Split Tunnel, DoH, Başlangıç, Temalar) -->
+        <button id="btnOpenSettings" class="nav-icon-btn" title="Gelişmiş Güvenlik ve Sistem Ayarları" aria-label="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
         <button id="btnOpenAudit" class="nav-icon-btn" title="Halka Açık Sıfır Kayıt Denetimi" aria-label="Audit Report">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -267,8 +283,8 @@
           </div>
         </div>
 
-        <!-- Özellikler Merkezi 5-Grid -->
-        <div class="feature-hub-grid" style="grid-template-columns: repeat(5, 1fr);">
+        <!-- Özellikler Merkezi 6-Grid -->
+        <div class="feature-hub-grid" style="grid-template-columns: repeat(6, 1fr);">
           
           <!-- 1. Discord & DPI Engeli Kaldırıcı -->
           <div id="tileDpiBypass" class="feature-tile active" title="Discord, Roblox ve Sansür Engellerini Aş">
@@ -335,7 +351,24 @@
             </div>
           </div>
 
-          <!-- 5. Tor-Over-VPN -->
+          <!-- 5. Multi-Hop (Çift Atlama / Zincirleme VPN) -->
+          <div id="tileMultiHop" class="feature-tile" title="Multi-Hop (Çift Atlama Modu)">
+            <div class="tile-top">
+              <div class="tile-icon-wrap" style="color: var(--emerald-safe); background: rgba(0, 245, 155, 0.15);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="13 17 18 12 13 7"></polyline>
+                  <polyline points="6 17 11 12 6 7"></polyline>
+                </svg>
+              </div>
+              <span id="multiHopBadge" class="tile-badge">AYRI MOD</span>
+            </div>
+            <div>
+              <div class="tile-title" data-i18n="tileMultiHopTitle">Multi-Hop Çift Atlama</div>
+              <div class="tile-desc" data-i18n="tileMultiHopDesc">2 sunucu üzerinden zincirleme şifreleme</div>
+            </div>
+          </div>
+
+          <!-- 6. Tor-Over-VPN -->
           <div id="tileTorBridge" class="feature-tile" title="Tor Onion Yönlendirme">
             <div class="tile-top">
               <div class="tile-icon-wrap" style="color: var(--violet-onion);">
@@ -379,6 +412,25 @@
         </div>
 
         <div class="modal-body">
+          <!-- Akıllı Otomatik Bağlantı (Smart Connect) Banner -->
+          <div id="smartConnectBanner" class="smart-connect-banner">
+            <div class="smart-connect-left">
+              <div class="smart-connect-icon">⚡</div>
+              <div>
+                <div class="smart-connect-title">
+                  <span data-i18n="smartConnectTitle">Akıllı Otomatik Bağlantı (Smart Connect)</span>
+                  <span class="brand-tag" style="padding: 1px 6px; font-size: 9px;">CANLI PING ANALİZİ</span>
+                </div>
+                <div class="smart-connect-sub" data-i18n="smartConnectSub">En düşük gerçek gecikmeli (ping) sunucuyu anında tespit eder ve bağlar</div>
+              </div>
+            </div>
+            <button id="btnSmartConnect" class="smart-connect-btn">
+              <span class="live-dot-pulse"></span>
+              <span data-i18n="btnSmartConnectText">En Hızlıya Bağlan</span>
+              <span id="smartFastestPingBadge" class="smart-ping-badge">Canlı Ping...</span>
+            </button>
+          </div>
+
           <!-- Arama Çubuğu -->
           <div class="server-search-bar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -688,6 +740,233 @@ AllowedIPs = 0.0.0.0/0"></textarea>
               Onion Devresini Başlat
             </button>
           </div>
+        </div>
+      </div>
+    <!-- 7. GELİŞMİŞ SİBER AYARLAR MODALI (Split Tunneling, DoH/DNS, Sistem & Temalar) -->
+    <div id="modalSettings" class="modal-backdrop">
+      <div class="modal-window" style="max-width: 680px;">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <div class="modal-title" data-i18n="settingsModalTitle">Gelişmiş Siber Güvenlik & Sistem Ayarları</div>
+          </div>
+          <button id="btnCloseSettingsModal" class="modal-close-btn" aria-label="Kapat">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <!-- Sekmeler Başlığı -->
+        <div class="settings-tabs-nav">
+          <button class="settings-tab-btn active" data-tab="split">
+            <span>🔀</span> <span data-i18n="tabSplitTunnel">Split Tunneling</span>
+          </button>
+          <button class="settings-tab-btn" data-tab="dns">
+            <span>🛡️</span> <span data-i18n="tabDns">Özel DNS & DoH</span>
+          </button>
+          <button class="settings-tab-btn" data-tab="system">
+            <span>⚙️</span> <span data-i18n="tabSystem">Sistem & Başlangıç</span>
+          </button>
+          <button class="settings-tab-btn" data-tab="themes">
+            <span>🎨</span> <span data-i18n="tabThemes">Siber Temalar</span>
+          </button>
+        </div>
+
+        <div class="modal-body" style="padding: 0;">
+          
+          <!-- TAB 1: SPLIT TUNNELING -->
+          <div id="tabPaneSplit" class="tab-pane active">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="splitTunnelTitle">Uygulama Bazlı Tünelleme (Split Tunneling)</div>
+                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="splitTunnelDesc">VPN tüneline girecek veya doğrudan yerel internete bağlanacak uygulamaları belirleyin.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switchSplitTunnelMaster" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <!-- Mod Seçici -->
+            <div class="split-mode-selector">
+              <div id="splitModeTunnelCard" class="split-mode-card active" data-mode="tunnel_selected">
+                <div class="split-mode-title" data-i18n="splitModeTunnel">Yalnızca Seçili Uygulamaları VPN ile Koru</div>
+                <div class="split-mode-sub">Discord, Roblox, Steam vs. VPN'den geçer, diğer her şey yerel ISS hızında kalır.</div>
+              </div>
+              <div id="splitModeBypassCard" class="split-mode-card" data-mode="bypass_selected">
+                <div class="split-mode-title" data-i18n="splitModeBypass">Tüm Cihazı Koru, Seçilenleri Hariç Tut (Bypass)</div>
+                <div class="split-mode-sub">Banka uygulamaları ve yerel servisler VPN'i bypass ederek doğrudan bağlanır.</div>
+              </div>
+            </div>
+
+            <!-- Uygulama Listesi -->
+            <div id="splitAppsListContainer" class="split-apps-list">
+              <!-- JS ile dinamik render edilecek -->
+            </div>
+
+            <!-- Özel Uygulama Ekleme -->
+            <div class="split-add-box">
+              <input type="text" id="inputCustomAppExe" placeholder="Özel uygulama .exe adı (Örn: valorant.exe veya chrome.exe)...">
+              <button id="btnAddCustomApp" class="btn btn-primary" style="padding: 7px 14px; font-size: 11px;" data-i18n="btnAddApp">
+                + Uygulama Ekle
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB 2: ÖZEL DOH & DNS SAĞLAYICILARI -->
+          <div id="tabPaneDns" class="tab-pane">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="dnsTitle">Şifreli DNS / DoH Sağlayıcı Yapılandırması</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="dnsDesc">İnternet Servis Sağlayıcınızın (ISS) DNS sorgularınızı kaydetmesini engellemek için DoH sağlayıcınızı seçin.</div>
+            </div>
+
+            <div class="dns-grid">
+              <div class="dns-card active" data-dns-provider="cloudflare">
+                <div class="dns-card-header">
+                  <span class="dns-card-title">⚡ Cloudflare 1.1.1.1</span>
+                  <span class="item-tag-pill" style="color: var(--cyan-stealth);">Hızlı & Gizli</span>
+                </div>
+                <div class="dns-card-desc">Sıfır günlük, kuantum güvenli hızlı DoH çözümleyicisi.</div>
+              </div>
+
+              <div class="dns-card" data-dns-provider="adguard">
+                <div class="dns-card-header">
+                  <span class="dns-card-title">🛡️ AdGuard DNS</span>
+                  <span class="item-tag-pill" style="color: var(--emerald-safe);">Reklam Engelleyici</span>
+                </div>
+                <div class="dns-card-desc">Reklamları ve zararlı domainleri ağ düzeyinde bloke eder.</div>
+              </div>
+
+              <div class="dns-card" data-dns-provider="quad9">
+                <div class="dns-card-header">
+                  <span class="dns-card-title">🔒 Quad9 (9.9.9.9)</span>
+                  <span class="item-tag-pill" style="color: #7289da;">Tehdit Kalkanı</span>
+                </div>
+                <div class="dns-card-desc">Zararlı yazılım, oltalama ve botnet adreslerini engeller.</div>
+              </div>
+
+              <div class="dns-card" data-dns-provider="mullvad">
+                <div class="dns-card-header">
+                  <span class="dns-card-title">🧅 Mullvad No-Log</span>
+                  <span class="item-tag-pill" style="color: var(--violet-onion);">Gizlilik Odaklı</span>
+                </div>
+                <div class="dns-card-desc">İsveç gizlilik yasaları altında 100% kayıtsız DoH sunucusu.</div>
+              </div>
+            </div>
+
+            <!-- NextDNS & Özel URL Alanı -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+              <div style="font-size: 12px; font-weight: 600; color: var(--text-main);">Özel DoH / NextDNS Profil URL:</div>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="inputCustomDnsUrl" style="flex: 1; background: rgba(0,0,0,0.35); border: 1px solid var(--border-glass); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-main); font-size: 11px; font-family: var(--font-mono); outline: none;" placeholder="https://dns.nextdns.io/xxxxxx veya https://dns.google/dns-query">
+                <button id="btnSaveCustomDns" class="btn btn-primary" style="padding: 7px 14px; font-size: 11px;" data-i18n="btnApplyDns">
+                  Uygula
+                </button>
+              </div>
+              <div id="dnsStatusMessage" style="font-size: 11px; color: var(--emerald-safe); display: none;">✓ DoH Uç Noktası Başarıyla Değiştirildi</div>
+            </div>
+          </div>
+
+          <!-- TAB 3: SİSTEM & BAŞLANGIÇ AYARLARI -->
+          <div id="tabPaneSystem" class="tab-pane">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="autostartTitle">Windows Açılışında Başlatma & Sistem Tepsisi</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="autostartDesc">GhostWire VPN arka planda sistem tepsisinde (Tray) sessiz çalışabilir ve Windows ile otomatik başlayabilir.</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-title" data-i18n="optStartWithWindows">Windows Açılışında Otomatik Başlat</div>
+                  <div class="settings-row-sub">Bilgisayar her açıldığında GhostWire VPN arka planda hazır bekler.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchAutostartWindows">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-title" data-i18n="optStartMinimized">Sistem Tepsisine (Tray) Küçültülmüş Olarak Başlat</div>
+                  <div class="settings-row-sub">Pencere açılmadan doğrudan saat yanındaki simgeye yerleşir.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchStartMinimized" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-title" data-i18n="optAutoConnectLaunch">Açılışta Otomatik Akıllı Bağlantı (Smart Connect) Kur</div>
+                  <div class="settings-row-sub">Açıldığı anda en düşük gecikmeli güvenli sunucuya otomatik bağlanır.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchAutoConnectLaunch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <!-- Sistem Tepsisi (Tray) Bilgilendirmesi -->
+              <div style="padding: 10px 14px; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+                <span style="color: var(--cyan-stealth); font-weight: 700;">💡 Sistem Tepsisi (Tray) Hızlı Menüsü:</span> Saat yanındaki GhostWire simgesine sağ tıklayarak Akıllı Bağlantıyı tetikleyebilir, Türkiye/Almanya/İzlanda gibi popüler sunucular arasında tek tıkla geçiş yapabilirsiniz.
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: SİBER TEMALAR -->
+          <div id="tabPaneThemes" class="tab-pane">
+            <div>
+              <div style="font-weight: 700; font-size: 13px; color: var(--text-main);" data-i18n="themeTitle">Siberpunk Arayüz Temaları</div>
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;" data-i18n="themeDesc">Göz konforunuza ve stilinize uygun siber temayı seçin.</div>
+            </div>
+
+            <div class="themes-grid">
+              <div class="theme-card active" data-theme-name="quantum">
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">Quantum Stealth Cyan</div>
+                <div style="font-size: 10px; color: var(--text-muted);">Varsayılan Neon Kuantum Mavisi & Turkuaz</div>
+                <div class="theme-preview-swatches">
+                  <div class="theme-swatch" style="background: #00e5ff;"></div>
+                  <div class="theme-swatch" style="background: #00f59b;"></div>
+                  <div class="theme-swatch" style="background: #0b1120;"></div>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme-name="matrix">
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">Matrix Cyber Green</div>
+                <div style="font-size: 10px; color: var(--text-muted);">Hacker Terminali Zümrüt Yeşili & Simsiyah OLED</div>
+                <div class="theme-preview-swatches">
+                  <div class="theme-swatch" style="background: #00ff66;"></div>
+                  <div class="theme-swatch" style="background: #00cc55;"></div>
+                  <div class="theme-swatch" style="background: #030a05;"></div>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme-name="crimson">
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">Cyberpunk OLED Crimson</div>
+                <div style="font-size: 10px; color: var(--text-muted);">Neon Kırmızı Kalkan & Derin Siyah Kontrast</div>
+                <div class="theme-preview-swatches">
+                  <div class="theme-swatch" style="background: #ff0055;"></div>
+                  <div class="theme-swatch" style="background: #ff3366;"></div>
+                  <div class="theme-swatch" style="background: #0a0305;"></div>
+                </div>
+              </div>
+
+              <div class="theme-card" data-theme-name="violet">
+                <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">Tor Onion Deep Violet</div>
+                <div style="font-size: 10px; color: var(--text-muted);">Kriptografik Eflatun, Derin Mor & Gece Mavisi</div>
+                <div class="theme-preview-swatches">
+                  <div class="theme-swatch" style="background: #b362ff;"></div>
+                  <div class="theme-swatch" style="background: #8b5cf6;"></div>
+                  <div class="theme-swatch" style="background: #080614;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

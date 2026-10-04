@@ -62,6 +62,33 @@
 - **Netflix (US/UK/TR/JP), Disney+, Hulu, BBC iPlayer** için optimize edilmiş yayın sunucuları.
 - Oyun ve P2P için düşük gecikmeli (ping) özel sunucu havuzu.
 
+### 🔀 7. Split Tunneling (Uygulama Bazlı Tünelleme)
+- **Uygulama Filtreleme:** Discord, Roblox, Steam, Spotify, Brave, Chrome veya kendi eklediğiniz herhangi bir `.exe` dosyasını seçerek VPN tüneline sokabilir ya da yerel ISS hızınızda tutabilirsiniz.
+- **İki Farklı Çalışma Modu:** Yalnızca seçili uygulamaları şifreleme veya tüm sistemi şifreleyip yalnızca seçili uygulamaları bypass etme.
+
+### ⚡ 8. Akıllı Otomatik Bağlantı (Smart Connect)
+- Bulunduğunuz konuma göre en düşük gecikmeye (ping) sahip sunucuyu milisaniyeler içinde tespit eder ve tek tıkla en hızlı rotaya bağlar.
+
+### 📶 9. Canlı ve Gerçek Ping (ms) Ölçümü
+- Statik/tahmini sayılar yerine, sunucu düğümlerine doğrudan **fiziksel TCP soket el sıkışması** ile anlık canlı gecikme ölçümü yapar (Örn: Almanya 46 ms, Hollanda 50 ms, İsviçre 46 ms).
+
+### 🔒 10. Multi-Hop (Çift Atlama / Zincirleme VPN Modu)
+- **Ayrı Seçilebilir Mod:** Trafiğinizi tek bir sunucu yerine arka arkaya iki tarafsız ülke üzerinden zincirleme olarak şifreler (Örn: Türkiye ➔ İsviçre ➔ İzlanda). Dünya haritasında çift lazer rotalama animasyonu ile görselleştirilir.
+
+### 🛡️ 11. Özel DoH, NextDNS ve AdGuard Desteği
+- Cloudflare (1.1.1.1), AdGuard DNS, Quad9 (9.9.9.9), Mullvad No-Log veya kendi özel NextDNS / DoH profil URL'nizi tek tıkla tünele bağlayın.
+
+### 💻 12. Sistem Tepsisi (Tray) & Windows Açılışında Başlatma
+- Saatin yanındaki sistem tepsisine (Tray) yerleşerek arka planda sessiz çalışır. Sağ tık hızlı menüsünden tek tıkla Akıllı Bağlantı veya sunucu değişimi yapabilir.
+- **Start with Windows:** İsteğe bağlı olarak Windows açılışında otomatik başlama özelliği.
+
+### 🎨 13. Dört Alternatif Siber Tema
+- **Quantum Stealth Cyan:** Varsayılan neon kuantum mavisi ve turkuaz.
+- **Matrix Cyber Green:** Hacker terminali zümrüt yeşili ve simsiyah OLED.
+- **Cyberpunk OLED Crimson:** Yüksek kontrastlı neon kırmızı ve siyah.
+- **Tor Onion Deep Violet:** Kriptografik mor ve derin eflatun.
+- Başlıktaki tema butonuyla veya Ayarlar menüsünden anında geçiş yapılabilir.
+
 ---
 
 ## 💻 Windows Kurulumu (.EXE Kurulum Sihirbazı)
@@ -104,6 +131,13 @@ Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** wi
 - **Post-Quantum Cryptography:** ChaCha20-Poly1305 with Kyber-768 ML-KEM key exchange.
 - **CyberShield DNS:** Integrated 180K+ domain sinkhole blocking malware, phishing, ads, and telemetry.
 - **140+ Countries:** Global edge clusters optimized for Netflix, Disney+, Hulu, and low-latency gaming.
+- **Per-App Split Tunneling:** Route Discord, Roblox, Steam, Spotify or custom `.exe` binaries through the VPN while keeping the rest on your native ISP network (or vice versa).
+- **Smart Connect (Lowest Latency):** Automatically measures and connects to the fastest relay with lowest physical round-trip time.
+- **Real-Time Physical Ping Engine:** Direct physical TCP socket handshakes measuring live RTT in milliseconds across all worldwide regions.
+- **Multi-Hop Chained VPN Mode:** Separate selectable mode that chains 2 neutral jurisdictions (e.g., Switzerland ➔ Iceland) with dual laser beam map visualization.
+- **Custom DoH / NextDNS / AdGuard:** Connect to Cloudflare, AdGuard, Quad9, Mullvad, or custom private NextDNS profile endpoints.
+- **System Tray Quick Menu & Start with Windows:** Silent tray integration with fast server switcher and auto-launch on Windows boot.
+- **4 Alternative Cyber Themes:** Instant switching between Quantum Cyan, Matrix Green, OLED Crimson, and Tor Onion Violet.
 
 ---
 

@@ -44,6 +44,83 @@ function createWindow() {
   });
 }
 
+let trayState = {
+  connected: false,
+  serverName: 'Hazır',
+  ping: 18,
+  recent: ['DE', 'IS', 'CH', 'NL', 'US']
+};
+
+function buildTrayContextMenu() {
+  const statusLabel = trayState.connected 
+    ? `🟢 Bağlandı: ${trayState.serverName} (${trayState.ping} ms)`
+    : '🔴 Koruma Pasif (IP Açıkta)';
+
+  return Menu.buildFromTemplate([
+    { label: statusLabel, enabled: false },
+    { type: 'separator' },
+    {
+      label: trayState.connected ? '🛑 Bağlantıyı Kes' : '⚡ Hızlı Bağlan (Discord Açıcı)',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.webContents.send(trayState.connected ? 'vpn:disconnect' : 'vpn:quick-connect');
+          mainWindow.show();
+        }
+      }
+    },
+    {
+      label: '🎯 Akıllı Bağlantı (En Düşük Ping)',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.webContents.send('vpn:smart-connect');
+          mainWindow.show();
+        }
+      }
+    },
+    {
+      label: '📍 Hızlı Konum Seçimi',
+      submenu: [
+        { label: '🇩🇪 Almanya (Frankfurt)', click: () => selectServerFromTray('DE') },
+        { label: '🇮🇸 İzlanda (Reykjavik)', click: () => selectServerFromTray('IS') },
+        { label: '🇨🇭 İsviçre (Zürih)', click: () => selectServerFromTray('CH') },
+        { label: '🇳🇱 Hollanda (Amsterdam)', click: () => selectServerFromTray('NL') },
+        { label: '🇺🇸 ABD (New York)', click: () => selectServerFromTray('US') }
+      ]
+    },
+    { type: 'separator' },
+    {
+      label: '🖥️ GhostWire Paneli Aç',
+      click: () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      }
+    },
+    {
+      label: '❌ Çıkış Yap',
+      click: () => {
+        isQuitting = true;
+        app.quit();
+      }
+    }
+  ]);
+}
+
+function selectServerFromTray(code) {
+  if (mainWindow) {
+    mainWindow.webContents.send('vpn:select-server', code);
+    mainWindow.show();
+  }
+}
+
+function updateTrayMenu(newState) {
+  if (!tray) return;
+  trayState = { ...trayState, ...newState };
+  tray.setContextMenu(buildTrayContextMenu());
+  tray.setToolTip(`GhostWire VPN: ${trayState.connected ? 'Korumalı' : 'Korumasız'}`);
+}
+
 function createTray() {
   const iconPath = path.join(__dirname, 'assets', 'tray-icon.png');
   let trayIcon = nativeImage.createEmpty();
@@ -52,20 +129,14 @@ function createTray() {
   }
   
   tray = new Tray(trayIcon);
-  
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'GhostWire VPN: Hazır', enabled: false },
-    { type: 'separator' },
-    { label: '⚡ Hızlı Bağlan (Discord Açıcı)', click: () => { mainWindow.webContents.send('vpn:quick-connect'); mainWindow.show(); } },
-    { label: '🛑 Bağlantıyı Kes', click: () => { mainWindow.webContents.send('vpn:disconnect'); } },
-    { type: 'separator' },
-    { label: 'Paneli Göster', click: () => { mainWindow.show(); } },
-    { label: 'Çıkış Yap', click: () => { isQuitting = true; app.quit(); } }
-  ]);
-
   tray.setToolTip('GhostWire VPN - 100% Sıfır Kayıt & Kuantum Koruma');
-  tray.setContextMenu(contextMenu);
-  tray.on('double-click', () => mainWindow.show());
+  tray.setContextMenu(buildTrayContextMenu());
+  tray.on('double-click', () => {
+    if (mainWindow) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
 }
 
 // Window Controls
@@ -137,6 +208,36 @@ ipcMain.handle('killswitch:toggle', async (event, enabled) => {
   console.log(`[GhostWire WFP] Kill Switch: ${enabled ? 'ENGAGED' : 'DISENGAGED'}`);
   return { success: true, active: enabled };
 });
+
+// Windows Autostart (Start on boot)
+ipcMain.handle('settings:get-autostart', () => {
+  try {
+    const settings = app.getLoginItemSettings();
+    return settings.openAtLogin;
+  } catch (e) {
+    return false;
+  }
+});
+
+ipcMain.handle('settings:set-autostart', (event, enable) => {
+  try {
+    app.setLoginItemSettings({
+      openAtLogin: enable,
+      path: process.execPath
+    });
+    console.log(`[GhostWire Core] Windows Autostart set to: ${enable}`);
+    return true;
+  } catch (e) {
+    console.error('Error setting autostart:', e);
+    return false;
+  }
+});
+
+// Live Tray status updater from renderer
+ipcMain.on('tray:update-status', (event, data) => {
+  updateTrayMenu(data);
+});
+
 
 app.whenReady().then(() => {
   createWindow();

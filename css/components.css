@@ -849,3 +849,399 @@
   background: dashed rgba(179, 98, 255, 0.4);
   margin: 0 10px;
 }
+
+/* ===================================================================
+   SMART CONNECT & ADVANCED SETTINGS MODAL
+   =================================================================== */
+
+/* Smart Connect Banner in Server List */
+.smart-connect-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(0, 245, 155, 0.08));
+  border: 1px solid var(--border-glass-bright);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.smart-connect-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.smart-connect-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 229, 255, 0.2);
+  border: 1px solid var(--cyan-stealth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--cyan-stealth);
+}
+
+.smart-connect-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.smart-connect-sub {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+.smart-connect-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--cyan-stealth), #00b4d8);
+  color: #050811;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.smart-connect-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4);
+}
+
+.live-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00f59b;
+  box-shadow: 0 0 8px #00f59b;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.smart-ping-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  background: rgba(5, 8, 17, 0.85);
+  color: var(--cyan-stealth);
+  border-radius: 4px;
+}
+
+/* Settings Modal Tabs Nav */
+.settings-tabs-nav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-glass);
+  padding: 0 16px;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.settings-tab-btn {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.settings-tab-btn.active {
+  color: var(--cyan-stealth);
+  border-bottom-color: var(--cyan-stealth);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.tab-pane {
+  display: none;
+  padding: 14px 16px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+/* Split Tunneling Tab */
+.split-mode-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.split-mode-card {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.split-mode-card.active {
+  border-color: var(--cyan-stealth);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.split-mode-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.split-mode-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.split-apps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.split-app-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  transition: background var(--transition-fast);
+}
+
+.split-app-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.split-app-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.split-app-icon {
+  font-size: 18px;
+}
+
+.split-app-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.split-app-exe {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* Custom Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: .25s;
+  border-radius: 20px;
+  border: 1px solid var(--border-glass);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  transition: .25s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--emerald-safe);
+  box-shadow: 0 0 10px var(--emerald-glow);
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+/* Split Add Custom App */
+.split-add-box {
+  display: flex;
+  gap: 8px;
+}
+
+.split-add-box input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: var(--text-main);
+  font-size: 12px;
+  outline: none;
+  font-family: var(--font-mono);
+}
+
+.split-add-box input:focus {
+  border-color: var(--cyan-stealth);
+}
+
+/* DNS Providers Grid */
+.dns-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.dns-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dns-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-glass-bright);
+}
+
+.dns-card.active {
+  border-color: var(--cyan-stealth);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.dns-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dns-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dns-card-desc {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* Theme Selector Cards */
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.theme-card {
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glass-bright);
+}
+
+.theme-card.active {
+  border-color: var(--cyan-stealth);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+}
+
+.theme-preview-swatches {
+  display: flex;
+  gap: 6px;
+}
+
+.theme-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Autostart & System Settings Rows */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+}
+
+.settings-row-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.settings-row-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}

@@ -10,6 +10,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   testDiscord: () => ipcRenderer.invoke('vpn:test-discord'),
   openDiscord: () => ipcRenderer.send('vpn:open-discord'),
   toggleKillSwitch: (state) => ipcRenderer.invoke('killswitch:toggle', state),
+  setAutostart: (enable) => ipcRenderer.invoke('settings:set-autostart', enable),
+  getAutostart: () => ipcRenderer.invoke('settings:get-autostart'),
+  updateTrayStatus: (data) => ipcRenderer.send('tray:update-status', data),
   onQuickConnect: (callback) => ipcRenderer.on('vpn:quick-connect', callback),
-  onDisconnect: (callback) => ipcRenderer.on('vpn:disconnect', callback)
+  onDisconnect: (callback) => ipcRenderer.on('vpn:disconnect', callback),
+  onSmartConnect: (callback) => ipcRenderer.on('vpn:smart-connect', callback),
+  onSelectServer: (callback) => ipcRenderer.on('vpn:select-server', (event, code) => callback(code))
 });
+

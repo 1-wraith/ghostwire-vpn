@@ -10,6 +10,8 @@ import { VpnEngine } from './vpn-engine.js';
 import { DpiEngine } from './dpi-engine.js';
 import { i18n } from './i18n.js';
 import { ConfigImporter } from '../core/config-importer.js';
+import { splitTunnel } from './split-tunnel.js';
+import { themeManager } from './theme-manager.js';
 
 // Instantiate Core Engines
 const cyberShield = new CyberShield();
@@ -28,6 +30,7 @@ if (trServer) {
 let speedMonitor = null;
 let mapRenderer = null;
 let activeCategory = 'all';
+let livePings = {};
 
 // DOM Element Registry
 const elements = {
@@ -128,7 +131,29 @@ const elements = {
   btnFullscreenToggle: document.getElementById('btnFullscreenToggle'),
   fullscreenIcon: document.getElementById('fullscreenIcon'),
   winMinimize: document.getElementById('winMinimize'),
-  winClose: document.getElementById('winClose')
+  winClose: document.getElementById('winClose'),
+
+  // New Advanced Features
+  btnCycleTheme: document.getElementById('btnCycleTheme'),
+  btnOpenSettings: document.getElementById('btnOpenSettings'),
+  modalSettings: document.getElementById('modalSettings'),
+  btnCloseSettingsModal: document.getElementById('btnCloseSettingsModal'),
+  btnSmartConnect: document.getElementById('btnSmartConnect'),
+  smartFastestPingBadge: document.getElementById('smartFastestPingBadge'),
+  tileMultiHop: document.getElementById('tileMultiHop'),
+  multiHopBadge: document.getElementById('multiHopBadge'),
+  switchSplitTunnelMaster: document.getElementById('switchSplitTunnelMaster'),
+  splitModeTunnelCard: document.getElementById('splitModeTunnelCard'),
+  splitModeBypassCard: document.getElementById('splitModeBypassCard'),
+  splitAppsListContainer: document.getElementById('splitAppsListContainer'),
+  inputCustomAppExe: document.getElementById('inputCustomAppExe'),
+  btnAddCustomApp: document.getElementById('btnAddCustomApp'),
+  inputCustomDnsUrl: document.getElementById('inputCustomDnsUrl'),
+  btnSaveCustomDns: document.getElementById('btnSaveCustomDns'),
+  dnsStatusMessage: document.getElementById('dnsStatusMessage'),
+  switchAutostartWindows: document.getElementById('switchAutostartWindows'),
+  switchStartMinimized: document.getElementById('switchStartMinimized'),
+  switchAutoConnectLaunch: document.getElementById('switchAutoConnectLaunch')
 };
 
 // Application Bootstrap
@@ -136,10 +161,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initGraphics();
   initSubscriptions();
   initEventListeners();
+  initNewFeatures();
   applyLanguage(i18n.currentLang);
   renderServerList();
   checkElectronIntegration();
   startSimulationLoop();
+  refreshLivePings();
+  setInterval(refreshLivePings, 12000);
 });
 
 // Setup Graphics & Canvases
@@ -617,6 +645,7 @@ function renderServerList() {
     const isCurrent = vpnEngine.selectedServer && vpnEngine.selectedServer.id === server.id;
     const item = document.createElement('div');
     item.className = `server-list-item ${isCurrent ? 'active' : ''}`;
+    item.setAttribute('data-code', server.code);
     
     let tagsHtml = '';
     if (server.streaming && server.streaming.length > 0) {
@@ -628,6 +657,9 @@ function renderServerList() {
     if (server.tor) {
       tagsHtml += `<span class="item-tag-pill" style="color: var(--violet-onion);">🧅 Tor</span>`;
     }
+
+    const livePing = (livePings && livePings[server.code] !== undefined) ? livePings[server.code] : server.ping;
+    const pingColor = livePing < 60 ? 'var(--emerald-safe)' : (livePing < 110 ? 'var(--cyan-stealth)' : '#f59e0b');
 
     item.innerHTML = `
       <div class="item-left">
@@ -642,7 +674,7 @@ function renderServerList() {
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="server-ping-badge">⚡ ${server.ping} ms</span>
+        <span class="server-ping-badge" style="color: ${pingColor}; font-weight: 700;">⚡ ${livePing} ms</span>
       </div>
     `;
 
@@ -651,6 +683,9 @@ function renderServerList() {
       vpnEngine.setServer(server);
       closeModal(elements.modalServerList);
       renderServerList();
+      if (elements.currentServerPing) {
+        elements.currentServerPing.textContent = `${livePing} ms`;
+      }
     });
 
     elements.serversGrid.appendChild(item);
@@ -693,5 +728,271 @@ function checkElectronIntegration() {
     window.electronAPI.onDisconnect(() => {
       if (vpnEngine.state === 'CONNECTED') vpnEngine.disconnect();
     });
+    window.electronAPI.onSmartConnect(() => {
+      vpnEngine.smartConnect(livePings);
+    });
+    window.electronAPI.onSelectServer((code) => {
+      const s = SERVERS_DATABASE.find(srv => srv.code === code);
+      if (s) {
+        vpnEngine.setServer(s);
+        vpnEngine.connect();
+      }
+    });
+    if (window.electronAPI.getAutostart) {
+      window.electronAPI.getAutostart().then(res => {
+        if (res && res.enabled !== undefined && elements.switchAutostartWindows) {
+          elements.switchAutostartWindows.checked = res.enabled;
+        }
+      }).catch(() => {});
+    }
   }
+}
+
+// ===================================================================
+// NEW ADVANCED FEATURES ORCHESTRATION
+// ===================================================================
+
+function initNewFeatures() {
+  // 1. Theme Management
+  updateThemeUI(themeManager.currentTheme);
+  if (elements.btnCycleTheme) {
+    elements.btnCycleTheme.addEventListener('click', () => {
+      soundFX.playClick();
+      const nextTheme = themeManager.cycleTheme();
+      updateThemeUI(nextTheme);
+    });
+  }
+
+  // 2. Settings Modal Open/Close & Tabs
+  if (elements.btnOpenSettings) {
+    elements.btnOpenSettings.addEventListener('click', () => {
+      soundFX.playClick();
+      openModal(elements.modalSettings);
+      renderSplitTunnelApps();
+    });
+  }
+  if (elements.btnCloseSettingsModal) {
+    elements.btnCloseSettingsModal.addEventListener('click', () => {
+      closeModal(elements.modalSettings);
+    });
+  }
+
+  document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      soundFX.playClick();
+      document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.getAttribute('data-tab');
+      const pane = document.getElementById(`tabPane${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+      if (pane) pane.classList.add('active');
+    });
+  });
+
+  // 3. Smart Connect
+  if (elements.btnSmartConnect) {
+    elements.btnSmartConnect.addEventListener('click', () => {
+      soundFX.playClick();
+      const best = vpnEngine.smartConnect(livePings);
+      closeModal(elements.modalServerList);
+      renderServerList();
+      if (best && elements.currentServerPing) {
+        const p = livePings[best.code] || best.ping;
+        elements.currentServerPing.textContent = `${p} ms`;
+      }
+    });
+  }
+
+  // 4. Multi-Hop Toggle Tile
+  if (elements.tileMultiHop) {
+    elements.tileMultiHop.addEventListener('click', () => {
+      soundFX.playClick();
+      const isMulti = vpnEngine.connectionMode !== 'multihop';
+      vpnEngine.setConnectionMode(isMulti ? 'multihop' : 'single');
+      elements.tileMultiHop.classList.toggle('active', isMulti);
+      const isTr = i18n.currentLang === 'tr';
+      elements.multiHopBadge.textContent = isMulti ? (isTr ? 'AKTİF (ÇİFT)' : 'ACTIVE (DUAL)') : (isTr ? 'AYRI MOD' : 'OFF');
+      if (mapRenderer) {
+        mapRenderer.setMultiHopMode(isMulti, 'CH');
+      }
+    });
+  }
+
+  // 5. Split Tunneling
+  if (elements.switchSplitTunnelMaster) {
+    elements.switchSplitTunnelMaster.checked = splitTunnel.enabled;
+    elements.switchSplitTunnelMaster.addEventListener('change', (e) => {
+      soundFX.playClick();
+      splitTunnel.setEnabled(e.target.checked);
+    });
+  }
+
+  if (elements.splitModeTunnelCard && elements.splitModeBypassCard) {
+    elements.splitModeTunnelCard.addEventListener('click', () => {
+      soundFX.playClick();
+      elements.splitModeTunnelCard.classList.add('active');
+      elements.splitModeBypassCard.classList.remove('active');
+      splitTunnel.setMode('tunnel_selected');
+    });
+    elements.splitModeBypassCard.addEventListener('click', () => {
+      soundFX.playClick();
+      elements.splitModeBypassCard.classList.add('active');
+      elements.splitModeTunnelCard.classList.remove('active');
+      splitTunnel.setMode('bypass_selected');
+    });
+  }
+
+  if (elements.btnAddCustomApp && elements.inputCustomAppExe) {
+    elements.btnAddCustomApp.addEventListener('click', () => {
+      const exeName = elements.inputCustomAppExe.value.trim();
+      if (exeName) {
+        soundFX.playClick();
+        splitTunnel.addCustomApp(exeName);
+        elements.inputCustomAppExe.value = '';
+        renderSplitTunnelApps();
+      }
+    });
+  }
+
+  // 6. DNS / DoH Providers
+  document.querySelectorAll('.dns-card').forEach(card => {
+    card.addEventListener('click', () => {
+      soundFX.playClick();
+      document.querySelectorAll('.dns-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      const prov = card.getAttribute('data-dns-provider');
+      const dohMap = {
+        cloudflare: 'https://cloudflare-dns.com/dns-query',
+        adguard: 'https://dns.adguard-dns.com/dns-query',
+        quad9: 'https://dns.quad9.net/dns-query',
+        mullvad: 'https://dns.mullvad.net/dns-query'
+      };
+      if (dohMap[prov]) {
+        vpnEngine.setCustomDns(dohMap[prov]);
+        showDnsFeedback();
+      }
+    });
+  });
+
+  if (elements.btnSaveCustomDns && elements.inputCustomDnsUrl) {
+    elements.btnSaveCustomDns.addEventListener('click', () => {
+      const url = elements.inputCustomDnsUrl.value.trim();
+      if (url) {
+        soundFX.playClick();
+        vpnEngine.setCustomDns(url);
+        showDnsFeedback();
+      }
+    });
+  }
+
+  // 7. Autostart Switch
+  if (elements.switchAutostartWindows) {
+    elements.switchAutostartWindows.addEventListener('change', async (e) => {
+      soundFX.playClick();
+      if (window.electronAPI && window.electronAPI.setAutostart) {
+        await window.electronAPI.setAutostart(e.target.checked);
+      }
+    });
+  }
+
+  // 8. Cyber Theme Cards in Settings
+  document.querySelectorAll('.theme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      soundFX.playClick();
+      const theme = card.getAttribute('data-theme-name');
+      themeManager.setTheme(theme);
+      updateThemeUI(theme);
+    });
+  });
+}
+
+function updateThemeUI(theme) {
+  document.querySelectorAll('.theme-card').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-theme-name') === theme);
+  });
+}
+
+function showDnsFeedback() {
+  if (elements.dnsStatusMessage) {
+    elements.dnsStatusMessage.style.display = 'block';
+    setTimeout(() => {
+      elements.dnsStatusMessage.style.display = 'none';
+    }, 4000);
+  }
+}
+
+function renderSplitTunnelApps() {
+  if (!elements.splitAppsListContainer) return;
+  elements.splitAppsListContainer.innerHTML = '';
+  const apps = splitTunnel.getApps();
+  apps.forEach(app => {
+    const item = document.createElement('div');
+    item.className = 'split-app-item';
+    item.innerHTML = `
+      <div class="split-app-info">
+        <span class="split-app-icon">${app.icon}</span>
+        <div>
+          <div class="split-app-name">${app.name}</div>
+          <div class="split-app-exe">${app.exe}</div>
+        </div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" ${app.enabled ? 'checked' : ''}>
+        <span class="slider"></span>
+      </label>
+    `;
+    const cb = item.querySelector('input');
+    cb.addEventListener('change', () => {
+      soundFX.playClick();
+      splitTunnel.toggleApp(app.id);
+    });
+    elements.splitAppsListContainer.appendChild(item);
+  });
+}
+
+async function refreshLivePings() {
+  try {
+    const res = await fetch('/api/ping-all');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.pings) {
+        livePings = data.pings;
+        updateLivePingsUI();
+      }
+    }
+  } catch (e) {
+    // Silent background refresh
+  }
+}
+
+function updateLivePingsUI() {
+  let bestServer = null;
+  let minPing = Infinity;
+  for (const s of SERVERS_DATABASE) {
+    const p = (livePings && livePings[s.code] !== undefined) ? livePings[s.code] : (s.ping || 999);
+    if (p < minPing) {
+      minPing = p;
+      bestServer = s;
+    }
+  }
+
+  if (elements.smartFastestPingBadge && bestServer) {
+    elements.smartFastestPingBadge.textContent = `${bestServer.name}: ${minPing} ms`;
+  }
+
+  if (vpnEngine.selectedServer && livePings[vpnEngine.selectedServer.code] !== undefined) {
+    elements.currentServerPing.textContent = `${livePings[vpnEngine.selectedServer.code]} ms`;
+  }
+
+  document.querySelectorAll('#serversGrid .server-list-item').forEach(item => {
+    const sCode = item.getAttribute('data-code');
+    if (sCode && livePings[sCode] !== undefined) {
+      const badge = item.querySelector('.server-ping-badge');
+      if (badge) {
+        const p = livePings[sCode];
+        badge.textContent = `⚡ ${p} ms`;
+        badge.style.color = p < 60 ? 'var(--emerald-safe)' : (p < 110 ? 'var(--cyan-stealth)' : '#f59e0b');
+      }
+    }
+  });
 }

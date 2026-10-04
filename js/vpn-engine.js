@@ -39,11 +39,18 @@ export class VpnEngine {
     this.selectedServer = serverDatabase.find(s => s.code === 'IS') || serverDatabase[0];
     this.currentProtocol = PROTOCOLS.WIREGUARD;
 
+    // Advanced Routing Modes: 'single' | 'multihop' | 'tor'
+    this.connectionMode = 'single';
+    this.multiHopEntry = serverDatabase.find(s => s.code === 'CH') || serverDatabase[1];
+
     // Security Features
     this.killSwitch = true;
     this.dnsLeakShield = true;
     this.ipv6LeakShield = true;
     this.streamingOptimized = true;
+
+    // Custom DNS & DoH provider
+    this.customDns = localStorage.getItem('ghostwire_doh') || 'https://cloudflare-dns.com/dns-query';
 
     // Ephemeral Connection Telemetry (Zero Disk Logs)
     this.connectionSession = {
@@ -60,6 +67,44 @@ export class VpnEngine {
 
     this.uptimeInterval = null;
     this.listeners = [];
+  }
+
+  setConnectionMode(mode, hopEntryCode = 'CH') {
+    this.connectionMode = mode;
+    if (mode === 'multihop') {
+      const hop = this.serverDatabase.find(s => s.code === hopEntryCode.toUpperCase()) || this.serverDatabase[1];
+      this.multiHopEntry = hop;
+    }
+    this.notify();
+  }
+
+  setCustomDns(url) {
+    if (!url) return;
+    this.customDns = url;
+    localStorage.setItem('ghostwire_doh', url);
+    fetch('/api/set-doh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ endpoint: url })
+    }).catch(() => {});
+    this.notify();
+  }
+
+  smartConnect(livePings = {}) {
+    // Find server with lowest live ping
+    let bestServer = this.serverDatabase[0];
+    let minPing = Infinity;
+
+    for (const server of this.serverDatabase) {
+      const p = livePings[server.code] !== undefined ? livePings[server.code] : (server.ping || 999);
+      if (p < minPing && p > 0) {
+        minPing = p;
+        bestServer = server;
+      }
+    }
+
+    this.setServer(bestServer);
+    return this.connect();
   }
 
   setProtocol(protocolId) {
