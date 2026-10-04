@@ -59,9 +59,12 @@ const elements = {
   speedUploadVal: document.getElementById('speedUploadVal'),
   peakSpeedVal: document.getElementById('peakSpeedVal'),
 
-  // Diagnostics
+  // Diagnostics & Real Discord Testing
   diagDiscordStatus: document.getElementById('diagDiscordStatus'),
   discordPingBadge: document.getElementById('discordPingBadge'),
+  btnTestDiscord: document.getElementById('btnTestDiscord'),
+  btnOpenDiscordApp: document.getElementById('btnOpenDiscordApp'),
+  discordTestResultBox: document.getElementById('discordTestResultBox'),
 
   // Canvases
   worldMapCanvas: document.getElementById('worldMapCanvas'),
@@ -299,29 +302,58 @@ function updateTorUI(snapshot) {
   }
 }
 
-function updateAcceleratorUI(snapshot) {
-  elements.acceleratorBadge.textContent = snapshot.enabled ? snapshot.metrics.speedMultiplier + ' TURBO' : 'OFF';
-  elements.tileAccelerator.className = snapshot.enabled ? 'feature-tile active' : 'feature-tile';
-}
-
 function updateDpiUI(snapshot) {
   const isTr = i18n.currentLang === 'tr';
   elements.dpiBypassBadge.textContent = snapshot.enabled ? (isTr ? 'DPI AKTİF' : 'DPI ON') : 'OFF';
   elements.tileDpiBypass.className = snapshot.enabled ? 'feature-tile active' : 'feature-tile';
+}
 
-  if (snapshot.discordStatus === 'online') {
-    elements.diagDiscordStatus.textContent = isTr ? `ERİŞİLEBİLİR (${snapshot.discordLatency || 24} ms) ✓` : `ACCESSIBLE (${snapshot.discordLatency || 24} ms) ✓`;
-    elements.diagDiscordStatus.className = 'telemetry-value safe';
-    elements.discordPingBadge.textContent = `🎮 Discord: ${snapshot.discordLatency || 24} ms`;
-    elements.discordPingBadge.style.color = 'var(--emerald-safe)';
-  } else if (snapshot.discordStatus === 'checking') {
-    elements.diagDiscordStatus.textContent = isTr ? 'TEST EDİLİYOR...' : 'CHECKING...';
-    elements.diagDiscordStatus.className = 'telemetry-value';
-  } else {
-    elements.diagDiscordStatus.textContent = isTr ? 'ENGELLİ ✗' : 'BLOCKED ✗';
+// Real Discord Live Test Action
+async function runRealDiscordTest() {
+  const isTr = i18n.currentLang === 'tr';
+  elements.diagDiscordStatus.textContent = isTr ? 'TEST EDİLİYOR...' : 'TESTING...';
+  elements.diagDiscordStatus.className = 'telemetry-value';
+  elements.discordTestResultBox.style.display = 'block';
+  elements.discordTestResultBox.style.background = 'rgba(0, 229, 255, 0.08)';
+  elements.discordTestResultBox.style.border = '1px solid rgba(0, 229, 255, 0.3)';
+  elements.discordTestResultBox.style.color = 'var(--cyan-stealth)';
+  elements.discordTestResultBox.innerHTML = `<span>⏳ ${isTr ? 'Discord Gateway (gateway.discord.gg:443) ile güvenli tünel el sıkışması deneniyor...' : 'Testing TLS handshake with Discord Gateway...'}</span>`;
+
+  try {
+    let result = null;
+    if (window.electronAPI && window.electronAPI.testDiscord) {
+      result = await window.electronAPI.testDiscord();
+    } else {
+      const res = await fetch('/api/discord-check');
+      result = await res.json();
+    }
+
+    if (result && result.success) {
+      elements.diagDiscordStatus.textContent = isTr ? `ERİŞİLEBİLİR (${result.latencyMs} ms) ✓` : `ACCESSIBLE (${result.latencyMs} ms) ✓`;
+      elements.diagDiscordStatus.className = 'telemetry-value safe';
+      elements.discordPingBadge.textContent = `🎮 Discord: ${result.latencyMs} ms`;
+      elements.discordPingBadge.style.color = 'var(--emerald-safe)';
+
+      elements.discordTestResultBox.style.background = 'rgba(0, 245, 155, 0.1)';
+      elements.discordTestResultBox.style.border = '1px solid rgba(0, 245, 155, 0.4)';
+      elements.discordTestResultBox.style.color = 'var(--emerald-safe)';
+      elements.discordTestResultBox.innerHTML = `
+        <strong>✓ ${isTr ? 'BAĞLANTI BAŞARILI!' : 'CONNECTION SUCCESSFUL!'}</strong> (${result.latencyMs} ms)<br>
+        <span>${isTr ? 'Paketler Türk Telekom/ISS DPI engelini aştı. Discord ses, metin ve sunucu kanalları sorunsuz açılıyor.' : 'Packets bypassed ISP DPI filters. Discord is fully unblocked.'}</span>
+      `;
+    } else {
+      throw new Error(result ? result.error : 'Connection timeout');
+    }
+  } catch (err) {
+    elements.diagDiscordStatus.textContent = isTr ? 'BAŞARISIZ ✗' : 'FAILED ✗';
     elements.diagDiscordStatus.className = 'telemetry-value danger';
-    elements.discordPingBadge.textContent = '🎮 Discord: Engelli';
-    elements.discordPingBadge.style.color = 'var(--crimson-danger)';
+    elements.discordTestResultBox.style.background = 'rgba(255, 51, 102, 0.1)';
+    elements.discordTestResultBox.style.border = '1px solid rgba(255, 51, 102, 0.4)';
+    elements.discordTestResultBox.style.color = 'var(--crimson-danger)';
+    elements.discordTestResultBox.innerHTML = `
+      <strong>✗ ${isTr ? 'BAĞLANTI KESİNTİSİ' : 'CONNECTION FAILED'}</strong><br>
+      <span>${isTr ? 'Hata:' : 'Error:'} ${err.message}. ${isTr ? 'Lütfen önce "Bağlan" butonuna basarak tüneli aktif edin.' : 'Please click Connect first to activate the tunnel.'}</span>
+    `;
   }
 }
 
@@ -342,15 +374,33 @@ function initEventListeners() {
     soundFX.playConnect();
     if (vpnEngine.state === 'CONNECTED') {
       soundFX.playDisconnect();
-      if (window.electronAPI && window.electronAPI.resetSystemDns) {
-        window.electronAPI.resetSystemDns();
+      if (window.electronAPI && window.electronAPI.disconnectTunnel) {
+        await window.electronAPI.disconnectTunnel();
       }
       await vpnEngine.disconnect();
     } else {
-      if (window.electronAPI && window.electronAPI.setSystemDns) {
-        window.electronAPI.setSystemDns('1.1.1.1', '1.0.0.1');
+      if (window.electronAPI && window.electronAPI.connectTunnel) {
+        await window.electronAPI.connectTunnel();
       }
       await vpnEngine.connect();
+      // Auto run test after connect
+      setTimeout(() => runRealDiscordTest(), 1200);
+    }
+  });
+
+  // Real Discord Live Test Button
+  elements.btnTestDiscord.addEventListener('click', () => {
+    soundFX.playClick();
+    runRealDiscordTest();
+  });
+
+  // Open Discord Button
+  elements.btnOpenDiscordApp.addEventListener('click', () => {
+    soundFX.playClick();
+    if (window.electronAPI && window.electronAPI.openDiscord) {
+      window.electronAPI.openDiscord();
+    } else {
+      window.open('https://discord.com/app', '_blank');
     }
   });
 
@@ -407,6 +457,7 @@ function initEventListeners() {
   elements.tileDpiBypass.addEventListener('click', () => {
     soundFX.playClick();
     dpiEngine.toggleDpiBypass();
+    runRealDiscordTest();
   });
 
   elements.tileAccelerator.addEventListener('click', () => {

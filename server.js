@@ -1,8 +1,11 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { ProxyEngine } = require('./core/proxy-engine');
 
 const PORT = process.env.PORT || 4173;
+const proxyEngine = new ProxyEngine(10808);
+proxyEngine.start();
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -13,18 +16,13 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
-  '.woff2': 'font/woff2',
-  '.mp3': 'audio/mpeg',
-  '.wav': 'audio/wav'
+  '.woff2': 'font/woff2'
 };
 
-const server = http.createServer((req, res) => {
-  // CORS & Security Headers
+const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -32,35 +30,26 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Handle mock API endpoints for VPN operations
+  // Real Discord connectivity test endpoint
+  if (req.url === '/api/discord-check') {
+    const result = await proxyEngine.testDiscord();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+    return;
+  }
+
   if (req.url === '/api/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       status: 'active',
       engine: 'GhostWire Core v1.0.0',
-      kernelDriver: 'WireGuard-NT / WinTun Active',
+      proxyPort: 10808,
       ramOnlyMode: true,
       logsRecorded: 0
     }));
     return;
   }
 
-  // Live IP check API proxy or mock check
-  if (req.url === '/api/ip-lookup') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      ip: '185.220.101.45',
-      isp: 'GhostWire High-Stealth Relay',
-      country: 'Iceland',
-      countryCode: 'IS',
-      city: 'Reykjavik',
-      dnsLeak: false,
-      webrtcLeak: false
-    }));
-    return;
-  }
-
-  // Clean URL to local path
   let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
   filePath = filePath.split('?')[0];
 
@@ -70,7 +59,6 @@ const server = http.createServer((req, res) => {
   fs.readFile(filePath, (err, content) => {
     if (err) {
       if (err.code === 'ENOENT') {
-        // Fallback to index.html for SPA routing if needed
         fs.readFile(path.join(__dirname, 'index.html'), (fallbackErr, fallbackContent) => {
           if (fallbackErr) {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -95,6 +83,7 @@ server.listen(PORT, () => {
   console.log(`\n======================================================`);
   console.log(`🛡️  GhostWire VPN Core Server running at:`);
   console.log(`👉  http://localhost:${PORT}`);
+  console.log(`⚡  Real DPI Circumvention Proxy running at 127.0.0.1:10808`);
   console.log(`🔒  Zero-Knowledge, Zero-Log, High-Speed Privacy Shield`);
   console.log(`======================================================\n`);
 });

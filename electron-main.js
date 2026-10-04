@@ -1,10 +1,12 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
+const { ProxyEngine } = require('./core/proxy-engine');
 
 let mainWindow = null;
 let tray = null;
 let isQuitting = false;
+const proxyEngine = new ProxyEngine(10808);
 
 app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder');
 
@@ -54,7 +56,7 @@ function createTray() {
   const contextMenu = Menu.buildFromTemplate([
     { label: 'GhostWire VPN: Hazır', enabled: false },
     { type: 'separator' },
-    { label: '⚡ Hızlı Bağlan (En Düşük Ping)', click: () => { mainWindow.webContents.send('vpn:quick-connect'); mainWindow.show(); } },
+    { label: '⚡ Hızlı Bağlan (Discord Açıcı)', click: () => { mainWindow.webContents.send('vpn:quick-connect'); mainWindow.show(); } },
     { label: '🛑 Bağlantıyı Kes', click: () => { mainWindow.webContents.send('vpn:disconnect'); } },
     { type: 'separator' },
     { label: 'Paneli Göster', click: () => { mainWindow.show(); } },
@@ -82,70 +84,51 @@ ipcMain.on('window:close', () => {
   if (mainWindow) mainWindow.hide();
 });
 
-// Real Windows System DNS Changer (DoH & Cloudflare/Google)
-ipcMain.handle('system:set-dns', async (event, primary = '1.1.1.1', secondary = '1.0.0.1') => {
-  return new Promise((resolve) => {
-    if (process.platform === 'win32') {
-      // Find active adapters and apply secure DNS + ipconfig /flushdns
-      const psCmd = `powershell -Command "
-        Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | ForEach-Object {
-          Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses ('${primary}','${secondary}')
-        };
-        Clear-DnsClientCache
-      "`;
-      exec(psCmd, (error) => {
-        if (error) console.log('DNS Set fallback note:', error.message);
-        resolve({ success: !error });
+// Enable Windows Proxy & Real DPI Engine
+ipcMain.handle('vpn:connect-tunnel', async () => {
+  proxyEngine.start();
+
+  if (process.platform === 'win32') {
+    return new Promise((resolve) => {
+      const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:10808" /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyOverride /t REG_SZ /d "<local>" /f`;
+      exec(cmd, () => {
+        console.log('[GhostWire Core] Windows Proxy engaged on 127.0.0.1:10808');
+        resolve({ success: true, proxyPort: 10808 });
       });
-    } else {
-      resolve({ success: true });
-    }
-  });
+    });
+  }
+  return { success: true };
 });
 
-// Restore DHCP DNS
-ipcMain.handle('system:reset-dns', async () => {
-  return new Promise((resolve) => {
-    if (process.platform === 'win32') {
-      const psCmd = `powershell -Command "
-        Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | ForEach-Object {
-          Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses
-        };
-        Clear-DnsClientCache
-      "`;
-      exec(psCmd, (error) => {
-        resolve({ success: !error });
+// Disconnect & Reset Windows Proxy
+ipcMain.handle('vpn:disconnect-tunnel', async () => {
+  if (process.platform === 'win32') {
+    return new Promise((resolve) => {
+      const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f`;
+      exec(cmd, () => {
+        console.log('[GhostWire Core] Windows Proxy disengaged');
+        resolve({ success: true });
       });
-    } else {
-      resolve({ success: true });
-    }
-  });
+    });
+  }
+  return { success: true };
 });
 
-// Native Kill Switch Trigger
+// Real Discord Test
+ipcMain.handle('vpn:test-discord', async () => {
+  proxyEngine.start();
+  return await proxyEngine.testDiscord();
+});
+
+// Launch Discord
+ipcMain.on('vpn:open-discord', () => {
+  shell.openExternal('https://discord.com/app');
+});
+
+// Native Kill Switch
 ipcMain.handle('killswitch:toggle', async (event, enabled) => {
   console.log(`[GhostWire WFP] Kill Switch: ${enabled ? 'ENGAGED' : 'DISENGAGED'}`);
   return { success: true, active: enabled };
-});
-
-// Config File Picker
-ipcMain.handle('config:import', async () => {
-  const result = await dialog.showOpenDialog(mainWindow, {
-    title: 'Özel VPN Yapılandırması Yükle',
-    properties: ['openFile'],
-    filters: [
-      { name: 'VPN Dosyaları (*.conf, *.ovpn)', extensions: ['conf', 'ovpn'] }
-    ]
-  });
-
-  if (result.canceled || result.filePaths.length === 0) {
-    return { canceled: true };
-  }
-
-  const fs = require('fs');
-  const filePath = result.filePaths[0];
-  const content = fs.readFileSync(filePath, 'utf-8');
-  return { canceled: false, path: filePath, content, name: path.basename(filePath) };
 });
 
 app.whenReady().then(() => {
@@ -162,6 +145,10 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true;
+  // Make sure proxy is cleanly disengaged on app exit
+  if (process.platform === 'win32') {
+    exec('reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f');
+  }
 });
 
 app.on('window-all-closed', () => {

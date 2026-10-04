@@ -187,12 +187,12 @@
         <div class="glass-panel telemetry-card" style="padding: 14px 16px;">
           <div style="font-size: 12px; font-weight: 700; color: var(--cyan-stealth); display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <span data-i18n="diagnosticsTitle">Canlı Ağ Teşhis & Discord Kalkanı</span>
-            <span id="discordPingBadge" class="item-tag-pill discord" style="font-size: 11px;">🎮 Discord: Hazır</span>
+            <span id="discordPingBadge" class="item-tag-pill discord" style="font-size: 11px;">🎮 Discord: Test Edilmedi</span>
           </div>
 
           <div class="telemetry-row">
             <span class="telemetry-label" data-i18n="discordStatusLabel">Discord Gateway Erişimi:</span>
-            <span id="diagDiscordStatus" class="telemetry-value safe">ERİŞİLEBİLİR ✓</span>
+            <span id="diagDiscordStatus" class="telemetry-value safe">HAZIR</span>
           </div>
 
           <div class="telemetry-row">
@@ -204,6 +204,17 @@
             <span class="telemetry-label" data-i18n="webrtcShieldLabel">WebRTC IP Sızıntı Kalkanı:</span>
             <span class="telemetry-value safe">KORUNUYOR (0 Sızıntı)</span>
           </div>
+
+          <!-- Canlı Aksiyon Butonları -->
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button id="btnTestDiscord" class="btn btn-primary" style="flex: 1; padding: 7px 10px; font-size: 11px; background: linear-gradient(135deg, #7289da, #5865f2); color: #fff;">
+              ⚡ Discord'u Canlı Test Et
+            </button>
+            <button id="btnOpenDiscordApp" class="btn btn-outline" style="padding: 7px 10px; font-size: 11px;">
+              🌐 Discord'u Aç
+            </button>
+          </div>
+          <div id="discordTestResultBox" style="display: none; margin-top: 8px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 11px; font-family: var(--font-mono); line-height: 1.4;"></div>
         </div>
 
       </section>
