@@ -23,6 +23,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getUpdateStatus: () => ipcRenderer.invoke('updater:status'),
   simulateUpdate: (enable, version) => ipcRenderer.invoke('updater:simulate', enable, version),
   selectExeFile: () => ipcRenderer.invoke('dialog:select-exe'),
-  getRunningApps: () => ipcRenderer.invoke('system:get-running-apps')
+  getRunningApps: () => ipcRenderer.invoke('system:get-running-apps'),
+  toggleWintun: (state) => ipcRenderer.invoke('wintun:toggle', state),
+  getWintunStatus: () => ipcRenderer.invoke('wintun:status'),
+  getWintunTelemetry: () => ipcRenderer.invoke('wintun:get-telemetry')
 });
 

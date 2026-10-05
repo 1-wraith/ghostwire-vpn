@@ -59,6 +59,8 @@ export const TRANSLATIONS = {
     tileTorDesc: 'Tor tarayıcısı gerekmeden tüm sistemi Tor ağına sokar',
     tileDpiTitle: 'Discord & DPI Engeli Kaldır',
     tileDpiDesc: 'Discord, Roblox ve sansürlü siteleri engelsiz açar',
+    tileWintunTitle: 'L3 Wintun Çekirdek Sürücüsü',
+    tileWintunDesc: 'Çekirdek düzeyinde 0-sızıntı koruma ve UDP/ICMP tüneli',
 
     // Live Diagnostics Card
     diagnosticsTitle: 'Canlı Ağ Güvenliği & Teşhis Paneli',
@@ -224,6 +226,8 @@ export const TRANSLATIONS = {
     tileTorDesc: 'Route entire OS via Tor without browser',
     tileDpiTitle: 'Discord & DPI Bypass',
     tileDpiDesc: 'Unblocks Discord, Roblox & censored apps',
+    tileWintunTitle: 'L3 Wintun Kernel Driver',
+    tileWintunDesc: 'Ring-0 kernel zero-leak UDP/ICMP packet tunneling',
 
     // Live Diagnostics Card
     diagnosticsTitle: 'Live Network Security & Diagnostics Panel',

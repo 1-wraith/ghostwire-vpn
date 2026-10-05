@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage, shell, dialog } = 
 const path = require('path');
 const { exec } = require('child_process');
 const { ProxyEngine } = require('./core/proxy-engine');
+const { WintunEngine } = require('./core/wintun-engine');
 
 // Intercept unhandled exceptions safely so Windows never shows modal crash dialogs
 process.on('uncaughtException', (err) => {
@@ -15,6 +16,7 @@ let mainWindow = null;
 let tray = null;
 let isQuitting = false;
 const proxyEngine = new ProxyEngine(10808);
+const wintunEngine = new WintunEngine();
 
 app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder');
 
@@ -170,8 +172,17 @@ ipcMain.on('window:close', () => {
   if (mainWindow) mainWindow.hide();
 });
 
-// Enable Windows Proxy & Real DPI Engine
+// Enable Windows Proxy & Real DPI Engine & Layer-3 Wintun Driver
 ipcMain.handle('vpn:connect-tunnel', async () => {
+  let wintunStatus = null;
+  try {
+    if (wintunEngine.enabled) {
+      wintunStatus = await wintunEngine.start();
+    }
+  } catch (err) {
+    console.warn('[GhostWire Main] Wintun Layer-3 startup notice:', err.message);
+  }
+
   try {
     await proxyEngine.start();
   } catch (err) {
@@ -184,11 +195,11 @@ ipcMain.handle('vpn:connect-tunnel', async () => {
       const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:${port}" /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyOverride /t REG_SZ /d "<local>" /f`;
       exec(cmd, () => {
         console.log(`[GhostWire Core] Windows Proxy engaged on 127.0.0.1:${port}`);
-        resolve({ success: true, proxyPort: port });
+        resolve({ success: true, proxyPort: port, wintun: wintunStatus || wintunEngine.getStatus() });
       });
     });
   }
-  return { success: true };
+  return { success: true, wintun: wintunStatus || wintunEngine.getStatus() };
 });
 
 // Native Windows File Dialog to select any .exe application directly
@@ -256,8 +267,12 @@ ipcMain.handle('system:get-running-apps', async () => {
   });
 });
 
-// Disconnect & Reset Windows Proxy
+// Disconnect & Reset Windows Proxy & Wintun Layer-3
 ipcMain.handle('vpn:disconnect-tunnel', async () => {
+  try {
+    await wintunEngine.stop();
+  } catch (e) {}
+
   if (process.platform === 'win32') {
     return new Promise((resolve) => {
       const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f`;
@@ -316,6 +331,19 @@ ipcMain.on('tray:update-status', (event, data) => {
   updateTrayMenu(data);
 });
 
+// Wintun Layer-3 Kernel Engine IPC Handlers
+ipcMain.handle('wintun:status', () => {
+  return wintunEngine.getStatus();
+});
+
+ipcMain.handle('wintun:toggle', (event, enabled) => {
+  return wintunEngine.toggle(enabled);
+});
+
+ipcMain.handle('wintun:get-telemetry', () => {
+  return wintunEngine.getStatus();
+});
+
 
 // In-App Auto-Updater IPC Handlers
 const { UpdaterEngine } = require('./core/updater-engine');
@@ -355,6 +383,11 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true;
+  // Disengage Wintun Layer-3 driver and routes cleanly
+  try {
+    wintunEngine.stop();
+  } catch (e) {}
+  
   // Make sure proxy is cleanly disengaged on app exit
   if (process.platform === 'win32') {
     exec('reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f');

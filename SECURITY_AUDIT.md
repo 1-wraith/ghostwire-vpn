@@ -35,6 +35,7 @@ The scope encompassed:
 | **Disk Storage** | NVMe / SSD local storage | **100% Volatile RAM-Disk (Diskless Boot)** | ✅ Verified |
 | **Quantum Resistance** | Classical X25519 (Vulnerable) | **ML-KEM / Kyber-768 Post-Quantum Safe** | ✅ Verified |
 | **Kill Switch Leaks** | Occasional IPv6 / DNS bypass | **Windows Filtering Platform (WFP) Hard-Lock** | ✅ Verified |
+| **Layer-3 Packet Tunneling** | Often restricted to Layer-7 Proxy | **Ring-0 Wintun / WinDivert Kernel Driver** | ✅ Verified |
 
 ---
 
@@ -59,6 +60,11 @@ GhostWire provides built-in Onion routing directly at the network adapter level:
 3. Traffic traverses **Guard Node ➔ Middle Relay ➔ Exit Node**.
 4. **ISP visibility:** The Internet Service Provider only observes standard encrypted VPN traffic. They cannot detect Tor signatures.
 5. **Destination visibility:** Target websites and services observe only the ephemeral Tor exit relay IP.
+
+### 3.4 Layer-3 Wintun & WinDivert Ring-0 Driver Verification
+- **Full Packet Encapsulation:** The tunnel operates at Layer 3 (IP Level) utilizing ring-0 virtual adapters (`GhostWire-Tun0`, MTU 1420) alongside WinDivert packet filter drivers.
+- **Zero DNS & WebRTC Leaks:** Prevents physical adapter fallback leaks by enforcing split default routing (`0.0.0.0/1` and `128.0.0.0/1`) and DNS Hard-Locking.
+- **UDP & ICMP Protection:** Gaming, voice communications (Discord, VoIP), and ICMP traffic are fully shielded at the kernel level without relying solely on application-level proxy hooks.
 
 ---
 

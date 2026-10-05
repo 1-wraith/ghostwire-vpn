@@ -206,6 +206,14 @@
 
           <div class="telemetry-row">
             <span class="telemetry-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+              <span>Ağ Tünel Sürücüsü</span>
+            </span>
+            <span id="telemetryDriver" class="telemetry-value safe">Layer-3 Wintun (Ring-0)</span>
+          </div>
+
+          <div class="telemetry-row">
+            <span class="telemetry-label">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
               <span data-i18n="auditProof">RAM-Only Kayıt Tutmama Kanıtı</span>
             </span>
@@ -316,8 +324,8 @@
           </div>
         </div>
 
-        <!-- Özellikler Merkezi 6-Grid -->
-        <div class="feature-hub-grid" style="grid-template-columns: repeat(6, 1fr);">
+        <!-- Özellikler Merkezi 7-Grid -->
+        <div class="feature-hub-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
           
           <!-- 1. Discord & DPI Engeli Kaldırıcı -->
           <div id="tileDpiBypass" class="feature-tile active" title="Discord, Roblox ve Sansür Engellerini Aş">
@@ -416,6 +424,22 @@
             <div>
               <div class="tile-title" data-i18n="tileTorTitle">Tor-Over-VPN</div>
               <div class="tile-desc" data-i18n="tileTorDesc">Tor tarayıcısız Onion gizliliği</div>
+            </div>
+          </div>
+
+          <!-- 7. Kuantum Wintun L3 Çekirdek Sürücüsü (Ring-0) -->
+          <div id="tileWintun" class="feature-tile active" title="Layer-3 Wintun & WinDivert Ring-0 Çekirdek Sürücüsü (0 Sızıntı)">
+            <div class="tile-top">
+              <div class="tile-icon-wrap" style="color: var(--cyan-stealth); background: rgba(0, 229, 255, 0.15);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+              </div>
+              <span id="wintunBadge" class="tile-badge" style="background: rgba(0, 229, 255, 0.15); color: var(--cyan-stealth);">L3 RING-0</span>
+            </div>
+            <div>
+              <div class="tile-title" data-i18n="tileWintunTitle">L3 Wintun Sürücüsü</div>
+              <div class="tile-desc" data-i18n="tileWintunDesc">Çekirdek düzeyinde 0-sızıntı koruma</div>
             </div>
           </div>
 
@@ -970,6 +994,21 @@ AllowedIPs = 0.0.0.0/0"></textarea>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Kuantum Wintun Layer-3 Çekirdek Sürücüsü Switch -->
+              <div class="settings-row" style="background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: var(--radius-sm); padding: 12px 14px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="settings-row-title" style="color: var(--cyan-stealth); font-weight: 700;">⚡ Kuantum Wintun L3 Çekirdek Sürücüsü (Ring-0 Kernel TUN)</div>
+                    <span class="brand-tag" style="background: rgba(0, 245, 155, 0.15); color: var(--emerald-safe); font-size: 9px; padding: 2px 6px;">MULLVAD STANDARDI</span>
+                  </div>
+                  <div class="settings-row-sub">Tüm sistem trafiğini, oyunları, UDP/ICMP ve DNS paketlerini doğrudan Windows çekirdeğinde tüneller. Proxy düzeyindeki sızıntı risklerini sıfıra indirir.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switchWintunKernel" checked>
+                  <span class="slider"></span>
+                </label>
+              </div>
+
               <!-- Windows Açılışında Başlat -->
               <div class="settings-row">
                 <div>

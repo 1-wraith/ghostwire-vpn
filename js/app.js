@@ -86,6 +86,10 @@ const elements = {
   killSwitchBadge: document.getElementById('killSwitchBadge'),
   tileTorBridge: document.getElementById('tileTorBridge'),
   torBadge: document.getElementById('torBadge'),
+  tileWintun: document.getElementById('tileWintun'),
+  wintunBadge: document.getElementById('wintunBadge'),
+  telemetryDriver: document.getElementById('telemetryDriver'),
+  switchWintunKernel: document.getElementById('switchWintunKernel'),
 
   // Modals
   modalServerList: document.getElementById('modalServerList'),
@@ -553,6 +557,76 @@ function initEventListeners() {
     soundFX.playClick();
     vpnEngine.toggleKillSwitch();
   });
+
+  // Wintun Layer-3 Kernel Driver Toggles
+  let wintunActive = true;
+  function updateWintunUI(active) {
+    if (elements.tileWintun) {
+      if (active) {
+        elements.tileWintun.classList.add('active');
+        if (elements.wintunBadge) {
+          elements.wintunBadge.textContent = 'L3 RING-0';
+          elements.wintunBadge.style.color = 'var(--cyan-stealth)';
+          elements.wintunBadge.style.background = 'rgba(0, 229, 255, 0.15)';
+        }
+        if (elements.telemetryDriver) {
+          elements.telemetryDriver.textContent = 'Layer-3 Wintun (Ring-0)';
+          elements.telemetryDriver.className = 'telemetry-value safe';
+        }
+        if (elements.switchWintunKernel) elements.switchWintunKernel.checked = true;
+      } else {
+        elements.tileWintun.classList.remove('active');
+        if (elements.wintunBadge) {
+          elements.wintunBadge.textContent = 'DEVRE DIŞI';
+          elements.wintunBadge.style.color = 'var(--text-muted)';
+          elements.wintunBadge.style.background = 'rgba(255, 255, 255, 0.05)';
+        }
+        if (elements.telemetryDriver) {
+          elements.telemetryDriver.textContent = 'Layer-7 HTTP/CONNECT Proxy';
+          elements.telemetryDriver.className = 'telemetry-value';
+        }
+        if (elements.switchWintunKernel) elements.switchWintunKernel.checked = false;
+      }
+    }
+  }
+
+  if (elements.tileWintun) {
+    elements.tileWintun.addEventListener('click', async () => {
+      soundFX.playClick();
+      wintunActive = !wintunActive;
+      updateWintunUI(wintunActive);
+      if (window.electronAPI && window.electronAPI.toggleWintun) {
+        await window.electronAPI.toggleWintun(wintunActive);
+      } else {
+        try {
+          await fetch('/api/wintun-toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: wintunActive })
+          });
+        } catch (e) {}
+      }
+    });
+  }
+
+  if (elements.switchWintunKernel) {
+    elements.switchWintunKernel.addEventListener('change', async (e) => {
+      soundFX.playClick();
+      wintunActive = e.target.checked;
+      updateWintunUI(wintunActive);
+      if (window.electronAPI && window.electronAPI.toggleWintun) {
+        await window.electronAPI.toggleWintun(wintunActive);
+      } else {
+        try {
+          await fetch('/api/wintun-toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enabled: wintunActive })
+          });
+        } catch (e) {}
+      }
+    });
+  }
 
   elements.btnToggleTorRouting.addEventListener('click', async () => {
     soundFX.playClick();

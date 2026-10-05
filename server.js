@@ -5,6 +5,7 @@ const { exec } = require('child_process');
 const { ProxyEngine } = require('./core/proxy-engine');
 const { PingEngine } = require('./core/ping-engine');
 const { UpdaterEngine } = require('./core/updater-engine');
+const { WintunEngine } = require('./core/wintun-engine');
 const { SERVERS_DATABASE } = require('./js/server-list');
 
 // Intercept unhandled exceptions safely
@@ -19,6 +20,7 @@ const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
 const pingEngine = new PingEngine();
 const updaterEngine = new UpdaterEngine('1.0.0', '1-wraith/ghostwire-vpn');
+const wintunEngine = new WintunEngine();
 proxyEngine.start().catch(() => {});
 
 const MIME_TYPES = {
@@ -181,6 +183,36 @@ const server = http.createServer(async (req, res) => {
     const result = updaterEngine.applyUpdate();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
+    return;
+  }
+
+  // Wintun Layer-3 Kernel Engine Endpoints
+  if (req.url === '/api/wintun-status') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(wintunEngine.getStatus()));
+    return;
+  }
+
+  if (req.url === '/api/wintun-toggle' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { enabled } = JSON.parse(body || '{}');
+        const state = wintunEngine.toggle(enabled !== undefined ? enabled : !wintunEngine.enabled);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, enabled: state, status: wintunEngine.getStatus() }));
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+      }
+    });
+    return;
+  }
+
+  if (req.url === '/api/wintun-telemetry') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(wintunEngine.getStatus()));
     return;
   }
 

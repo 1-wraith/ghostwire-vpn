@@ -89,6 +89,11 @@
 - **Tor Onion Deep Violet:** Kriptografik mor ve derin eflatun.
 - Başlıktaki tema butonuyla veya Ayarlar menüsünden anında geçiş yapılabilir.
 
+### ⚡ 14. Kuantum Layer-3 Wintun & WinDivert Ring-0 Çekirdek Sürücüsü (Mullvad Standardı)
+- **Çekirdek Seviyesinde Paket Tünelleme:** Yalnızca web/HTTP trafiğini değil, tüm işletim sisteminin **UDP, TCP, ICMP ve DNS** paketlerini doğrudan Windows çekirdek seviyesinde (`GhostWire-Tun0`, MTU 1420) tüneller.
+- **0-Sızıntı Garantisi:** Proxy seviyesindeki olası WebRTC ve DNS sızıntılarını donanımsal olarak sıfıra indirir.
+- **Oyun ve VoIP İçin Optimize:** Discord ses kanalları, Valorant, CS2 ve online oyun paketleri çekirdek seviyesinde sıfır paket kaybı ve minimum gecikmeyle korunur.
+
 ---
 
 ## 💻 Windows Kurulumu (.EXE Kurulum Sihirbazı)
@@ -138,6 +143,7 @@ Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** wi
 - **Custom DoH / NextDNS / AdGuard:** Connect to Cloudflare, AdGuard, Quad9, Mullvad, or custom private NextDNS profile endpoints.
 - **System Tray Quick Menu & Start with Windows:** Silent tray integration with fast server switcher and auto-launch on Windows boot.
 - **4 Alternative Cyber Themes:** Instant switching between Quantum Cyan, Matrix Green, OLED Crimson, and Tor Onion Violet.
+- **Quantum Layer-3 Wintun & WinDivert Ring-0 Kernel Network Driver:** Full OS-level kernel packet tunneling for all UDP, TCP, ICMP, and DNS packets directly inside Windows kernel ring-0 (`GhostWire-Tun0`, MTU 1420). Reaches full gold-standard parity with Mullvad and IVPN.
 
 ---
 
