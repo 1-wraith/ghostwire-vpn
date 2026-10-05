@@ -215,13 +215,13 @@ export class ClientUpdater {
   async simulateNewVersion() {
     try {
       if (window.electronAPI && window.electronAPI.simulateUpdate) {
-        const sim = await window.electronAPI.simulateUpdate(true, '1.1.0');
+        const sim = await window.electronAPI.simulateUpdate(true, '1.2.0');
         this.showBanner(sim);
       } else {
         const res = await fetch('/api/simulate-update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ enable: true, version: '1.1.0' })
+          body: JSON.stringify({ enable: true, version: '1.2.0' })
         });
         if (res.ok) {
           const sim = await res.json();
@@ -229,7 +229,7 @@ export class ClientUpdater {
         }
       }
       if (this.elements.settingsUpdateStatus) {
-        this.elements.settingsUpdateStatus.textContent = '✓ Test Güncellemesi (v1.1.0) Aktifleştirildi! Üstteki banner kontrol edin.';
+        this.elements.settingsUpdateStatus.textContent = '✓ Test Güncellemesi (v1.2.0) Aktifleştirildi! Üstteki banner kontrol edin.';
         this.elements.settingsUpdateStatus.style.color = 'var(--emerald-safe)';
         this.elements.settingsUpdateStatus.style.display = 'block';
       }

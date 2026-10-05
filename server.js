@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
 const pingEngine = new PingEngine();
 const pkg = require('./package.json');
-const updaterEngine = new UpdaterEngine(pkg.version || '1.1.0', '1-wraith/ghostwire-vpn');
+const updaterEngine = new UpdaterEngine(pkg.version || '1.2.0', '1-wraith/ghostwire-vpn');
 const wintunEngine = new WintunEngine();
 proxyEngine.start().catch(() => {});
 
@@ -230,7 +230,7 @@ const server = http.createServer(async (req, res) => {
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
       let enable = true;
-      let targetVersion = '1.1.0';
+      let targetVersion = '1.2.0';
       try {
         if (body) {
           const parsed = JSON.parse(body);

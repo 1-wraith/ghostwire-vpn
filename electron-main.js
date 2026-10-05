@@ -408,7 +408,7 @@ ipcMain.handle('wintun:get-telemetry', () => {
 // In-App Auto-Updater IPC Handlers
 const { UpdaterEngine } = require('./core/updater-engine');
 const pkg = require('./package.json');
-const updaterEngine = new UpdaterEngine(pkg.version || '1.1.0', '1-wraith/ghostwire-vpn');
+const updaterEngine = new UpdaterEngine(pkg.version || '1.2.0', '1-wraith/ghostwire-vpn');
 
 ipcMain.handle('updater:check', async () => {
   return await updaterEngine.checkLatestRelease();

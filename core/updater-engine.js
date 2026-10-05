@@ -34,10 +34,10 @@ class UpdaterEngine {
 
     if (this.simulated) {
       this.updateState.hasUpdate = true;
-      this.updateState.latestVersion = '1.1.0';
-      this.updateState.releaseName = 'GhostWire VPN v1.1.0 - Kuantum Performans & Hız Turbo';
-      this.updateState.releaseNotes = '• Yeni BBR v3 çekirdek optimizasyonu\n• 15 yeni Asya ve Amerika sunucusu\n• Gelişmiş bellek koruması';
-      this.updateState.assetName = 'GhostWire VPN Setup 1.1.0.exe';
+      this.updateState.latestVersion = '1.2.0';
+      this.updateState.releaseName = 'GhostWire VPN v1.2.0 - Canlı Soket Hız Telemetrisi & Cross-Platform';
+      this.updateState.releaseNotes = '• Canlı indirme/yükleme soket bayt eşlemesi ve anlık hız telemetrisi\n• Tam Cross-Platform (Linux & macOS) desteği ve CI/CD derleme hattı\n• Gelişmiş BBR ve MTU optimizasyonları';
+      this.updateState.assetName = 'GhostWire VPN Setup 1.2.0.exe';
       this.updateState.assetSize = 80696313;
       this.updateState.status = 'available';
       return this.getStatus();
@@ -280,13 +280,13 @@ class UpdaterEngine {
     return { success: false, error: 'Installer file not found' };
   }
 
-  simulateUpdate(enable = true, targetVersion = '1.1.0') {
+  simulateUpdate(enable = true, targetVersion = '1.2.0') {
     this.simulated = enable;
     if (enable) {
       this.updateState.hasUpdate = true;
       this.updateState.latestVersion = targetVersion;
-      this.updateState.releaseName = `GhostWire VPN v${targetVersion} - Kuantum Performans & Hız Turbo`;
-      this.updateState.releaseNotes = '• Yeni BBR v3 çekirdek optimizasyonu\n• 15 yeni Asya ve Amerika sunucusu\n• Gelişmiş bellek koruması';
+      this.updateState.releaseName = `GhostWire VPN v${targetVersion} - Canlı Soket Hız Telemetrisi & Cross-Platform`;
+      this.updateState.releaseNotes = '• Canlı indirme/yükleme soket bayt eşlemesi ve anlık hız telemetrisi\n• Tam Cross-Platform (Linux & macOS) desteği ve CI/CD derleme hattı\n• Gelişmiş BBR ve MTU optimizasyonları';
       this.updateState.assetName = `GhostWire VPN Setup ${targetVersion}.exe`;
       this.updateState.assetSize = 80696313;
       this.updateState.status = 'available';

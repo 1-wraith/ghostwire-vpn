@@ -111,22 +111,22 @@
 ## 💻 Kurulum ve Çalıştırma Rehberi
 
 ### Windows Kurulumu (.EXE):
-1. [Releases](https://github.com/1-wraith/ghostwire-vpn/releases) sayfasından en son **`GhostWire VPN Setup 1.1.0.exe`** dosyasını indirin.
+1. [Releases](https://github.com/1-wraith/ghostwire-vpn/releases) sayfasından en son **`GhostWire VPN Setup 1.2.0.exe`** dosyasını indirin.
 2. Çift tıklayarak kurulum sihirbazını başlatın ve kurulumu tamamlayın.
 
 ### Linux Kurulumu (.AppImage veya .deb):
 ```bash
 # AppImage ile doğrudan çalıştırma:
-chmod +x "GhostWire VPN-1.1.0.AppImage"
-./"GhostWire VPN-1.1.0.AppImage"
+chmod +x "GhostWire VPN-1.2.0.AppImage"
+./"GhostWire VPN-1.2.0.AppImage"
 
 # Debian / Ubuntu için .deb kurulumu:
-sudo dpkg -i ghostwire-vpn_1.1.0_amd64.deb
+sudo dpkg -i ghostwire-vpn_1.2.0_amd64.deb
 sudo apt-get install -f # Gerekirse bağımlılıkları tamamlar
 ```
 
 ### macOS Kurulumu (.dmg):
-1. **`GhostWire VPN-1.1.0.dmg`** dosyasını açın.
+1. **`GhostWire VPN-1.2.0.dmg`** dosyasını açın.
 2. `GhostWire VPN` uygulamasını `Applications` klasörüne sürükleyip bırakın.
 3. Uygulamayı ilk kez açarken macOS Güvenlik uyarısı çıkarsa *Sistem Ayarları ➔ Gizlilik ve Güvenlik ➔ Yine de Aç* diyerek onaylayın.
 

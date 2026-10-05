@@ -1,6 +1,6 @@
 {
   "name": "ghostwire-vpn",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "GhostWire VPN - 100% Açık Kaynaklı, Sıfır Kayıtlı Kuantum Gizlilik Kalkanı ve Sansür Engel Kırıcı",
   "main": "electron-main.js",
   "author": "1-wraith",
