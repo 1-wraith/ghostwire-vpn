@@ -297,82 +297,11 @@
               <span>Küresel Siber Komuta & Rota Paneli</span>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div class="view-switch-group">
-                <button id="btnViewCmdHud" class="view-tab-btn active">🛰️ Komuta HUD</button>
-                <button id="btnViewWorldMap" class="view-tab-btn">🗺️ Dünya Haritası</button>
-              </div>
-              <span class="brand-tag" data-i18n="mapLiveBadge">CANLI GEO-ROTALAMA</span>
-            </div>
+            <span class="brand-tag" data-i18n="mapLiveBadge">CANLI GEO-ROTALAMA</span>
           </div>
 
-          <!-- GÖRÜNÜM 1: Kuantum Komuta & Rota HUD -->
-          <div id="panelCmdHudView" class="cmd-hud-view-container">
-            <!-- Sol: Yörünge Bağlantı & Hızlı Düğüm Seçici -->
-            <div class="hud-left-orbit-card">
-              <div class="hud-orbit-header">
-                <span class="hud-pulse-dot"></span>
-                <span>AKTİF LAZER TÜNEL BAĞLANTISI</span>
-              </div>
-              <div class="hud-orbit-route-row">
-                <div class="hud-node-box origin">
-                  <span class="node-flag">🇹🇷</span>
-                  <div>
-                    <div class="node-name">Türkiye</div>
-                    <div class="node-sub">İstanbul (Ev Ağı)</div>
-                  </div>
-                </div>
-                
-                <div class="hud-laser-connector">
-                  <div class="hud-laser-line"></div>
-                  <span class="hud-ping-badge" id="hudPingBadge">⚡ 18 ms</span>
-                </div>
-
-                <div class="hud-node-box target">
-                  <span class="node-flag" id="hudTargetFlag">🇮🇸</span>
-                  <div>
-                    <div class="node-name" id="hudTargetName">Iceland</div>
-                    <div class="node-sub" id="hudTargetCity">Reykjavik</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Hızlı Düğüm Seçici Chip'leri -->
-              <div class="hud-quick-nodes-row">
-                <span class="hud-quick-title">⚡ Hızlı Konum:</span>
-                <button class="hud-quick-chip active" data-code="IS">🇮🇸 IS (18ms)</button>
-                <button class="hud-quick-chip" data-code="DE">🇩🇪 DE (46ms)</button>
-                <button class="hud-quick-chip" data-code="CH">🇨🇭 CH (46ms)</button>
-                <button class="hud-quick-chip" data-code="NL">🇳🇱 NL (50ms)</button>
-                <button class="hud-quick-chip" data-code="US">🇺🇸 US (110ms)</button>
-                <button class="hud-quick-chip" data-code="JP">🇯🇵 JP (190ms)</button>
-              </div>
-            </div>
-
-            <!-- Sağ: Canlı Hat Kapasite & Hız Testi Başlatıcı -->
-            <div class="hud-right-speed-card">
-              <div class="hud-speed-header">
-                <span>📶 CANLI HAT KAPASİTESİ & TÜNEL HIZI</span>
-              </div>
-              <div class="hud-speed-gauge-wrap">
-                <div class="speed-stat-box">
-                  <div class="speed-stat-label">Anlık Soket Trafiği</div>
-                  <div class="speed-stat-value" id="hudLiveSpeedVal">0.00 Mbps</div>
-                </div>
-                <div class="speed-stat-box">
-                  <div class="speed-stat-label">Maksimum Hat Kapasitesi</div>
-                  <div class="speed-stat-value peak" id="hudPeakSpeedVal">850 Mbps</div>
-                </div>
-              </div>
-              <button id="btnRunSpeedTestBurst" class="btn btn-primary speedtest-burst-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                <span>⚡ Anlık Hız & Hat Testi Başlat</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- GÖRÜNÜM 2: Coğrafi Dünya Haritası -->
-          <div class="map-canvas-wrapper" id="worldMapWrapper" style="display: none;">
+          <!-- Coğrafi Dünya Haritası -->
+          <div class="map-canvas-wrapper" id="worldMapWrapper">
             <div class="map-radar-sweep"></div>
             <div class="hud-corner hud-corner-tl"></div>
             <div class="hud-corner hud-corner-tr"></div>

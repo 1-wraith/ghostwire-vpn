@@ -575,7 +575,8 @@
 .map-canvas-wrapper {
   position: relative;
   width: 100%;
-  height: clamp(230px, 32vh, 340px);
+  height: clamp(380px, 48vh, 520px);
+  min-height: 380px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: radial-gradient(ellipse at center, rgba(14, 26, 48, 0.95) 0%, rgba(5, 8, 16, 0.99) 100%);

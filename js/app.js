@@ -177,18 +177,7 @@ const elements = {
   selectMtuSize: document.getElementById('selectMtuSize'),
   switchDesktopNotifications: document.getElementById('switchDesktopNotifications'),
 
-  // Tactical Command HUD View Elements
-  btnViewCmdHud: document.getElementById('btnViewCmdHud'),
-  btnViewWorldMap: document.getElementById('btnViewWorldMap'),
-  panelCmdHudView: document.getElementById('panelCmdHudView'),
-  worldMapWrapper: document.getElementById('worldMapWrapper'),
-  hudPingBadge: document.getElementById('hudPingBadge'),
-  hudTargetFlag: document.getElementById('hudTargetFlag'),
-  hudTargetName: document.getElementById('hudTargetName'),
-  hudTargetCity: document.getElementById('hudTargetCity'),
-  hudLiveSpeedVal: document.getElementById('hudLiveSpeedVal'),
-  hudPeakSpeedVal: document.getElementById('hudPeakSpeedVal'),
-  btnRunSpeedTestBurst: document.getElementById('btnRunSpeedTestBurst')
+  worldMapWrapper: document.getElementById('worldMapWrapper')
 };
 
 // Application Bootstrap
@@ -332,13 +321,6 @@ function updateEngineUI(state) {
   elements.currentServerCity.textContent = `${server.city} • ${server.unblockDiscord ? (isTr ? 'Discord Engeli Kaldırıcı' : 'Discord Unblock') : (isTr ? 'Yüksek Hızlı' : 'High Speed')}`;
   elements.currentServerPing.textContent = `⚡ ${server.ping} ms`;
   elements.activeProtocolBadge.textContent = protocol.badge || protocol.name;
-
-  if (elements.hudTargetFlag && server) {
-    elements.hudTargetFlag.textContent = server.flag;
-    elements.hudTargetName.textContent = server.name;
-    elements.hudTargetCity.textContent = server.city;
-    elements.hudPingBadge.textContent = `⚡ ${server.ping} ms`;
-  }
 
   elements.killSwitchBadge.textContent = killSwitch ? (isTr ? 'KİLİTLİ' : 'ENGAGED') : (isTr ? 'KAPALI' : 'DISABLED');
   elements.tileKillSwitch.className = killSwitch ? 'feature-tile active' : 'feature-tile';
@@ -741,69 +723,7 @@ function initEventListeners() {
     }
   });
 
-  // Tab Switcher between Komuta HUD and Dünya Haritası
-  if (elements.btnViewCmdHud && elements.btnViewWorldMap) {
-    elements.btnViewCmdHud.addEventListener('click', () => {
-      soundFX.playClick();
-      elements.btnViewCmdHud.classList.add('active');
-      elements.btnViewWorldMap.classList.remove('active');
-      if (elements.panelCmdHudView) elements.panelCmdHudView.style.display = 'grid';
-      if (elements.worldMapWrapper) elements.worldMapWrapper.style.display = 'none';
-    });
 
-    elements.btnViewWorldMap.addEventListener('click', () => {
-      soundFX.playClick();
-      elements.btnViewWorldMap.classList.add('active');
-      elements.btnViewCmdHud.classList.remove('active');
-      if (elements.panelCmdHudView) elements.panelCmdHudView.style.display = 'none';
-      if (elements.worldMapWrapper) elements.worldMapWrapper.style.display = 'block';
-    });
-  }
-
-  // Quick Node Chips in HUD
-  document.querySelectorAll('.hud-quick-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      soundFX.playClick();
-      document.querySelectorAll('.hud-quick-chip').forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const code = chip.getAttribute('data-code');
-      const srv = SERVERS_DATABASE.find(s => s.code === code);
-      if (srv) {
-        vpnEngine.setServer(srv);
-      }
-    });
-  });
-
-  // Speed Test Burst Action
-  if (elements.btnRunSpeedTestBurst) {
-    elements.btnRunSpeedTestBurst.addEventListener('click', async () => {
-      soundFX.playClick();
-      elements.btnRunSpeedTestBurst.disabled = true;
-      elements.btnRunSpeedTestBurst.innerHTML = `<span>⏳ Hat Kapasitesi Ölçülüyor...</span>`;
-
-      let count = 0;
-      const interval = setInterval(() => {
-        count++;
-        const testDown = Math.floor(Math.random() * 250) + 680;
-        const testUp = Math.floor(Math.random() * 120) + 360;
-        handleRealBandwidthTelemetry({
-          downloadMbps: testDown,
-          uploadMbps: testUp,
-          peakMbps: Math.max(850, testDown)
-        });
-
-        if (count >= 10) {
-          clearInterval(interval);
-          elements.btnRunSpeedTestBurst.disabled = false;
-          elements.btnRunSpeedTestBurst.innerHTML = `
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            <span>⚡ Anlık Hız & Hat Testi Başlat</span>
-          `;
-          soundFX.playConnect();
-        }
-      }, 150);
-    });
-  }
 
   // Close modals
   document.querySelectorAll('.modal-backdrop').forEach(modal => {
