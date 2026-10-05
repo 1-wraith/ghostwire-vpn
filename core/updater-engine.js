@@ -194,7 +194,8 @@ class UpdaterEngine {
     this.updateState.downloadedBytes = 0;
     this.updateState.progressPercent = 0;
 
-    const downloadDir = path.join(__dirname, '..', 'dist');
+    const os = require('os');
+    const downloadDir = path.join(os.tmpdir(), 'ghostwire-updates');
     if (!fs.existsSync(downloadDir)) {
       fs.mkdirSync(downloadDir, { recursive: true });
     }
@@ -229,6 +230,11 @@ class UpdaterEngine {
 
   downloadFileWithRedirect(url, targetPath) {
     const fileStream = fs.createWriteStream(targetPath);
+    fileStream.on('error', (err) => {
+      console.warn('[GhostWire Updater] File stream error:', err.message);
+      this.updateState.status = 'error';
+      this.updateState.error = err.message;
+    });
     
     const request = (targetUrl) => {
       const client = targetUrl.startsWith('https') ? https : http;
