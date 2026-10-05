@@ -358,7 +358,218 @@
   flex-direction: column;
   gap: 10px;
   position: relative;
-  min-height: 270px;
+  min-height: 230px;
+}
+
+/* Tab Switcher in Header */
+.view-switch-group {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.view-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-tab-btn.active {
+  background: rgba(0, 229, 255, 0.18);
+  color: var(--cyan-stealth);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+/* Command HUD View Layout */
+.cmd-hud-view-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .cmd-hud-view-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hud-left-orbit-card,
+.hud-right-speed-card {
+  background: radial-gradient(ellipse at center, rgba(14, 26, 48, 0.8) 0%, rgba(5, 8, 16, 0.95) 100%);
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.hud-orbit-header,
+.hud-speed-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan-stealth);
+  letter-spacing: 0.5px;
+}
+
+.hud-orbit-route-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.hud-node-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-node-box .node-flag {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.hud-node-box .node-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hud-node-box .node-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.hud-laser-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  max-width: 120px;
+}
+
+.hud-laser-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #00e5ff, #00f59b);
+  box-shadow: 0 0 8px #00f59b;
+  position: relative;
+  border-radius: 2px;
+}
+
+.hud-ping-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--emerald-safe);
+  background: rgba(0, 245, 155, 0.12);
+  border: 1px solid rgba(0, 245, 155, 0.3);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.hud-quick-nodes-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hud-quick-title {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.hud-quick-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hud-quick-chip:hover,
+.hud-quick-chip.active {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.4);
+  color: var(--cyan-stealth);
+}
+
+.hud-speed-gauge-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.speed-stat-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.speed-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.speed-stat-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--cyan-stealth);
+}
+
+.speed-stat-value.peak {
+  color: var(--emerald-safe);
+}
+
+.speedtest-burst-btn {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(0, 245, 155, 0.2));
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.speedtest-burst-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.35), rgba(0, 245, 155, 0.35));
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
 }
 
 .map-canvas-wrapper {

@@ -86,7 +86,7 @@ export class MapRenderer {
 
     // Build SVG markup with cyber filters, background grid, real countries, laser layer and pins
     mapDiv.innerHTML = `
-      <svg id="cyberWorldMapSvg" class="cyber-world-map-svg" viewBox="${SVG_VIEWBOX}" preserveAspectRatio="xMidYMid slice">
+      <svg id="cyberWorldMapSvg" class="cyber-world-map-svg" viewBox="${SVG_VIEWBOX}" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- Cyber Cyan & Emerald Glow Filters -->
           <filter id="neonGlowCyan" x="-50%" y="-50%" width="200%" height="200%">

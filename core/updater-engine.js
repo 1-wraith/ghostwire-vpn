@@ -150,17 +150,19 @@ class UpdaterEngine {
               const commitMsg = (commitData.commit && commitData.commit.message) || '';
               const commitDate = (commitData.commit && commitData.commit.committer && commitData.commit.committer.date) || '';
 
-              // If commit is newer or different from local baseline
-              if (sha && (!this.buildCommit || sha !== this.buildCommit)) {
+              if (sha && this.buildCommit && sha !== this.buildCommit) {
                 this.updateState.hasUpdate = true;
                 this.updateState.status = 'available';
-                this.updateState.latestVersion = `1.1.0 (#${sha})`;
+                this.updateState.latestVersion = `${this.currentVersion} (#${sha})`;
                 this.updateState.releaseName = `GhostWire VPN Yeni Güncelleme (#${sha})`;
                 this.updateState.releaseNotes = commitMsg.split('\n')[0];
                 this.updateState.publishedAt = commitDate;
                 if (!this.updateState.downloadUrl) {
                   this.updateState.downloadUrl = `https://github.com/${this.repo}/releases/latest`;
                 }
+              } else {
+                this.updateState.hasUpdate = false;
+                this.updateState.status = 'idle';
               }
             }
           } catch (e) {}
