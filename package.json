@@ -8,12 +8,13 @@
   "scripts": {
     "start": "electron .",
     "serve": "node server.js",
-    "build:exe": "electron-builder --win nsis",
+    "clean:dist": "node -e \"const fs=require('fs'),path=require('path'); const d='dist'; if(fs.existsSync(d)){ fs.readdirSync(d).forEach(f=>{ if(f.endsWith('.exe')||f.endsWith('.AppImage')||f.endsWith('.deb')||f.endsWith('.blockmap')||f.endsWith('.dmg')||f.endsWith('.zip')) fs.rmSync(path.join(d,f),{force:true}); }); }\"",
+    "build:exe": "npm run clean:dist && electron-builder --win nsis",
     "build:dir": "electron-builder --win dir",
-    "build:linux": "electron-builder --linux AppImage deb",
-    "build:mac": "electron-builder --mac dmg",
-    "build:all": "electron-builder -mwl",
-    "dist": "electron-builder"
+    "build:linux": "npm run clean:dist && electron-builder --linux AppImage deb",
+    "build:mac": "npm run clean:dist && electron-builder --mac dmg",
+    "build:all": "npm run clean:dist && electron-builder -mwl",
+    "dist": "npm run clean:dist && electron-builder"
   },
   "build": {
     "appId": "com.ghostwire.vpn",
