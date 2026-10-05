@@ -29,7 +29,7 @@ function createWindow() {
     title: 'GhostWire VPN - 0-Kayıtlı Kuantum Gizlilik Kalkanı',
     backgroundColor: '#060911',
     frame: false,
-    titleBarStyle: 'hidden',
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -172,11 +172,30 @@ ipcMain.on('window:close', () => {
   if (mainWindow) mainWindow.hide();
 });
 
-// Enable Windows Proxy & Real DPI Engine & Layer-3 Wintun Driver
+// Bandwidth broadcaster to renderer
+let bandwidthBroadcastTimer = null;
+function startBandwidthBroadcaster() {
+  if (bandwidthBroadcastTimer) clearInterval(bandwidthBroadcastTimer);
+  bandwidthBroadcastTimer = setInterval(() => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const stats = proxyEngine.getBandwidthTelemetry();
+      mainWindow.webContents.send('vpn:bandwidth-stats', stats);
+    }
+  }, 800);
+}
+
+function stopBandwidthBroadcaster() {
+  if (bandwidthBroadcastTimer) {
+    clearInterval(bandwidthBroadcastTimer);
+    bandwidthBroadcastTimer = null;
+  }
+}
+
+// Enable Cross-Platform Proxy & Real DPI Engine & Layer-3 Wintun Driver
 ipcMain.handle('vpn:connect-tunnel', async () => {
   let wintunStatus = null;
   try {
-    if (wintunEngine.enabled) {
+    if (wintunEngine.enabled && process.platform === 'win32') {
       wintunStatus = await wintunEngine.start();
     }
   } catch (err) {
@@ -189,17 +208,37 @@ ipcMain.handle('vpn:connect-tunnel', async () => {
     console.warn('[GhostWire Main] Proxy startup notice:', err.message);
   }
 
+  const port = proxyEngine.port || 10808;
+  startBandwidthBroadcaster();
+
   if (process.platform === 'win32') {
     return new Promise((resolve) => {
-      const port = proxyEngine.port || 10808;
       const cmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 1 /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyServer /t REG_SZ /d "127.0.0.1:${port}" /f & reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyOverride /t REG_SZ /d "<local>" /f`;
       exec(cmd, () => {
         console.log(`[GhostWire Core] Windows Proxy engaged on 127.0.0.1:${port}`);
         resolve({ success: true, proxyPort: port, wintun: wintunStatus || wintunEngine.getStatus() });
       });
     });
+  } else if (process.platform === 'darwin') {
+    return new Promise((resolve) => {
+      // macOS system proxy via networksetup
+      const cmd = `networksetup -setwebproxy "Wi-Fi" 127.0.0.1 ${port} & networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 ${port} & networksetup -setwebproxystate "Wi-Fi" on & networksetup -setsecurewebproxystate "Wi-Fi" on`;
+      exec(cmd, () => {
+        console.log(`[GhostWire Core] macOS Proxy engaged on 127.0.0.1:${port}`);
+        resolve({ success: true, proxyPort: port, platform: 'darwin' });
+      });
+    });
+  } else if (process.platform === 'linux') {
+    return new Promise((resolve) => {
+      // Linux GNOME system proxy
+      const cmd = `gsettings set org.gnome.system.proxy mode 'manual' && gsettings set org.gnome.system.proxy.http host '127.0.0.1' && gsettings set org.gnome.system.proxy.http port ${port} && gsettings set org.gnome.system.proxy.https host '127.0.0.1' && gsettings set org.gnome.system.proxy.https port ${port}`;
+      exec(cmd, () => {
+        console.log(`[GhostWire Core] Linux GNOME Proxy engaged on 127.0.0.1:${port}`);
+        resolve({ success: true, proxyPort: port, platform: 'linux' });
+      });
+    });
   }
-  return { success: true, wintun: wintunStatus || wintunEngine.getStatus() };
+  return { success: true, proxyPort: port, wintun: wintunStatus || wintunEngine.getStatus() };
 });
 
 // Native Windows File Dialog to select any .exe application directly
@@ -267,8 +306,10 @@ ipcMain.handle('system:get-running-apps', async () => {
   });
 });
 
-// Disconnect & Reset Windows Proxy & Wintun Layer-3
+// Disconnect & Reset Proxy & Wintun across Windows / macOS / Linux
 ipcMain.handle('vpn:disconnect-tunnel', async () => {
+  stopBandwidthBroadcaster();
+
   try {
     await wintunEngine.stop();
   } catch (e) {}
@@ -281,8 +322,27 @@ ipcMain.handle('vpn:disconnect-tunnel', async () => {
         resolve({ success: true });
       });
     });
+  } else if (process.platform === 'darwin') {
+    return new Promise((resolve) => {
+      exec(`networksetup -setwebproxystate "Wi-Fi" off & networksetup -setsecurewebproxystate "Wi-Fi" off`, () => {
+        console.log('[GhostWire Core] macOS Proxy disengaged');
+        resolve({ success: true });
+      });
+    });
+  } else if (process.platform === 'linux') {
+    return new Promise((resolve) => {
+      exec(`gsettings set org.gnome.system.proxy mode 'none'`, () => {
+        console.log('[GhostWire Core] Linux Proxy disengaged');
+        resolve({ success: true });
+      });
+    });
   }
   return { success: true };
+});
+
+// Telemetry handler
+ipcMain.handle('vpn:get-bandwidth-stats', () => {
+  return proxyEngine.getBandwidthTelemetry();
 });
 
 // Real Discord Test
@@ -384,14 +444,19 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true;
+  stopBandwidthBroadcaster();
   // Disengage Wintun Layer-3 driver and routes cleanly
   try {
     wintunEngine.stop();
   } catch (e) {}
   
-  // Make sure proxy is cleanly disengaged on app exit
+  // Make sure proxy is cleanly disengaged across all platforms on app exit
   if (process.platform === 'win32') {
     exec('reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings" /v ProxyEnable /t REG_DWORD /d 0 /f');
+  } else if (process.platform === 'darwin') {
+    exec('networksetup -setwebproxystate "Wi-Fi" off & networksetup -setsecurewebproxystate "Wi-Fi" off');
+  } else if (process.platform === 'linux') {
+    exec("gsettings set org.gnome.system.proxy mode 'none'");
   }
 });
 

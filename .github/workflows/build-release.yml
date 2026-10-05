@@ -1,0 +1,76 @@
+name: Cross-Platform Build & Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            build_cmd: npm run build:exe
+            artifact_pattern: dist/*.exe
+          - os: ubuntu-latest
+            build_cmd: npm run build:linux
+            artifact_pattern: dist/*.AppImage dist/*.deb dist/*.tar.gz
+          - os: macos-latest
+            build_cmd: npm run build:mac
+            artifact_pattern: dist/*.dmg dist/*.zip
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install System Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools libnotify4 libxtst6 libnss3
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Build
+        run: ${{ matrix.build_cmd }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.os }}
+          path: dist/*
+          if-no-files-found: warn
+
+      - name: Publish to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.tar.gz
+            dist/*.dmg
+            dist/*.zip
+            dist/*.yml
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

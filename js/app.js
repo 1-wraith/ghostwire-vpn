@@ -505,8 +505,9 @@ function initEventListeners() {
     elements.btnSoundToggle.style.opacity = isMuted ? '0.4' : '1';
   });
 
-  // Electron Window Controls (Minimize, Maximize, Close)
-  if (window.electronAPI) {
+  // Electron Window Controls (Minimize, Maximize, Close) - Cross-Platform (Windows & Linux)
+  const isDarwin = window.electronAPI && window.electronAPI.platform === 'darwin';
+  if (window.electronAPI && !isDarwin) {
     if (elements.winMinimize) {
       elements.winMinimize.style.display = 'flex';
       elements.winMinimize.addEventListener('click', () => {
@@ -830,16 +831,38 @@ function startSimulationLoop() {
   }, 4000);
 }
 
+function handleRealBandwidthTelemetry(stats) {
+  if (!stats) return;
+  if (vpnEngine.state !== 'CONNECTED') return;
+
+  if (speedMonitor) {
+    speedMonitor.feedRealTelemetry(stats);
+  }
+
+  const downMbps = (stats.downloadMbps !== undefined) ? stats.downloadMbps : (speedMonitor ? speedMonitor.currentDown : 0);
+  const upMbps = (stats.uploadMbps !== undefined) ? stats.uploadMbps : (speedMonitor ? speedMonitor.currentUp : 0);
+  const peakMbps = (stats.peakMbps !== undefined && stats.peakMbps > 0) ? stats.peakMbps : (speedMonitor ? speedMonitor.peakDown : 0);
+
+  if (elements.speedDownloadVal) {
+    elements.speedDownloadVal.textContent = `${downMbps} Mbps`;
+  }
+  if (elements.speedUploadVal) {
+    elements.speedUploadVal.textContent = `${upMbps} Mbps`;
+  }
+  if (elements.peakSpeedVal) {
+    elements.peakSpeedVal.textContent = `${peakMbps} Mbps`;
+  }
+}
+
 function checkElectronIntegration() {
   if (window.electronAPI) {
-    if (elements.winMinimize) {
-      elements.winMinimize.style.display = 'flex';
-      elements.winMinimize.addEventListener('click', () => window.electronAPI.minimize());
+    // Real Socket Bandwidth Live Stream from Electron Core
+    if (window.electronAPI.onBandwidthStats) {
+      window.electronAPI.onBandwidthStats((stats) => {
+        handleRealBandwidthTelemetry(stats);
+      });
     }
-    if (elements.winClose) {
-      elements.winClose.style.display = 'flex';
-      elements.winClose.addEventListener('click', () => window.electronAPI.close());
-    }
+
     window.electronAPI.onQuickConnect(() => {
       if (vpnEngine.state !== 'CONNECTED') vpnEngine.connect();
     });
@@ -864,6 +887,19 @@ function checkElectronIntegration() {
       }).catch(() => {});
     }
   }
+
+  // Live socket bandwidth poller for web mode or browser fallback
+  setInterval(async () => {
+    if (vpnEngine.state === 'CONNECTED' && (!window.electronAPI || !window.electronAPI.onBandwidthStats)) {
+      try {
+        const res = await fetch('/api/bandwidth-stats');
+        if (res.ok) {
+          const stats = await res.json();
+          handleRealBandwidthTelemetry(stats);
+        }
+      } catch (e) {}
+    }
+  }, 1000);
 }
 
 // ===================================================================

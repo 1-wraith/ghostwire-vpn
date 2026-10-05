@@ -10,6 +10,9 @@
     "serve": "node server.js",
     "build:exe": "electron-builder --win nsis",
     "build:dir": "electron-builder --win dir",
+    "build:linux": "electron-builder --linux AppImage deb",
+    "build:mac": "electron-builder --mac dmg",
+    "build:all": "electron-builder -mwl",
     "dist": "electron-builder"
   },
   "build": {
@@ -28,6 +31,30 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "GhostWire VPN"
+    },
+    "linux": {
+      "target": ["AppImage", "deb", "tar.gz"],
+      "category": "Network",
+      "icon": "assets/icon.png",
+      "maintainer": "1-wraith <contact@ghostwirevpn.org>",
+      "synopsis": "GhostWire VPN - 0-Logs Quantum Stealth Privacy Shield"
+    },
+    "deb": {
+      "depends": ["libnotify4", "libxtst6", "libnss3"]
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.png",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "GhostWire VPN",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
     }
   },
   "devDependencies": {

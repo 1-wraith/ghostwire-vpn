@@ -26,6 +26,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getRunningApps: () => ipcRenderer.invoke('system:get-running-apps'),
   toggleWintun: (state) => ipcRenderer.invoke('wintun:toggle', state),
   getWintunStatus: () => ipcRenderer.invoke('wintun:status'),
-  getWintunTelemetry: () => ipcRenderer.invoke('wintun:get-telemetry')
+  getWintunTelemetry: () => ipcRenderer.invoke('wintun:get-telemetry'),
+  getBandwidthStats: () => ipcRenderer.invoke('vpn:get-bandwidth-stats'),
+  onBandwidthStats: (callback) => ipcRenderer.on('vpn:bandwidth-stats', (event, data) => callback(data)),
+  platform: process.platform
 });
 

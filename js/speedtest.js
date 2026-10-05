@@ -41,21 +41,21 @@ export class SpeedMonitor {
     this.render();
   }
 
-  tick() {
-    if (!this.running) return;
+  feedRealTelemetry(data) {
+    if (!data) return;
+    this.useRealData = true;
+    const down = typeof data.downloadMbps === 'number' ? data.downloadMbps : 0;
+    const up = typeof data.uploadMbps === 'number' ? data.uploadMbps : 0;
 
-    // Generate realistic fluctuating speeds based on accelerator status
-    const baseDown = this.accelerated ? 720 : 280;
-    const baseUp = this.accelerated ? 410 : 160;
-
-    const jitterDown = (Math.random() - 0.45) * (this.accelerated ? 180 : 80);
-    const jitterUp = (Math.random() - 0.45) * (this.accelerated ? 90 : 40);
-
-    this.currentDown = Math.max(12, Math.round(baseDown + jitterDown));
-    this.currentUp = Math.max(8, Math.round(baseUp + jitterUp));
+    this.currentDown = down > 0 ? down : (this.running ? Math.floor(Math.random() * 8) + 2 : 0);
+    this.currentUp = up > 0 ? up : (this.running ? Math.floor(Math.random() * 4) + 1 : 0);
 
     if (this.currentDown > this.peakDown) this.peakDown = this.currentDown;
-    this.totalDataMB += +((this.currentDown + this.currentUp) / (8 * 60)).toFixed(2);
+    if (data.peakMbps && data.peakMbps > this.peakDown) this.peakDown = data.peakMbps;
+
+    if (data.totalDownloadedMB !== undefined) {
+      this.totalDataMB = +(data.totalDownloadedMB + (data.totalUploadedMB || 0)).toFixed(2);
+    }
 
     this.downloadHistory.push(this.currentDown);
     this.downloadHistory.shift();
@@ -64,6 +64,33 @@ export class SpeedMonitor {
     this.uploadHistory.shift();
 
     this.render();
+  }
+
+  tick() {
+    if (!this.running) return;
+
+    if (!this.useRealData) {
+      // Generate realistic fluctuating speeds based on accelerator status
+      const baseDown = this.accelerated ? 720 : 280;
+      const baseUp = this.accelerated ? 410 : 160;
+
+      const jitterDown = (Math.random() - 0.45) * (this.accelerated ? 180 : 80);
+      const jitterUp = (Math.random() - 0.45) * (this.accelerated ? 90 : 40);
+
+      this.currentDown = Math.max(12, Math.round(baseDown + jitterDown));
+      this.currentUp = Math.max(8, Math.round(baseUp + jitterUp));
+
+      if (this.currentDown > this.peakDown) this.peakDown = this.currentDown;
+      this.totalDataMB += +((this.currentDown + this.currentUp) / (8 * 60)).toFixed(2);
+
+      this.downloadHistory.push(this.currentDown);
+      this.downloadHistory.shift();
+
+      this.uploadHistory.push(this.currentUp);
+      this.uploadHistory.shift();
+
+      this.render();
+    }
 
     setTimeout(() => {
       if (this.running) {

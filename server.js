@@ -63,6 +63,14 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Real Socket Bandwidth Telemetry endpoint
+  if (req.url === '/api/bandwidth-stats') {
+    const stats = proxyEngine.getBandwidthTelemetry();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(stats));
+    return;
+  }
+
   // Custom DoH configuration
   if (req.url === '/api/set-doh' && req.method === 'POST') {
     let body = '';

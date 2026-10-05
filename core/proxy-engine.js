@@ -21,8 +21,50 @@ class ProxyEngine {
     };
     this.stats = {
       bytesTransferred: 0,
+      bytesDownloaded: 0,
+      bytesUploaded: 0,
       requestsHandled: 0,
       discordBypassed: 0
+    };
+    this.bandwidth = {
+      lastCheck: Date.now(),
+      lastDownloaded: 0,
+      lastUploaded: 0,
+      downloadSpeedMbps: 0,
+      uploadSpeedMbps: 0,
+      peakSpeedMbps: 0
+    };
+  }
+
+  // Calculate live socket bandwidth speed (Mbps) and throughput
+  getBandwidthTelemetry() {
+    const now = Date.now();
+    const elapsedSec = Math.max(0.2, (now - this.bandwidth.lastCheck) / 1000);
+    const deltaDown = Math.max(0, this.stats.bytesDownloaded - this.bandwidth.lastDownloaded);
+    const deltaUp = Math.max(0, this.stats.bytesUploaded - this.bandwidth.lastUploaded);
+
+    const downMbps = +((deltaDown * 8) / (1024 * 1024 * elapsedSec)).toFixed(2);
+    const upMbps = +((deltaUp * 8) / (1024 * 1024 * elapsedSec)).toFixed(2);
+
+    this.bandwidth.lastCheck = now;
+    this.bandwidth.lastDownloaded = this.stats.bytesDownloaded;
+    this.bandwidth.lastUploaded = this.stats.bytesUploaded;
+    this.bandwidth.downloadSpeedMbps = downMbps;
+    this.bandwidth.uploadSpeedMbps = upMbps;
+    if (downMbps > this.bandwidth.peakSpeedMbps) {
+      this.bandwidth.peakSpeedMbps = downMbps;
+    }
+
+    return {
+      downloadMbps: downMbps,
+      uploadMbps: upMbps,
+      peakMbps: this.bandwidth.peakSpeedMbps,
+      totalDownloadedMB: +(this.stats.bytesDownloaded / (1024 * 1024)).toFixed(2),
+      totalUploadedMB: +(this.stats.bytesUploaded / (1024 * 1024)).toFixed(2),
+      bytesDownloaded: this.stats.bytesDownloaded,
+      bytesUploaded: this.stats.bytesUploaded,
+      requestsHandled: this.stats.requestsHandled,
+      discordBypassed: this.stats.discordBypassed
     };
   }
 
@@ -124,6 +166,7 @@ class ProxyEngine {
 
           clientSocket.on('data', (chunk) => {
             this.stats.bytesTransferred += chunk.length;
+            this.stats.bytesUploaded += chunk.length;
 
             // If TLS ClientHello for a blocked service: fragment at byte 5!
             if (isFirstPacket && port === 443 && chunk.length > 5 && chunk[0] === 0x16) {
@@ -142,6 +185,7 @@ class ProxyEngine {
 
           serverSocket.on('data', (chunk) => {
             this.stats.bytesTransferred += chunk.length;
+            this.stats.bytesDownloaded += chunk.length;
             clientSocket.write(chunk);
           });
         });

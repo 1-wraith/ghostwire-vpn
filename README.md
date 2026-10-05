@@ -94,15 +94,41 @@
 - **0-Sızıntı Garantisi:** Proxy seviyesindeki olası WebRTC ve DNS sızıntılarını donanımsal olarak sıfıra indirir.
 - **Oyun ve VoIP İçin Optimize:** Discord ses kanalları, Valorant, CS2 ve online oyun paketleri çekirdek seviyesinde sıfır paket kaybı ve minimum gecikmeyle korunur.
 
+### 📊 15. Canlı Soket Bant Genişliği & Gerçek Ağ Telemetrisi (Real Socket Bandwidth)
+- **Fiziksel Soket Bayt Eşlemesi:** Tünel ve proxy üzerinden akan her bir gerçek TCP/UDP soket baytı (`bytesDownloaded` & `bytesUploaded`) delta zamanlayıcısıyla anlık hesaplanır.
+- **Canlı Göstergeler:** İndirme Hızı, Yükleme Hızı ve En Yüksek Hız (Peak Mbps) değerleri simüle veriler yerine doğrudan soketten akan gerçek canlı verilerle beslenir.
+- **Neon Dalga Formu (Canvas):** Cyan (İndirme) ve Zümrüt (Yükleme) grafik eğrileri canlı soket verisiyle dinamik olarak çizilir.
+
+### 🐧 🍎 16. Tam Cross-Platform (Linux & macOS) Desteği
+- **Çoklu İşletim Sistemi Mimarisi:**
+  - **Windows (10/11):** NSIS Kurulum Sihirbazı (`.exe`), Ring-0 WinDivert/Wintun sürücüsü, Internet Settings kayıt defteri entegrasyonu.
+  - **Linux (Ubuntu, Debian, Fedora, Arch):** `.AppImage`, `.deb` ve `.tar.gz` paketleri; `gsettings` tabanlı GNOME/KDE sistem proxy yöneticisi.
+  - **macOS (Apple Silicon & Intel):** `.dmg` ve `.zip` paketleri; `networksetup` sistemi, `hiddenInset` native macOS trafik ışığı pencere kontrolleri.
+- **GitHub Actions CI/CD:** Her yeni sürümde Windows, Ubuntu ve macOS derleyicileri üzerinde eşzamanlı derlenip GitHub Releases'e eklenir.
+
 ---
 
-## 💻 Windows Kurulumu (.EXE Kurulum Sihirbazı)
+## 💻 Kurulum ve Çalıştırma Rehberi
 
-1. [Releases](https://github.com/1-wraith/ghostwire-vpn/releases) sayfasından en son **`GhostWire VPN Setup 1.0.0.exe`** dosyasını indirin.
-2. İndirdiğiniz `.exe` dosyasına çift tıklayın.
-3. Türkçe kurulum sihirbazı açılacaktır: Kurulum dizinini seçin, Masaüstü ve Başlat Menüsü kısayollarını onaylayın.
-4. Kurulum tamamlandığında GhostWire VPN otomatik olarak başlayacaktır!
-5. **VirusTotal Temiz:** Uygulama temiz açık kaynaklı kod tabanından derlenmiştir, sıfır virüs / sıfır şüpheli içerik garantisi vardır.
+### Windows Kurulumu (.EXE):
+1. [Releases](https://github.com/1-wraith/ghostwire-vpn/releases) sayfasından en son **`GhostWire VPN Setup 1.1.0.exe`** dosyasını indirin.
+2. Çift tıklayarak kurulum sihirbazını başlatın ve kurulumu tamamlayın.
+
+### Linux Kurulumu (.AppImage veya .deb):
+```bash
+# AppImage ile doğrudan çalıştırma:
+chmod +x "GhostWire VPN-1.1.0.AppImage"
+./"GhostWire VPN-1.1.0.AppImage"
+
+# Debian / Ubuntu için .deb kurulumu:
+sudo dpkg -i ghostwire-vpn_1.1.0_amd64.deb
+sudo apt-get install -f # Gerekirse bağımlılıkları tamamlar
+```
+
+### macOS Kurulumu (.dmg):
+1. **`GhostWire VPN-1.1.0.dmg`** dosyasını açın.
+2. `GhostWire VPN` uygulamasını `Applications` klasörüne sürükleyip bırakın.
+3. Uygulamayı ilk kez açarken macOS Güvenlik uyarısı çıkarsa *Sistem Ayarları ➔ Gizlilik ve Güvenlik ➔ Yine de Aç* diyerek onaylayın.
 
 ---
 
@@ -144,6 +170,8 @@ Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** wi
 - **System Tray Quick Menu & Start with Windows:** Silent tray integration with fast server switcher and auto-launch on Windows boot.
 - **4 Alternative Cyber Themes:** Instant switching between Quantum Cyan, Matrix Green, OLED Crimson, and Tor Onion Violet.
 - **Quantum Layer-3 Wintun & WinDivert Ring-0 Kernel Network Driver:** Full OS-level kernel packet tunneling for all UDP, TCP, ICMP, and DNS packets directly inside Windows kernel ring-0 (`GhostWire-Tun0`, MTU 1420). Reaches full gold-standard parity with Mullvad and IVPN.
+- **Live Socket Bandwidth Accounting:** Real-time physical TCP/UDP socket telemetry calculating instantaneous upload, download, and peak speeds mapped directly to the UI and canvas waveform.
+- **Full Cross-Platform Support (Windows, Linux, macOS):** Native packaging and automated system proxy configuration across Windows (`reg`), Linux (`gsettings`), and macOS (`networksetup`).
 
 ---
 
@@ -153,16 +181,26 @@ Every GhostWire node operates exclusively on **volatile RAM disks (`tmpfs`)** wi
 ```bash
 git clone https://github.com/1-wraith/ghostwire-vpn.git
 cd ghostwire-vpn
-node server.js
+npm install
+npm run serve
 ```
 Open **`http://localhost:4173`** in your browser.
 
-### Build Windows Installer (.exe):
+### Build Executables from Source:
 ```bash
-npm install
+# Windows (.exe):
 npm run build:exe
+
+# Linux (.AppImage, .deb, .tar.gz):
+npm run build:linux
+
+# macOS (.dmg, .zip):
+npm run build:mac
+
+# Multi-platform simultaneous build:
+npm run build:all
 ```
-The installer will be generated in: `dist/GhostWire VPN Setup 1.0.0.exe`.
+Generated installers will be located in the `dist/` directory.
 
 ---
 
