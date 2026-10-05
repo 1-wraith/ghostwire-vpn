@@ -137,6 +137,7 @@ const elements = {
   btnFullscreenToggle: document.getElementById('btnFullscreenToggle'),
   fullscreenIcon: document.getElementById('fullscreenIcon'),
   winMinimize: document.getElementById('winMinimize'),
+  winMaximize: document.getElementById('winMaximize'),
   winClose: document.getElementById('winClose'),
 
   // New Advanced Features
@@ -503,6 +504,31 @@ function initEventListeners() {
     const isMuted = soundFX.toggleMute();
     elements.btnSoundToggle.style.opacity = isMuted ? '0.4' : '1';
   });
+
+  // Electron Window Controls (Minimize, Maximize, Close)
+  if (window.electronAPI) {
+    if (elements.winMinimize) {
+      elements.winMinimize.style.display = 'flex';
+      elements.winMinimize.addEventListener('click', () => {
+        soundFX.playClick();
+        window.electronAPI.minimize();
+      });
+    }
+    if (elements.winMaximize) {
+      elements.winMaximize.style.display = 'flex';
+      elements.winMaximize.addEventListener('click', () => {
+        soundFX.playClick();
+        window.electronAPI.maximize();
+      });
+    }
+    if (elements.winClose) {
+      elements.winClose.style.display = 'flex';
+      elements.winClose.addEventListener('click', () => {
+        soundFX.playClick();
+        window.electronAPI.close();
+      });
+    }
+  }
 
   // Modals Open/Close
   elements.btnOpenServerList.addEventListener('click', () => {

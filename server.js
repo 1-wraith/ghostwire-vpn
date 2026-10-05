@@ -19,7 +19,8 @@ process.on('unhandledRejection', (reason) => {
 const PORT = process.env.PORT || 4173;
 const proxyEngine = new ProxyEngine(10808);
 const pingEngine = new PingEngine();
-const updaterEngine = new UpdaterEngine('1.0.0', '1-wraith/ghostwire-vpn');
+const pkg = require('./package.json');
+const updaterEngine = new UpdaterEngine(pkg.version || '1.1.0', '1-wraith/ghostwire-vpn');
 const wintunEngine = new WintunEngine();
 proxyEngine.start().catch(() => {});
 

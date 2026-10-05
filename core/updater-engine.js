@@ -80,26 +80,95 @@ class UpdaterEngine {
 
               // Version comparison
               this.updateState.hasUpdate = this.isNewerVersion(latestTag, this.currentVersion);
-              this.updateState.status = this.updateState.hasUpdate ? 'available' : 'idle';
-              resolve(this.getStatus());
+              if (this.updateState.hasUpdate) {
+                this.updateState.status = 'available';
+                return resolve(this.getStatus());
+              }
+
+              // Fallback: Check if latest commit on main is newer
+              this.checkLatestCommit().then(() => {
+                resolve(this.getStatus());
+              }).catch(() => {
+                this.updateState.status = 'idle';
+                resolve(this.getStatus());
+              });
             } else {
-              this.updateState.status = 'idle';
-              resolve(this.getStatus());
+              this.checkLatestCommit().then(() => {
+                resolve(this.getStatus());
+              }).catch(() => {
+                this.updateState.status = 'idle';
+                resolve(this.getStatus());
+              });
             }
           } catch (err) {
-            this.updateState.status = 'error';
-            this.updateState.error = err.message;
-            resolve(this.getStatus());
+            this.checkLatestCommit().then(() => {
+              resolve(this.getStatus());
+            }).catch(() => {
+              this.updateState.status = 'error';
+              this.updateState.error = err.message;
+              resolve(this.getStatus());
+            });
           }
         });
       });
 
       req.on('error', (err) => {
-        this.updateState.status = 'error';
-        this.updateState.error = err.message;
-        resolve(this.getStatus());
+        this.checkLatestCommit().then(() => {
+          resolve(this.getStatus());
+        }).catch(() => {
+          this.updateState.status = 'error';
+          this.updateState.error = err.message;
+          resolve(this.getStatus());
+        });
       });
 
+      req.end();
+    });
+  }
+
+  // Real-time commit checking from GitHub main branch
+  checkLatestCommit() {
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'api.github.com',
+        path: `/repos/${this.repo}/commits/main`,
+        method: 'GET',
+        headers: {
+          'User-Agent': 'GhostWire-VPN-Client',
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      };
+
+      const req = https.request(options, (res) => {
+        let rawData = '';
+        res.on('data', chunk => rawData += chunk);
+        res.on('end', () => {
+          try {
+            if (res.statusCode === 200) {
+              const commitData = JSON.parse(rawData);
+              const sha = (commitData.sha || '').substring(0, 7);
+              const commitMsg = (commitData.commit && commitData.commit.message) || '';
+              const commitDate = (commitData.commit && commitData.commit.committer && commitData.commit.committer.date) || '';
+
+              // If commit is newer or different from local baseline
+              if (sha && (!this.buildCommit || sha !== this.buildCommit)) {
+                this.updateState.hasUpdate = true;
+                this.updateState.status = 'available';
+                this.updateState.latestVersion = `1.1.0 (#${sha})`;
+                this.updateState.releaseName = `GhostWire VPN Yeni Güncelleme (#${sha})`;
+                this.updateState.releaseNotes = commitMsg.split('\n')[0];
+                this.updateState.publishedAt = commitDate;
+                if (!this.updateState.downloadUrl) {
+                  this.updateState.downloadUrl = `https://github.com/${this.repo}/releases/latest`;
+                }
+              }
+            }
+          } catch (e) {}
+          resolve();
+        });
+      });
+
+      req.on('error', () => resolve());
       req.end();
     });
   }

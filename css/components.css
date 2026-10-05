@@ -1625,3 +1625,29 @@
   color: var(--text-main);
 }
 
+/* Electron Frameless Window Control Buttons */
+.win-ctrl-btn {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  transition: all var(--transition-fast);
+  -webkit-app-region: no-drag;
+}
+
+.win-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.win-close-btn:hover {
+  background: #e81123 !important;
+  color: #ffffff !important;
+}
+
