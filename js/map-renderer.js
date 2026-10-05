@@ -86,7 +86,7 @@ export class MapRenderer {
 
     // Build SVG markup with cyber filters, background grid, real countries, laser layer and pins
     mapDiv.innerHTML = `
-      <svg id="cyberWorldMapSvg" class="cyber-world-map-svg" viewBox="${SVG_VIEWBOX}" preserveAspectRatio="xMidYMid meet">
+      <svg id="cyberWorldMapSvg" class="cyber-world-map-svg" viewBox="${SVG_VIEWBOX}" preserveAspectRatio="xMidYMid slice">
         <defs>
           <!-- Cyber Cyan & Emerald Glow Filters -->
           <filter id="neonGlowCyan" x="-50%" y="-50%" width="200%" height="200%">
@@ -298,6 +298,13 @@ export class MapRenderer {
 
       const targetEl = countriesLayer.querySelector(`[id="${this.targetCode.toLowerCase()}"]`);
       if (targetEl) targetEl.classList.add('country-target');
+    }
+
+    const mapHudTarget = document.getElementById('mapHudTarget');
+    if (mapHudTarget && this.targetServer) {
+      const city = this.targetServer.city || this.targetServer.name;
+      const ping = this.targetServer.ping || 18;
+      mapHudTarget.innerHTML = `${city.toUpperCase()} (${this.targetCode}) • ⚡ ${ping} ms`;
     }
 
     if (!arcMain || !arcGlow) return;
