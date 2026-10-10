@@ -1,6 +1,6 @@
 {
   "name": "ghostwire-vpn",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "GhostWire VPN - 100% Açık Kaynaklı, Sıfır Kayıtlı Kuantum Gizlilik Kalkanı ve Sansür Engel Kırıcı",
   "main": "electron-main.js",
   "author": "1-wraith",
@@ -24,7 +24,8 @@
     },
     "win": {
       "target": ["nsis"],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
       "oneClick": false,

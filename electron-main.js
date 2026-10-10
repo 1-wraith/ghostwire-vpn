@@ -351,9 +351,44 @@ ipcMain.handle('vpn:test-discord', async () => {
   return await proxyEngine.testDiscord();
 });
 
-// Launch Discord
+// Launch Discord (Priority: Native Desktop Discord.exe -> discord:// URI -> Web Fallback)
 ipcMain.on('vpn:open-discord', () => {
-  shell.openExternal('https://discord.com/app');
+  if (process.platform === 'win32') {
+    const localAppData = process.env.LOCALAPPDATA || '';
+    const discordUpdateExe = path.join(localAppData, 'Discord', 'Update.exe');
+    const fs = require('fs');
+    if (fs.existsSync(discordUpdateExe)) {
+      exec(`"${discordUpdateExe}" --processStart Discord.exe`, (err) => {
+        if (err) {
+          shell.openExternal('discord://').catch(() => shell.openExternal('https://discord.com/app'));
+        }
+      });
+      return;
+    }
+  }
+  shell.openExternal('discord://').catch(() => shell.openExternal('https://discord.com/app'));
+});
+
+// Admin Elevation Helpers for WinDivert Kernel Driver
+ipcMain.handle('system:check-admin', async () => {
+  return new Promise((resolve) => {
+    if (process.platform !== 'win32') return resolve(true);
+    exec('net session', (err) => {
+      resolve(!err);
+    });
+  });
+});
+
+ipcMain.handle('system:restart-as-admin', () => {
+  if (process.platform === 'win32') {
+    const exe = app.isPackaged ? process.execPath : process.argv[0];
+    const args = app.isPackaged ? '' : `"${path.resolve(__dirname)}"`;
+    exec(`powershell -NoProfile -Command "Start-Process '${exe}' -ArgumentList '${args}' -Verb RunAs"`, () => {
+      app.exit(0);
+    });
+    return { success: true };
+  }
+  return { success: false };
 });
 
 // Native Kill Switch

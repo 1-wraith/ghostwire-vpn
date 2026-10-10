@@ -93,26 +93,15 @@ class WintunEngine {
   startKernelDriver() {
     return new Promise((resolve) => {
       try {
-        // Driver arguments:
-        // -p: Passive mode (do not drop packets on delay)
-        // -r: Replace Host header with mixed case (bypass DPI)
-        // -s: Strip space between Host header and value
-        // -f 2: Fragment HTTP persistent connections
-        // -k 2: Enable HTTP persistent (keep-alive) fragmentation
-        // -n: Do not wait for first ACK before fragmenting
-        // -e 2: Fragment HTTPS / TLS ClientHello packets (Bypasses Discord & Roblox block)
-        // --dns-addr 1.1.1.1 --dns-port 53: Redirect all legacy UDP 53 DNS queries to Cloudflare
+        // Tested parameters for Turkish ISPs (Superonline, Turk Telekom, Vodafone)
+        // -9: Maximum fragmentation & fake packet anti-DPI mode
+        // --dns-addr 77.88.8.8 --dns-port 1253: Routes legacy UDP DNS through unblocked port 1253 to evade ISP port 53 DNS poisoning
         const args = [
-          '-p',
-          '-r',
-          '-s',
-          '-f', '2',
-          '-k', '2',
-          '-n',
-          '-e', '2',
-          '--dns-addr', '1.1.1.1',
-          '--dns-port', '53',
-          '--set-ttl', '3'
+          '-9',
+          '--dns-addr', '77.88.8.8',
+          '--dns-port', '1253',
+          '--dnsv6-addr', '2a02:6b8::feed:0ff',
+          '--dnsv6-port', '1253'
         ];
 
         const cwd = path.dirname(this.driverBinary);
@@ -154,23 +143,11 @@ class WintunEngine {
   }
 
   // Layer 3 Routing Table Manipulation
-  // Uses the canonical WireGuard / OpenVPN split default route trick (0.0.0.0/1 and 128.0.0.0/1)
   applyKernelRoutes() {
-    return new Promise((resolve) => {
-      if (process.platform !== 'win32') return resolve();
-
-      // Ensure Windows route commands are executed
-      // By using /1 netmasks, these routes are strictly more specific than the default gateway 0.0.0.0/0
-      // preventing any non-tunnel packet leaks while keeping local LAN intact
-      const cmd = `route add 0.0.0.0 mask 128.0.0.0 127.0.0.1 metric 5 & route add 128.0.0.0 mask 128.0.0.0 127.0.0.1 metric 5`;
-      exec(cmd, (err) => {
-        if (!err) {
-          this.routesApplied = true;
-          console.log('[GhostWire Wintun] Layer-3 split default routing applied (0.0.0.0/1 & 128.0.0.0/1).');
-        }
-        resolve();
-      });
-    });
+    // WinDivert directly filters and modifies packets at the NDIS kernel level.
+    // Do NOT inject fake 127.0.0.1 routes which blackhole host traffic.
+    this.routesApplied = false;
+    return Promise.resolve();
   }
 
   // Enforces zero DNS leaks on physical network adapters
@@ -178,10 +155,10 @@ class WintunEngine {
     return new Promise((resolve) => {
       if (process.platform !== 'win32') return resolve();
 
-      // Set primary DNS on all active interfaces to encrypted 1.1.1.1 to kill ISP hijacking
-      const cmd = `powershell -NoProfile -Command "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses ('1.1.1.1','1.0.0.1') -ErrorAction SilentlyContinue }"`;
+      // Set fallback DNS to 77.88.8.8 and 1.1.1.1
+      const cmd = `powershell -NoProfile -Command "Get-NetAdapter | Where-Object Status -eq 'Up' | ForEach-Object { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ServerAddresses ('77.88.8.8','1.1.1.1') -ErrorAction SilentlyContinue }"`;
       exec(cmd, () => {
-        console.log('[GhostWire Wintun] DNS Hard-Lock engaged (1.1.1.1 & 1.0.0.1).');
+        console.log('[GhostWire Wintun] DNS fallback set (77.88.8.8 & 1.1.1.1).');
         resolve();
       });
     });

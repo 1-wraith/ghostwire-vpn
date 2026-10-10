@@ -83,33 +83,63 @@ class ProxyEngine {
     }
   }
 
-  // Real DNS-over-HTTPS (Cloudflare / AdGuard / NextDNS / Quad9)
+  // Multi-Provider DoH with auto-fallback (Cloudflare -> Google -> Quad9)
   async resolveDoH(hostname) {
+    if (!hostname) return hostname;
     if (this.dnsCache.has(hostname)) return this.dnsCache.get(hostname);
 
-    return new Promise((resolve) => {
-      const sep = this.dohEndpoint.includes('?') ? '&' : '?';
-      const url = `${this.dohEndpoint}${sep}name=${encodeURIComponent(hostname)}&type=A`;
+    // If already an IPv4 address, return directly
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) return hostname;
 
-      https.get(url, {
-        headers: { 'accept': 'application/dns-json' },
-        timeout: 3000
-      }, (res) => {
-        let data = '';
-        res.on('data', c => data += c);
-        res.on('end', () => {
-          try {
-            const json = JSON.parse(data);
-            if (json.Answer && json.Answer.length > 0) {
-              const ip = json.Answer[0].data;
-              this.dnsCache.set(hostname, ip);
-              return resolve(ip);
-            }
-          } catch (e) {}
-          resolve(hostname);
+    const endpoints = [
+      this.dohEndpoint,
+      'https://dns.google/resolve',
+      'https://dns.quad9.net/dns-query'
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        const ip = await new Promise((resolve, reject) => {
+          const sep = endpoint.includes('?') ? '&' : '?';
+          const url = `${endpoint}${sep}name=${encodeURIComponent(hostname)}&type=A`;
+
+          const req = https.get(url, {
+            headers: { 'accept': 'application/dns-json' },
+            timeout: 2500
+          }, (res) => {
+            let data = '';
+            res.on('data', c => data += c);
+            res.on('end', () => {
+              try {
+                const json = JSON.parse(data);
+                if (json.Answer && json.Answer.length > 0) {
+                  const match = json.Answer.find(a => a.type === 1 || /^(\d{1,3}\.){3}\d{1,3}$/.test(a.data));
+                  if (match && match.data) {
+                    return resolve(match.data);
+                  }
+                }
+              } catch (e) {}
+              reject(new Error('No DNS answer'));
+            });
+          });
+
+          req.on('error', reject);
+          req.on('timeout', () => {
+            req.destroy();
+            reject(new Error('Timeout'));
+          });
         });
-      }).on('error', () => resolve(hostname));
-    });
+
+        if (ip) {
+          this.dnsCache.set(hostname, ip);
+          return ip;
+        }
+      } catch (err) {
+        // Try next DoH provider
+      }
+    }
+
+    return hostname;
   }
 
   start() {
@@ -121,8 +151,38 @@ class ProxyEngine {
       }
 
       const srv = http.createServer((req, res) => {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('GhostWire Quantum Proxy Active\n');
+        // Direct local ping to proxy port
+        if (req.url === '/' && (!req.headers.host || req.headers.host.includes('127.0.0.1') || req.headers.host.includes('localhost'))) {
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          return res.end('GhostWire Quantum Proxy Active\n');
+        }
+
+        // Real HTTP Forwarding for non-HTTPS traffic (connectivitycheck.gstatic.com etc.)
+        try {
+          const parsedUrl = new URL(req.url.startsWith('http') ? req.url : `http://${req.headers.host}${req.url}`);
+          const options = {
+            hostname: parsedUrl.hostname,
+            port: parsedUrl.port || 80,
+            path: parsedUrl.pathname + parsedUrl.search,
+            method: req.method,
+            headers: req.headers
+          };
+
+          const proxyReq = http.request(options, (proxyRes) => {
+            res.writeHead(proxyRes.statusCode, proxyRes.headers);
+            proxyRes.pipe(res);
+          });
+
+          proxyReq.on('error', () => {
+            res.writeHead(502, { 'Content-Type': 'text/plain' });
+            res.end('Bad Gateway\n');
+          });
+
+          req.pipe(proxyReq);
+        } catch (e) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Bad Request\n');
+        }
       });
 
       let resolved = false;

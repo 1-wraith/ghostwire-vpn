@@ -405,10 +405,32 @@ async function runRealDiscordTest() {
     elements.discordTestResultBox.style.background = 'rgba(255, 51, 102, 0.1)';
     elements.discordTestResultBox.style.border = '1px solid rgba(255, 51, 102, 0.4)';
     elements.discordTestResultBox.style.color = 'var(--crimson-danger)';
+
+    let adminNotice = '';
+    if (window.electronAPI && window.electronAPI.checkAdmin) {
+      try {
+        const isAdmin = await window.electronAPI.checkAdmin();
+        if (!isAdmin) {
+          adminNotice = `<br><div style="margin-top: 6px; padding: 6px 8px; background: rgba(255, 204, 0, 0.15); border: 1px solid rgba(255, 204, 0, 0.4); border-radius: 4px; color: #ffd166;">
+            ⚠️ <strong>${isTr ? 'Yönetici İzni Gerekli:' : 'Admin Required:'}</strong> ${isTr ? 'Superonline/Türk Telekom DPI engelini aşmak için sürücünün yönetici yetkisi olmalıdır.' : 'Kernel driver requires Administrator privileges to bypass ISP DPI.'}
+            <button id="btnRestartAdminNow" style="background:#ffd166; color:#000; border:none; padding:3px 8px; border-radius:3px; cursor:pointer; font-weight:bold; margin-left:6px; font-size:10px;">⚡ ${isTr ? 'Yönetici Olarak Başlat' : 'Restart as Admin'}</button>
+          </div>`;
+        }
+      } catch (e) {}
+    }
+
     elements.discordTestResultBox.innerHTML = `
       <strong>✗ ${isTr ? 'BAĞLANTI KESİNTİSİ' : 'CONNECTION FAILED'}</strong><br>
-      <span>${isTr ? 'Hata:' : 'Error:'} ${err.message}. ${isTr ? 'Lütfen önce "Bağlan" butonuna basarak tüneli aktif edin.' : 'Please click Connect first to activate the tunnel.'}</span>
+      <span>${isTr ? 'Hata:' : 'Error:'} ${err.message}.</span>
+      ${adminNotice}
     `;
+
+    const btnRestart = document.getElementById('btnRestartAdminNow');
+    if (btnRestart && window.electronAPI && window.electronAPI.restartAsAdmin) {
+      btnRestart.addEventListener('click', () => {
+        window.electronAPI.restartAsAdmin();
+      });
+    }
   }
 }
 

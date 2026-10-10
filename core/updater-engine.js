@@ -34,10 +34,10 @@ class UpdaterEngine {
 
     if (this.simulated) {
       this.updateState.hasUpdate = true;
-      this.updateState.latestVersion = '1.2.0';
-      this.updateState.releaseName = 'GhostWire VPN v1.2.0 - Canlı Soket Hız Telemetrisi & Cross-Platform';
-      this.updateState.releaseNotes = '• Canlı indirme/yükleme soket bayt eşlemesi ve anlık hız telemetrisi\n• Tam Cross-Platform (Linux & macOS) desteği ve CI/CD derleme hattı\n• Gelişmiş BBR ve MTU optimizasyonları';
-      this.updateState.assetName = 'GhostWire VPN Setup 1.2.0.exe';
+      this.updateState.latestVersion = '1.2.1';
+      this.updateState.releaseName = 'GhostWire VPN v1.2.1 - Discord & Superonline Hotfix';
+      this.updateState.releaseNotes = '• Superonline ve Türk Telekom için optimize edilmiş DPI kalkanı\n• HTTP Proxy yönlendirme düzeltmesi (connectivitycheck)\n• Otomatik yönetici hakları ve doğrudan Discord masaüstü başlatma';
+      this.updateState.assetName = 'GhostWire VPN Setup 1.2.1.exe';
       this.updateState.assetSize = 80696313;
       this.updateState.status = 'available';
       return this.getStatus();

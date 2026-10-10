@@ -29,6 +29,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getWintunTelemetry: () => ipcRenderer.invoke('wintun:get-telemetry'),
   getBandwidthStats: () => ipcRenderer.invoke('vpn:get-bandwidth-stats'),
   onBandwidthStats: (callback) => ipcRenderer.on('vpn:bandwidth-stats', (event, data) => callback(data)),
+  checkAdmin: () => ipcRenderer.invoke('system:check-admin'),
+  restartAsAdmin: () => ipcRenderer.invoke('system:restart-as-admin'),
   platform: process.platform
 });
 
