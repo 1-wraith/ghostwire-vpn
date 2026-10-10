@@ -209,8 +209,8 @@ function initGraphics() {
         vpnEngine.setServer(server);
       }
     };
-    if (trServer) {
-      mapRenderer.setTargetNode('TR');
+    if (isServer) {
+      mapRenderer.setTargetNode('IS');
     }
     mapRenderer.start();
   }

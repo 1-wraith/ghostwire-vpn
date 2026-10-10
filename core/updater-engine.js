@@ -34,10 +34,10 @@ class UpdaterEngine {
 
     if (this.simulated) {
       this.updateState.hasUpdate = true;
-      this.updateState.latestVersion = '1.2.2';
-      this.updateState.releaseName = 'GhostWire VPN v1.2.2 - Iceland Default & Smart Connect Routing';
-      this.updateState.releaseNotes = '• Varsayılan ve en hızlı bağlantı sunucusu İzlanda (Reykjavik) olarak güncellendi\n• Superonline ve Türk Telekom için optimize edilmiş DPI kalkanı\n• HTTP Proxy yönlendirme ve Discord masaüstü entegrasyonu';
-      this.updateState.assetName = 'GhostWire VPN Setup 1.2.2.exe';
+      this.updateState.latestVersion = '1.2.3';
+      this.updateState.releaseName = 'GhostWire VPN v1.2.3 - UI & CI Hotfix';
+      this.updateState.releaseNotes = '• Tıklanma ve harita render hatası giderildi\n• CI/CD pipeline yapılandırması güncellendi\n• İzlanda varsayılan rota ve DPI kalkanı kararlılık yaması';
+      this.updateState.assetName = 'GhostWire VPN Setup 1.2.3.exe';
       this.updateState.assetSize = 80696313;
       this.updateState.status = 'available';
       return this.getStatus();
