@@ -147,15 +147,17 @@ function createIcoFile(pngBuffer256, pngBuffer64, pngBuffer32, pngBuffer16) {
 const assetsDir = path.join(__dirname, 'assets');
 if (!fs.existsSync(assetsDir)) fs.mkdirSync(assetsDir, { recursive: true });
 
+const png512 = createPngBuffer(512, 512);
 const png256 = createPngBuffer(256, 256);
 const png64 = createPngBuffer(64, 64);
 const png32 = createPngBuffer(32, 32);
 const png16 = createPngBuffer(16, 16);
 
-fs.writeFileSync(path.join(assetsDir, 'icon.png'), png256);
+// macOS requires at least 512x512 PNG
+fs.writeFileSync(path.join(assetsDir, 'icon.png'), png512);
 fs.writeFileSync(path.join(assetsDir, 'tray-icon.png'), png32);
 
 const icoBuf = createIcoFile(png256, png64, png32, png16);
 fs.writeFileSync(path.join(assetsDir, 'icon.ico'), icoBuf);
 
-console.log('Successfully generated assets/icon.ico, assets/icon.png and assets/tray-icon.png!');
+console.log('Successfully generated 512x512 assets/icon.png and assets/icon.ico!');

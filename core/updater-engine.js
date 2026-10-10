@@ -34,10 +34,10 @@ class UpdaterEngine {
 
     if (this.simulated) {
       this.updateState.hasUpdate = true;
-      this.updateState.latestVersion = '1.2.3';
-      this.updateState.releaseName = 'GhostWire VPN v1.2.3 - UI & CI Hotfix';
-      this.updateState.releaseNotes = '• Tıklanma ve harita render hatası giderildi\n• CI/CD pipeline yapılandırması güncellendi\n• İzlanda varsayılan rota ve DPI kalkanı kararlılık yaması';
-      this.updateState.assetName = 'GhostWire VPN Setup 1.2.3.exe';
+      this.updateState.latestVersion = '1.2.4';
+      this.updateState.releaseName = 'GhostWire VPN v1.2.4 - Cross-Platform Release';
+      this.updateState.releaseNotes = '• macOS 512x512 retina icon desteği eklendi\n• CI/CD otomatik GitHub Release entegrasyonu düzeltildi\n• İzlanda varsayılan tünel ve DPI koruması';
+      this.updateState.assetName = 'GhostWire VPN Setup 1.2.4.exe';
       this.updateState.assetSize = 80696313;
       this.updateState.status = 'available';
       return this.getStatus();

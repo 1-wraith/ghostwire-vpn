@@ -1,6 +1,6 @@
 {
   "name": "ghostwire-vpn",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "GhostWire VPN - 100% Açık Kaynaklı, Sıfır Kayıtlı Kuantum Gizlilik Kalkanı ve Sansür Engel Kırıcı",
   "main": "electron-main.js",
   "author": "1-wraith",
@@ -9,14 +9,19 @@
     "start": "electron .",
     "serve": "node server.js",
     "clean:dist": "node -e \"const fs=require('fs'),path=require('path'); const d='dist'; if(fs.existsSync(d)){ fs.readdirSync(d).forEach(f=>{ if(f.endsWith('.exe')||f.endsWith('.AppImage')||f.endsWith('.deb')||f.endsWith('.blockmap')||f.endsWith('.dmg')||f.endsWith('.zip')) fs.rmSync(path.join(d,f),{force:true}); }); }\"",
-    "build:exe": "npm run clean:dist && electron-builder --win nsis",
-    "build:dir": "electron-builder --win dir",
-    "build:linux": "npm run clean:dist && electron-builder --linux AppImage deb",
-    "build:mac": "npm run clean:dist && electron-builder --mac dmg",
-    "build:all": "npm run clean:dist && electron-builder -mwl",
-    "dist": "npm run clean:dist && electron-builder"
+    "build:exe": "npm run clean:dist && electron-builder --win nsis -p never",
+    "build:dir": "electron-builder --win dir -p never",
+    "build:linux": "npm run clean:dist && electron-builder --linux AppImage deb -p never",
+    "build:mac": "npm run clean:dist && electron-builder --mac dmg -p never",
+    "build:all": "npm run clean:dist && electron-builder -mwl -p never",
+    "dist": "npm run clean:dist && electron-builder -p never"
   },
   "build": {
+    "publish": {
+      "provider": "github",
+      "owner": "1-wraith",
+      "repo": "ghostwire-vpn"
+    },
     "appId": "com.ghostwire.vpn",
     "productName": "GhostWire VPN",
     "directories": {
