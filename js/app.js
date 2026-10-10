@@ -23,10 +23,10 @@ const dpiEngine = new DpiEngine();
 const vpnEngine = new VpnEngine(SERVERS_DATABASE, cyberShield, torBridge, accelerator);
 let clientUpdater = null;
 
-// Set default to Turkey (Istanbul) for instant anti-censorship out-of-the-box
-const trServer = SERVERS_DATABASE.find(s => s.code === 'TR');
-if (trServer) {
-  vpnEngine.setServer(trServer);
+// Set default to Iceland (Reykjavik) for instant anti-censorship out-of-the-box
+const isServer = SERVERS_DATABASE.find(s => s.code === 'IS') || SERVERS_DATABASE[0];
+if (isServer) {
+  vpnEngine.setServer(isServer);
 }
 
 let speedMonitor = null;

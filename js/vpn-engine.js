@@ -91,17 +91,10 @@ export class VpnEngine {
   }
 
   smartConnect(livePings = {}) {
-    // Find server with lowest live ping
-    let bestServer = this.serverDatabase[0];
-    let minPing = Infinity;
-
-    for (const server of this.serverDatabase) {
-      const p = livePings[server.code] !== undefined ? livePings[server.code] : (server.ping || 999);
-      if (p < minPing && p > 0) {
-        minPing = p;
-        bestServer = server;
-      }
-    }
+    // Primary anti-censorship node: Iceland (IS - Reykjavik)
+    // Ensures domestic Turkey nodes (which remain censored for Discord/Roblox) are never picked
+    const iceland = this.serverDatabase.find(s => s.code === 'IS');
+    const bestServer = iceland || this.serverDatabase.find(s => s.code !== 'TR') || this.serverDatabase[0];
 
     this.setServer(bestServer);
     return this.connect();
